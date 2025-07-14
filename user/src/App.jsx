@@ -9,13 +9,15 @@ import CourseYearBranchPage from './component/useronbording/cource_year_grade';
 import InterestPage from './component/useronbording/InterestPage';
 import Prompt from './component/useronbording/Prompt';
 import RelationshipStatusPage from './component/useronbording/RelationshipStatus';
+import UsernamePage from './component/useronbording/UsernamePage';
+import UserProfilePage from './component/useronbording/UserProfilePage';
 
 
 
 function App() {
   return (
     <div>
-      <SelectRegionPage />
+      {/* <SelectRegionPage />
       <SelectCollegePage />
       <VerifyEmailPage /> 
       <OtpVerificationPage />
@@ -23,7 +25,10 @@ function App() {
       <CourseYearBranchPage />
       <InterestPage />
       <Prompt />
-      <RelationshipStatusPage />
+      <RelationshipStatusPage /> */}
+      {/* <UsernamePage /> */}
+      <UserProfilePage />
+
 
       {/* Uncomment the component you want to render */}
 
