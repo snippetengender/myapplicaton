@@ -1,28 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, Search, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import api from "../../services/api";
+import debounce from "lodash.debounce";
 
-const regions = [
-  "PSG", "CIT", "PSG CAS", "SKCET", "PSG Tech",
-  "SREC CBE",
-];
+export default function CollegeSelect() {
+  const [colleges, setColleges] = useState([]);
+  const [selectedCollege, setSelectedCollege] = useState(null); 
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-export default function RegionSelect() {
-  const [selected, setSelected] = useState("coimbatore");
+  const selectedCity = localStorage.getItem("snippet_region") || "";
+
+  const fetchColleges = debounce(async (query = "") => {
+    if (query.trim().length < 3) {
+      setColleges([]);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await api.get(`/college?name=${query}&city=${selectedCity}`);
+      console.log("Fetched colleges:", res.data.data);
+      setColleges(res.data.data); 
+    } catch (err) {
+      console.error("Error fetching colleges:", err);
+      setColleges([]);
+    } finally {
+      setLoading(false);
+    }
+  }, 500);
+
+  useEffect(() => {
+    fetchColleges(""); 
+  }, []);
+
+  useEffect(() => {
+    fetchColleges(search);
+    return fetchColleges.cancel;
+  }, [search]);
+
+  const handleCollegeSelect = (college) => {
+    setSelectedCollege(college);
+    localStorage.setItem("selected_college", JSON.stringify(college));
+    console.log("Selected College saved:", college);
+  };
+
+  const handleNext = () => {
+    if (!selectedCollege) {
+      alert("Please select a college");
+      return;
+    }
+    navigate("/useronboarding/verify-email"); 
+  };
 
   return (
     <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
       {/* Top Section */}
       <div>
-        {/* Back Arrow */}
-        <button className="text-white mb-4">
+        <button className="text-white mb-4" onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
         </button>
 
-        {/* Title */}
-        <h1 className="text-2xl font-semibold mb-2">Select your college</h1>
+        <h1 className="text-2xl font-semibold mb-2">Select your College</h1>
         <p className="text-sm text-gray-300 mb-4">
-          Lorem ipsum dolor sit amet consectetur. Sit porta blandit montes cursus.
-          Tempus accumsan mauris in cras sit. <span className="underline">Learn more</span>
+          Showing colleges in <span className="text-[#F06CB7]">{selectedCity}</span>.
         </p>
 
         {/* Search Box */}
@@ -30,48 +72,60 @@ export default function RegionSelect() {
           <Search size={18} className="text-gray-400" />
           <input
             type="text"
-            placeholder="search for region"
+            placeholder="Search for college"
             className="bg-transparent outline-none text-sm w-full placeholder:text-gray-400"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        {/* Selected Region */}
-        <div className="mb-6">
-          <button
-            className="border px-4 py-1 rounded-full text-sm"
-            style={{
-              
-              borderColor: "#F06CB7"
-            }}
-          >
-            {selected}
-          </button>
-        </div>
-
-        {/* College Region Section */}
-        <div>
-          <p className="font-semibold text-base mb-3">Showing colleges of Coimbatore</p>
-          <div className="flex flex-wrap gap-2">
-            {regions.map((region, index) => (
-              <button
-                key={index}
-                className="border border-white text-sm px-4 py-1 rounded-full"
-                onClick={() => setSelected(region)}
-              >
-                {region}
-              </button>
-            ))}
+        {/* Selected College */}
+        {selectedCollege && (
+          <div className="mb-6">
+            <button
+              className="border px-4 py-1 rounded-full text-sm"
+              style={{ borderColor: "#F06CB7" }}
+            >
+              {selectedCollege.name}
+            </button>
           </div>
+        )}
+
+        {/* College List */}
+        <div>
+          <p className="font-semibold text-base mb-3">Colleges in {selectedCity}</p>
+          {loading ? (
+            <p className="text-gray-400">Loading colleges...</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {colleges.map((college) => (
+                <button
+                  key={college._id}
+                  className={`border text-sm px-4 py-1 rounded-full ${
+                    selectedCollege?._id === college._id
+                      ? "border-pink-500"
+                      : "border-white"
+                  }`}
+                  onClick={() => handleCollegeSelect(college)}
+                >
+                  {college.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Bottom Navigation */}
       <div className="flex justify-between items-center mt-10 mb-4">
         <p className="text-sm text-white">
-          Can’t find your Region?{" "}
-          <span className="text-[#F06CB7] underline cursor-pointer">Add em</span>
+          Can’t find your College?{" "}
+          <span className="text-[#F06CB7] underline cursor-pointer">Add it</span>
         </p>
-        <button className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center">
+        <button
+          className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
+          onClick={handleNext}
+        >
           <ArrowRight size={22} className="text-white" />
         </button>
       </div>

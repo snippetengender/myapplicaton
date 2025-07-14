@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import api from '../../services/api'; 
+import { auth } from '../../firebaseConfig'; 
 
 export default function OtpVerificationPage() {
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const [timer, setTimer] = useState(60);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const inputRefs = useRef([]);
+  const navigate = useNavigate();
+
+  const savedEmail = localStorage.getItem('snippet_email') || '';
+  const userId = auth.currentUser?.uid || localStorage.getItem('snippet_user_id');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -26,11 +35,45 @@ export default function OtpVerificationPage() {
     }
   };
 
+  const handleSubmit = async () => {
+    const enteredOtp = otp.join('');
+    if (enteredOtp.length !== 6) {
+      setError('Please enter the 6-digit OTP');
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+
+    try {
+      const payload = {
+        user_id: userId,
+        otp: enteredOtp
+      };
+
+      console.log('Verifying OTP with payload:', payload);
+
+      const response = await api.post('/auth/verify-otp', payload);
+      console.log('OTP verification success:', response.data);
+
+      navigate('/useronboarding/name-dob-gender');
+    } catch (err) {
+      console.error('OTP verification failed:', err);
+      if (err.response) {
+        setError(err.response.data.detail || 'Verification failed. Try again.');
+      } else {
+        setError('Server error. Please try later.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
       {/* Header */}
       <div>
-        <button className="mb-4">
+        <button className="mb-4" onClick={() => navigate(-1)}>
           <ArrowLeft className="text-white" size={24} />
         </button>
 
@@ -39,13 +82,19 @@ export default function OtpVerificationPage() {
           type in the OTP which we have sent you through email
         </h1>
         <p className="text-sm text-gray-300 mb-4">
-          Lorem ipsum dolor sit amet consectetur. Sit porta blandit montes cursus. Tempus accumsan mauris in cras sit.
+          Enter the 6-digit OTP sent to your college email.
         </p>
 
         {/* Email Display */}
         <p className="text-sm mb-2">
           <span className="font-semibold">OTP sent to</span>{' '}
-          71762232053@cit.edu.in <span className="text-[#F06CB7] underline cursor-pointer">edit</span>
+          {savedEmail}{' '}
+          <span
+            className="text-[#F06CB7] underline cursor-pointer"
+            onClick={() => navigate('/useronboarding/verify-email')}
+          >
+            edit
+          </span>
         </p>
 
         {/* OTP Boxes */}
@@ -65,17 +114,32 @@ export default function OtpVerificationPage() {
           ))}
         </div>
 
+        {/* Error message */}
+        {error && (
+          <p className="mt-4 text-sm text-red-500">{error}</p>
+        )}
+
         {/* Timer */}
         <p className="mt-4 text-sm">
-          <span className="text-[#F06CB7]">Resend Code in</span> {Math.floor(timer / 60)} :{' '}
-          {String(timer % 60).padStart(2, '0')}
+          <span className="text-[#F06CB7]">Resend Code in</span>{' '}
+          {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}
         </p>
       </div>
 
       {/* Submit Button */}
       <div className="flex justify-end mt-10 mb-4">
-        <button className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center">
-          <ArrowRight className="text-white" size={22} />
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className={`w-12 h-12 rounded-full flex items-center justify-center ${
+            loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-[#2e2e2e]'
+          }`}
+        >
+          {loading ? (
+            <span className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          ) : (
+            <ArrowRight className="text-white" size={22} />
+          )}
         </button>
       </div>
     </div>

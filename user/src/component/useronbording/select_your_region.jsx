@@ -1,77 +1,152 @@
-import { useState } from 'react';
-import { ChevronLeft, Search, ArrowRight } from 'lucide-react';
-
-const regions = [
-  "coimbatore", "chennai", "delhi", "lucknow", "madrid",
-  "warangal", "bangalore", "pallakad", "coimbatore"
-];
+import { useState, useEffect, useCallback } from "react";
+import { ChevronLeft, Search, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
+import debounce from "lodash.debounce";
 
 export default function RegionSelect() {
-  const [selected, setSelected] = useState("coimbatore");
+  const [regions, setRegions] = useState([]);
+  const [selected, setSelected] = useState("");
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const fetchRegions = useCallback(
+    debounce(async (query = "") => {
+      if (query.trim().length < 2) {
+        setRegions([]);
+        return;
+      }
+      
+      setLoading(true);
+      setError("");
+      
+      try {
+        console.log("Fetching regions for query:", query);
+        console.log("API base URL:", api.defaults.baseURL);
+        
+        const res = await api.get(`/college/city?name=${encodeURIComponent(query)}`);
+        console.log("API Response:", res);
+        console.log("Response data:", res.data);
+        console.log("Regions data:", res.data.data);
+        
+        setRegions(res.data.data || []);
+      } catch (err) {
+        console.error("Detailed error information:");
+        console.error("Error message:", err.message);
+        console.error("Error code:", err.code);
+        console.error("Error config:", err.config);
+        console.error("Error request:", err.request);
+        console.error("Error response:", err.response);
+        
+        if (err.response) {
+          console.error("Response status:", err.response.status);
+          console.error("Response data:", err.response.data);
+          console.error("Response headers:", err.response.headers);
+          setError(`Server error: ${err.response.status} - ${err.response.data?.detail || err.response.statusText}`);
+        } else if (err.request) {
+          console.error("Request made but no response received");
+          setError("No response from server. Please check your internet connection.");
+        } else {
+          console.error("Error setting up request:", err.message);
+          setError(`Request error: ${err.message}`);
+        }
+        
+        setRegions([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    if (search.trim() !== "") {
+      fetchRegions(search);
+    } else {
+      setRegions([]);
+      setError("");
+    }
+  }, [search, fetchRegions]);
+
+  const handleNext = () => {
+    if (!selected) {
+      alert("Please select a region");
+      return;
+    }
+    localStorage.setItem("snippet_region", selected);
+    navigate("/useronboarding/select-college");
+  };
 
   return (
     <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
-      {/* Top Section */}
       <div>
-        {/* Back Arrow */}
-        <button className="text-white mb-4">
+        <button className="text-white mb-4" onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
         </button>
-
-        {/* Title */}
         <h1 className="text-2xl font-semibold mb-2">Select your Region</h1>
         <p className="text-sm text-gray-300 mb-4">
-          Lorem ipsum dolor sit amet consectetur. Sit porta blandit montes cursus.
-          Tempus accumsan mauris in cras sit. <span className="underline">Learn more</span>
+          Search your college region below.{" "}
+          <span className="underline">Learn more</span>
         </p>
-
-        {/* Search Box */}
         <div className="flex items-center gap-2 border border-gray-600 rounded-md px-3 py-2 mb-4">
           <Search size={18} className="text-gray-400" />
           <input
             type="text"
-            placeholder="search for region"
+            placeholder="Search for region"
             className="bg-transparent outline-none text-sm w-full placeholder:text-gray-400"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-
-        {/* Selected Region */}
-        <div className="mb-6">
-          <button
-            className="border px-4 py-1 rounded-full text-sm"
-            style={{
-              
-              borderColor: "#F06CB7"
-            }}
-          >
-            {selected}
-          </button>
-        </div>
-
-        {/* College Region Section */}
-        <div>
-          <p className="font-semibold text-base mb-3">Youre college is in</p>
-          <div className="flex flex-wrap gap-2">
-            {regions.map((region, index) => (
-              <button
-                key={index}
-                className="border border-white text-sm px-4 py-1 rounded-full"
-                onClick={() => setSelected(region)}
-              >
-                {region}
-              </button>
-            ))}
+        
+        {error && (
+          <div className="mb-4 p-3 bg-red-900 border border-red-600 rounded-md">
+            <p className="text-red-200 text-sm">{error}</p>
           </div>
+        )}
+        
+        {selected && (
+          <div className="mb-6">
+            <button
+              className="border px-4 py-1 rounded-full text-sm"
+              style={{ borderColor: "#F06CB7" }}
+            >
+              {selected}
+            </button>
+          </div>
+        )}
+        <div>
+          <p className="font-semibold text-base mb-3">Your college is in</p>
+          {loading ? (
+            <p className="text-gray-400">Loading regions...</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {regions.map((region, index) => (
+                <button
+                  key={index}
+                  className={`border text-sm px-4 py-1 rounded-full ${
+                    selected === region.city ? "border-pink-500" : "border-white"
+                  }`}
+                  onClick={() => setSelected(region.city)}
+                >
+                  {region.city}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Bottom Navigation */}
       <div className="flex justify-between items-center mt-10 mb-4">
         <p className="text-sm text-white">
-          Can’t find your Region?{" "}
+          Can't find your Region?{" "}
           <span className="text-[#F06CB7] underline cursor-pointer">Add em</span>
         </p>
-        <button className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center" onClick={() => (window.location.href = '/select_your_college')}>
+        <button
+          className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
+          onClick={handleNext}
+        >
           <ArrowRight size={22} className="text-white" />
         </button>
       </div>
