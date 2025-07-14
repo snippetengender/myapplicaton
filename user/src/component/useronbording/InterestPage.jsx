@@ -1,39 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 
 export default function InterestPage() {
-  const allInterests = [
-    'music', 'software', 'animae', 'dancing', 'yoga', 'dogs',
-    'feminism', 'fire & camping', 'ilayaraja playlist', 'MR. Beast', 'cats', 'video',
-  ];
-  const [selectedInterests, setSelectedInterests] = useState(['music']);
+  const navigate = useNavigate();
+  const [allInterests, setAllInterests] = useState([]);
+  const [selectedInterests, setSelectedInterests] = useState([]);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const toggleInterest = (item) => {
-    if (selectedInterests.includes(item)) {
-      setSelectedInterests(selectedInterests.filter(i => i !== item));
-    } else {
-      if (selectedInterests.length < 3) {
-        setSelectedInterests([...selectedInterests, item]);
+  useEffect(() => {
+    const fetchInterests = async () => {
+      try {
+        const res = await api.get('/entities/interests');
+        setAllInterests(res.data.data || []);
+      } catch (err) {
+        console.error(' Error fetching interests:', err.message);
+      } finally {
+        setLoading(false);
       }
+    };
+    fetchInterests();
+  }, []);
+
+  const toggleInterest = (interest) => {
+    const isSelected = selectedInterests.find(i => i.reference_id === interest.id);
+    if (isSelected) {
+      setSelectedInterests(selectedInterests.filter(i => i.reference_id !== interest.id));
+    } else if (selectedInterests.length < 3) {
+      setSelectedInterests([...selectedInterests, {
+        reference_id: interest.id,
+        name: interest.name
+      }]);
     }
   };
+
+  const saveToLocalStorage = (interests) => {
+    localStorage.setItem('snippet_user_interests', JSON.stringify(interests));
+  };
+
+  const handleNext = async () => {
+    saveToLocalStorage(selectedInterests);
+
+    const user_id = localStorage.getItem('snippet_user');
+    if (!user_id || selectedInterests.length === 0) {
+      console.error(' Missing user_id or no interests selected');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await api.patch(`/user/${user_id}`, { interests: selectedInterests });
+      console.log('Interests updated successfully');
+      navigate('/useronboarding/prompt');
+    } catch (err) {
+      console.error('Error saving interests:', err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const filteredInterests = allInterests.filter(i =>
+    i.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
       <div>
         {/* Back Arrow */}
-        <button className="mb-6">
+        <button className="mb-6" onClick={() => navigate(-1)}>
           <ArrowLeft className="text-white" size={24} />
         </button>
 
         {/* Headings */}
         <h1 className="text-2xl font-bold leading-tight">
-          What you're into <br /> Leeus start with your Interest
+          What you're into <br /> Let's start with your Interests
         </h1>
         <p className="text-sm text-zinc-300 mt-3 mb-4 leading-relaxed">
-          Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean
-          tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
+          Choose up to 3 interests that describe you best.
         </p>
 
         {/* Search Box */}
@@ -41,7 +87,7 @@ export default function InterestPage() {
           <Search className="text-zinc-400" size={18} />
           <input
             type="text"
-            placeholder="search for interest"
+            placeholder="Search for interests"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-transparent outline-none w-full text-sm text-white placeholder-zinc-500"
@@ -52,46 +98,52 @@ export default function InterestPage() {
         <div className="flex flex-wrap gap-2 mt-4">
           {selectedInterests.map((item) => (
             <span
-              key={item}
+              key={item.reference_id}
               className="px-3 py-1 border border-[#F06CB7] rounded-full text-sm text-white"
             >
-              {item}
+              {item.name}
             </span>
           ))}
         </div>
 
         {/* Suggestion Heading */}
-        <p className="text-sm font-semibold mt-6 mb-2">Any 3 from here</p>
+        <p className="text-sm font-semibold mt-6 mb-2">Pick any 3 from here</p>
 
         {/* Tag Suggestions */}
-        {/* Tag Suggestions */}
-<div className="border border-dashed border-zinc-700 p-3 rounded-md">
-  <div className="flex flex-wrap gap-2">
-    {allInterests.map((item, idx) => (
-      <button
-        key={`${item}-${idx}`}
-        onClick={() => toggleInterest(item)}
-        className={`px-3 py-1 rounded-full text-sm border transition ${
-          selectedInterests.includes(item)
-            ? 'border-[#F06CB7] text-white'
-            : 'border-zinc-500 text-zinc-300'
-        }`}
-      >
-        {item}
-      </button>
-    ))}
-  </div>
-</div>
-
+        <div className="border border-dashed border-zinc-700 p-3 rounded-md">
+          {loading ? (
+            <p className="text-zinc-400 text-sm">Loading interests...</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {filteredInterests.map((interest) => (
+                <button
+                  key={interest.id}
+                  onClick={() => toggleInterest(interest)}
+                  className={`px-3 py-1 rounded-full text-sm border transition ${
+                    selectedInterests.find(i => i.reference_id === interest.id)
+                      ? 'border-[#F06CB7] text-white'
+                      : 'border-zinc-500 text-zinc-300'
+                  }`}
+                >
+                  {interest.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Bottom Section */}
       <div className="flex items-center justify-between mt-6">
         <p className="text-sm text-zinc-400">
           Can’t find your Interest?{' '}
-          <span className="text-[#F06CB7] cursor-pointer">Add em</span>
+          <span className="text-[#F06CB7] cursor-pointer">Add one</span>
         </p>
-        <button className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center">
+        <button
+          onClick={handleNext}
+          disabled={saving || selectedInterests.length === 0}
+          className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
+        >
           <ArrowRight className="text-white" size={22} />
         </button>
       </div>
