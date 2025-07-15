@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api";
+import api from "../../providers/api";
 
 const prompts = [
   { id: "prompt_1", text: "I’m known for" },
@@ -17,6 +17,15 @@ export default function PromptEditor() {
   const [inputValue, setInputValue] = useState(""); 
   const [saving, setSaving] = useState(false);
 
+  const userInterest = JSON.parse(localStorage.getItem("snippet_user_interests"));
+
+  useEffect(() => {
+    if (!userInterest) {
+      console.warn("Fill the previous page");
+      navigate("/useronboarding/interests");
+    }
+  }, [navigate, userInterest]);
+
   const handlePromptClick = (id) => {
     if (activePrompt === id) {
       setActivePrompt(null);
@@ -31,32 +40,48 @@ export default function PromptEditor() {
     setInputValue(value);
   };
 
-  const handleSaveAndNext = async () => {
-    if (!activePrompt || inputValue.trim().length === 0) return;
+  const saveToLocalStorage = (reference_id, text) => {
+  const selectedPrompt = prompts.find((p) => p.id === reference_id);
+  const promptData = {
+    reference_id,
+    text: selectedPrompt?.text || "Prompt",
+    name: text.trim(),
+  };
+  localStorage.setItem("snippet_user_prompt", JSON.stringify(promptData));
+  console.log("Prompt saved to localStorage:", promptData);
+};
 
-    const user_id = localStorage.getItem("snippet_user");
+
+  const sendPromptToBackend = async (reference_id, text) => {
+    const user_id = localStorage.getItem("user_id");
     if (!user_id) {
       console.error("User ID missing in localStorage");
       return;
     }
 
-    setSaving(true);
     try {
       await api.patch(`/user/${user_id}`, {
-        prompt: {
-          reference_id: activePrompt,
-          name: inputValue.trim(),
-        },
+        prompt: { reference_id, name: text.trim() },
       });
-      console.log("Prompt saved successfully");
-      navigate("/useronboarding/relationship-status"); 
+      console.log("Prompt saved to backend");
     } catch (err) {
-      console.error("Error saving prompt:", err.message);
-    } finally {
-      setSaving(false);
+      console.error("Error saving prompt to backend:", err.message);
     }
   };
 
+  const handleSaveAndNext = async () => {
+    if (!activePrompt || inputValue.trim().length === 0) {
+      alert("Please select a prompt and fill it.");
+      return;
+    }
+
+    setSaving(true);
+    saveToLocalStorage(activePrompt, inputValue);
+    sendPromptToBackend(activePrompt, inputValue);
+
+    navigate("/useronboarding/relationship-status");
+    setSaving(false);
+  };
   return (
     <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
       {/* Top Navigation */}

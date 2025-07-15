@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, Search, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import api from "../../services/api";
+import api from "../../providers/api";
 import debounce from "lodash.debounce";
 
 export default function CollegeSelect() {
   const [colleges, setColleges] = useState([]);
-  const [selectedCollege, setSelectedCollege] = useState(null); 
+  const [selectedCollege, setSelectedCollege] = useState(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const selectedCity = localStorage.getItem("snippet_region") || "";
+  const selectedCity = localStorage.getItem("snippet_region");
+
+  useEffect(() => {
+    if (!selectedCity) {
+      console.warn("No region selected. Redirecting to select-region.");
+      navigate("/useronboarding/select-region", { replace: true });
+    }
+  }, [navigate, selectedCity]);
 
   const fetchColleges = debounce(async (query = "") => {
     if (query.trim().length < 3) {
@@ -22,7 +29,7 @@ export default function CollegeSelect() {
     try {
       const res = await api.get(`/college?name=${query}&city=${selectedCity}`);
       console.log("Fetched colleges:", res.data.data);
-      setColleges(res.data.data); 
+      setColleges(res.data.data);
     } catch (err) {
       console.error("Error fetching colleges:", err);
       setColleges([]);
@@ -32,13 +39,13 @@ export default function CollegeSelect() {
   }, 500);
 
   useEffect(() => {
-    fetchColleges(""); 
-  }, []);
+    fetchColleges(""); // Fetch colleges for default
+  }, [fetchColleges]);
 
   useEffect(() => {
     fetchColleges(search);
     return fetchColleges.cancel;
-  }, [search]);
+  }, [search, fetchColleges]);
 
   const handleCollegeSelect = (college) => {
     setSelectedCollege(college);
@@ -51,7 +58,7 @@ export default function CollegeSelect() {
       alert("Please select a college");
       return;
     }
-    navigate("/useronboarding/verify-email"); 
+    navigate("/useronboarding/verify-email");
   };
 
   return (

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { auth } from "../firebaseConfig";
+import { auth } from "../constants/firebaseConfig";
 
 let cachedToken = null;
 let tokenExpiresAt = 0; 

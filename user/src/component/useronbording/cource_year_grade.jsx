@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api";
+import api from "../../providers/api";
 
 export default function GradeInfoPage() {
   const navigate = useNavigate();
@@ -30,6 +30,14 @@ export default function GradeInfoPage() {
     saveToLocalStorage({ degree: val });
   };
 
+  const userInfo = JSON.parse(localStorage.getItem("snippet_user_info"))
+  useEffect(() => {
+    if(!userInfo){
+      console.warn("Please fill name dob page");
+      navigate("/useronboarding/name-dob-gender")
+    }
+  },[navigate,userInfo])
+
   const saveToLocalStorage = (updatedFields) => {
     const currentData = {
       course,
@@ -47,7 +55,7 @@ export default function GradeInfoPage() {
 
   const handleNext = async () => {
     setSaving(true);
-    const user_id = localStorage.getItem("snippet_user");
+    const user_id = localStorage.getItem("user_id");
     const education_status = JSON.parse(localStorage.getItem("snippet_user_education"));
 
     if (!user_id || !education_status || !education_status.degree) {

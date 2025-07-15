@@ -1,12 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api";
+import api from "../../providers/api";
 
 export default function RelationshipStatusPage() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const prompt = JSON.parse(localStorage.getItem("snippet_user_prompt"));
+
+  useEffect(() => {
+    if (!prompt) {
+      console.warn("Please fill the prompt page");
+      navigate("/useronboarding/prompt");
+    }
+
+    const savedStatus = localStorage.getItem("snippet_relationship_status");
+    if (savedStatus) {
+      setStatus(savedStatus);
+    }
+  }, [navigate, prompt]);
 
   const options = [
     { label: "Taken", value: "taken" },
@@ -14,10 +28,15 @@ export default function RelationshipStatusPage() {
     { label: "Prefer not to say", value: "prefer not to say" },
   ];
 
+  const handleStatusChange = (value) => {
+    setStatus(value);
+    localStorage.setItem("snippet_relationship_status", value); 
+  };
+
   const handleSaveAndNext = async () => {
     if (!status) return;
 
-    const user_id = localStorage.getItem("snippet_user");
+    const user_id = localStorage.getItem("user_id");
     if (!user_id) {
       console.error("User ID missing in localStorage");
       return;
@@ -28,15 +47,14 @@ export default function RelationshipStatusPage() {
       await api.patch(`/user/${user_id}`, {
         relationship_status: status,
       });
-      console.log("Relationship status updated");
-      navigate("/useronboarding/next-page");
+      console.log("Relationship status updated on server");
+      navigate("/useronboarding/user-name");
     } catch (err) {
       console.error("Error saving relationship status:", err.message);
     } finally {
       setSaving(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-black text-white px-5 py-6 flex flex-col justify-between">
       <div>
@@ -65,7 +83,7 @@ export default function RelationshipStatusPage() {
               name="relationship"
               value={opt.value}
               checked={status === opt.value}
-              onChange={() => setStatus(opt.value)}
+              onChange={() => handleStatusChange(opt.value)}
               className="w-5 h-5 accent-white"
             />
           </label>

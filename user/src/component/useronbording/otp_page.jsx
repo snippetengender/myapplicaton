@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/api'; 
-import { auth } from '../../firebaseConfig'; 
+import api from '../../providers/api'; 
+import { auth } from '../../constants/firebaseConfig'; 
 
 export default function OtpVerificationPage() {
   const [otp, setOtp] = useState(new Array(6).fill(''));
@@ -13,7 +13,14 @@ export default function OtpVerificationPage() {
   const navigate = useNavigate();
 
   const savedEmail = localStorage.getItem('snippet_email') || '';
-  const userId = auth.currentUser?.uid || localStorage.getItem('snippet_user_id');
+  const userId = auth.currentUser?.uid || localStorage.getItem('user_id');
+
+  useEffect(() => {
+    if(!savedEmail){
+        console.warn("No email enetered. Redirecting to verify-email.");
+        navigate("/useronboarding/verify-email", { replace: true });
+    }
+  })
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -55,7 +62,7 @@ export default function OtpVerificationPage() {
 
       const response = await api.post('/auth/verify-otp', payload);
       console.log('OTP verification success:', response.data);
-
+      localStorage.setItem("snippet_otp_verified", "true");
       navigate('/useronboarding/name-dob-gender');
     } catch (err) {
       console.error('OTP verification failed:', err);

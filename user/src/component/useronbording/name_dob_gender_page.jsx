@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api";
+import api from "../../providers/api";
 
 export default function UserInfoPage() {
   const navigate = useNavigate();
@@ -16,6 +16,15 @@ export default function UserInfoPage() {
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December",
   ];
+
+  useEffect(() => {
+  const otpVerified = localStorage.getItem("snippet_otp_verified");
+  if (!otpVerified) {
+    console.warn("OTP not verified. Redirecting to OTP page.");
+    navigate("/useronboarding/otp-verification", { replace: true });
+  }
+}, [navigate]);
+
 
   const saveToLocalStorage = (updatedFields) => {
     const userInfo = {
@@ -59,7 +68,7 @@ export default function UserInfoPage() {
 
   const handleNext = async () => {
     setSaving(true);
-    const user_id = localStorage.getItem("snippet_user");
+    const user_id = localStorage.getItem("user_id");
     const userInfo = JSON.parse(localStorage.getItem("snippet_user_info"));
     if (!user_id || !userInfo) {
       console.error("Missing user_id or userInfo in localStorage.");

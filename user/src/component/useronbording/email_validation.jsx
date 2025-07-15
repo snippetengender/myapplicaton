@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import api from '../../services/api';
+import api from '../../providers/api';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../../firebaseConfig';
+import { auth } from '../../constants/firebaseConfig';
 
 export default function VerifyEmailPage() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const selectedCollege = JSON.parse(localStorage.getItem("selected_college") || "null");
+
+  useEffect(() => {
+    if (!selectedCollege) {
+      console.warn("No college selected. Redirecting to select-college.");
+      navigate("/useronboarding/select-college", { replace: true });
+    }
+  }, [navigate, selectedCollege]);
 
   const handleVerify = async () => {
     if (!email.trim()) {
@@ -26,8 +35,8 @@ export default function VerifyEmailPage() {
         setLoading(false);
         return;
       }
+
       const user_id = user.uid;
-      const selectedCollege = JSON.parse(localStorage.getItem('selected_college'));
       const college_id = selectedCollege?._id;
 
       if (!college_id) {

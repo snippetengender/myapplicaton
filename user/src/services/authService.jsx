@@ -1,4 +1,4 @@
-import { auth, provider } from "../firebaseConfig.jsx";
+import { auth, provider } from "../constants/firebaseConfig.jsx";
 import { signInWithPopup } from "firebase/auth";
 
 export async function googleLogin() {

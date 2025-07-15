@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/api';
+import api from '../../providers/api';
 
 export default function InterestPage() {
   const navigate = useNavigate();
@@ -25,6 +25,14 @@ export default function InterestPage() {
     fetchInterests();
   }, []);
 
+  const user_edu = JSON.parse(localStorage.getItem("snippet_user_education"))
+  useEffect(() => {
+    if(!user_edu){
+      console.warn("Fill the previous page");
+      navigate("/useronboarding/course-year-branch")
+    }
+  },[navigate,user_edu])
+
   const toggleInterest = (interest) => {
     const isSelected = selectedInterests.find(i => i.reference_id === interest.id);
     if (isSelected) {
@@ -44,7 +52,7 @@ export default function InterestPage() {
   const handleNext = async () => {
     saveToLocalStorage(selectedInterests);
 
-    const user_id = localStorage.getItem('snippet_user');
+    const user_id = localStorage.getItem('user_id');
     if (!user_id || selectedInterests.length === 0) {
       console.error(' Missing user_id or no interests selected');
       return;

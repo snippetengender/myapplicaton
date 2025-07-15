@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, Search, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api";
+import api from "../../providers/api";
 import debounce from "lodash.debounce";
 
 export default function RegionSelect() {

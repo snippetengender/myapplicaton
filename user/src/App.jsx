@@ -1,6 +1,5 @@
-// App.js
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import SelectRegionPage from './component/useronbording/select_your_region';
 import SelectCollegePage from './component/useronbording/select_your_college';
 import VerifyEmailPage from './component/useronbording/email_validation';
@@ -10,21 +9,21 @@ import CourseYearBranchPage from './component/useronbording/cource_year_grade';
 import InterestPage from './component/useronbording/InterestPage';
 import Prompt from './component/useronbording/Prompt';
 import RelationshipStatusPage from './component/useronbording/RelationshipStatus';
+import GoogleLogin from './component/useronbording/Googlelogin';
+import ProtectedRoute from "./component/useronbording/ProtectedRoute";
 import UsernamePage from './component/useronbording/UsernamePage';
 import UserProfilePage from './component/useronbording/UserProfilePage';
-import GoogleLogin from './component/useronbording/googlelogin';
+
 
 function App() {
   return (
     <Router>
-      <div>
-        <Routes>
-          {/* Redirect root to onboarding */}
-          <Route path="/" element={<Navigate to="/useronboarding/google-login" replace />} />
-          
-          {/* Onboarding routes with nested structure */}
-          <Route path="useronboarding">
-            <Route path="google-login" element={<GoogleLogin />} />
+      <Routes>
+        <Route path="/" element={<Navigate to="/useronboarding/google-login" replace />} />
+        
+        <Route path="useronboarding">
+          <Route path="google-login" element={<GoogleLogin />} />
+          <Route element={<ProtectedRoute />}>
             <Route path="select-region" element={<SelectRegionPage />} />
             <Route path="select-college" element={<SelectCollegePage />} />
             <Route path="verify-email" element={<VerifyEmailPage />} />
@@ -34,12 +33,13 @@ function App() {
             <Route path="interests" element={<InterestPage />} />
             <Route path="prompt" element={<Prompt />} />
             <Route path="relationship-status" element={<RelationshipStatusPage />} />
+            <Route path="user-profile" element={<UserProfilePage/>} />
+            <Route path="user-name" element={<UsernamePage/>} />
           </Route>
-          
-          {/* Catch-all route for 404 */}
-          <Route path="*" element={<Navigate to="/useronboarding/google-login" replace />} />
-        </Routes>
-      </div>
+        </Route>
+
+        <Route path="*" element={<Navigate to="/useronboarding/google-login" replace />} />
+      </Routes>
     </Router>
   );
 }
