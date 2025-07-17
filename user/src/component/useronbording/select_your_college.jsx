@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ChevronLeft, Search, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from "../../providers/api";
@@ -20,7 +20,7 @@ export default function CollegeSelect() {
     }
   }, [navigate, selectedCity]);
 
-  const fetchColleges = debounce(async (query = "") => {
+  const debouncedFetchColleges = useMemo(() => debounce(async (query = "") => {
     if (query.trim().length < 3) {
       setColleges([]);
       return;
@@ -36,16 +36,12 @@ export default function CollegeSelect() {
     } finally {
       setLoading(false);
     }
-  }, 500);
+  }, 500), [selectedCity]);
 
   useEffect(() => {
-    fetchColleges(""); // Fetch colleges for default
-  }, [fetchColleges]);
-
-  useEffect(() => {
-    fetchColleges(search);
-    return fetchColleges.cancel;
-  }, [search, fetchColleges]);
+    debouncedFetchColleges(search);
+    return () => debouncedFetchColleges.cancel(); 
+  }, [search, debouncedFetchColleges]);
 
   const handleCollegeSelect = (college) => {
     setSelectedCollege(college);
