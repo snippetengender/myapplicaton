@@ -22,6 +22,16 @@ import UserProfilePage from "./component/useronbording/UserProfilePage";
 import Lobby from "./component/signinPage/Lobby";
 import Home from "./component/bouquet/Home";
 import Login from "./component/signinPage/Login";
+import MyScreenPage from "./component/bouquet/my_scree_page";
+import FindEm from "./component/bouquet/find_em";
+import EmResult from "./component/bouquet/em_result";
+import BouquetPrompt from "./component/bouquet/bouquet_prompt";
+import ReferalFeature from "./component/bouquet/referal_feature"; 
+import BouquetFinalActivity from "./component/bouquet/final_activity";
+import SomeoneSaidThatPage from "./component/bouquet/someone_said_that_page";
+import RealHappynessPage from "./component/bouquet/real_happyness_page";
+import Regrets from "./component/bouquet/regrets";
+import WannaHide from "./component/bouquet/wanna_hide";
 
 function App() {
   return (
@@ -30,8 +40,22 @@ function App() {
         {/* 👇 Automatically decide landing page */}
         <Route path="/" element={<LandingRouter />} />
         <Route path="/lobby" element={<Lobby />} />
-        <Route path="/login" element={<Login />} /> 
+        <Route path="/login" element={<Login />} />
+
+        {/* need to be routed */} 
         <Route path="/home" element={<Home />} />
+        <Route path="/myscreen" element={<MyScreenPage/>}/>
+        <Route path="/findem" element={<FindEm />} />
+        <Route path="/emresult" element={<EmResult />} />
+        <Route path="/bouquetprompt" element={<BouquetPrompt />} />
+        <Route path="/referalfeature" element={<ReferalFeature />} />
+        <Route path="/bouquetfinalactivity" element={<BouquetFinalActivity />} />
+        <Route path="/someonesaidthat" element={<SomeoneSaidThatPage />} />
+        <Route path="/realhappyness" element={<RealHappynessPage />} />
+        <Route path="/regrets" element={<Regrets />} />
+        <Route path="/wannahide" element={<WannaHide />} />
+
+        {/* User Onboarding Routes */}
         <Route path="useronboarding">
           <Route path="google-login" element={<GoogleLogin />} />
           <Route element={<ProtectedRoute />}>
