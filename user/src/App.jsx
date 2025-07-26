@@ -20,7 +20,7 @@ import ProtectedRoute from "./component/useronbording/ProtectedRoute";
 import UsernamePage from "./component/useronbording/UsernamePage";
 import UserProfilePage from "./component/useronbording/UserProfilePage";
 import Lobby from "./component/signinPage/Lobby";
-import Home from "./component/bouquet/Home";
+import Home from "./component/Home_page/Home";
 import Login from "./component/signinPage/Login";
 import MyScreenPage from "./component/bouquet/my_scree_page";
 import FindEm from "./component/bouquet/find_em";
@@ -32,6 +32,8 @@ import SomeoneSaidThatPage from "./component/bouquet/someone_said_that_page";
 import RealHappynessPage from "./component/bouquet/real_happyness_page";
 import Regrets from "./component/bouquet/regrets";
 import WannaHide from "./component/bouquet/wanna_hide";
+import SelectTagPage from "./component/mix/select_tag_page";
+import CommentTree from "./component/mix/comments_page";
 
 function App() {
   return (
@@ -54,6 +56,8 @@ function App() {
         <Route path="/realhappyness" element={<RealHappynessPage />} />
         <Route path="/regrets" element={<Regrets />} />
         <Route path="/wannahide" element={<WannaHide />} />
+        <Route path="/selecttag" element={<SelectTagPage />} />
+        <Route path="/comments" element={<CommentTree />} />
 
         {/* User Onboarding Routes */}
         <Route path="useronboarding">
