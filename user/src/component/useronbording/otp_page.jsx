@@ -1,26 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import api from '../../providers/api'; 
-import { auth } from '../../constants/firebaseConfig'; 
+import React, { useState, useEffect, useRef } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import api from "../../providers/api";
+import { auth } from "../../constants/firebaseConfig";
 
 export default function OtpVerificationPage() {
-  const [otp, setOtp] = useState(new Array(6).fill(''));
+  const [otp, setOtp] = useState(new Array(6).fill(""));
   const [timer, setTimer] = useState(60);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const inputRefs = useRef([]);
   const navigate = useNavigate();
 
-  const savedEmail = localStorage.getItem('snippet_email') || '';
-  const userId = auth.currentUser?.uid || localStorage.getItem('user_id');
+  const savedEmail = localStorage.getItem("snippet_email") || "";
+  const userId = auth.currentUser?.uid || localStorage.getItem("user_id");
 
   useEffect(() => {
-    if(!savedEmail){
-        console.warn("No email enetered. Redirecting to verify-email.");
-        navigate("/useronboarding/verify-email", { replace: true });
+    if (!savedEmail) {
+      console.warn("No email enetered. Redirecting to verify-email.");
+      navigate("/useronboarding/verify-email", { replace: true });
     }
-  })
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -43,33 +43,33 @@ export default function OtpVerificationPage() {
   };
 
   const handleSubmit = async () => {
-    const enteredOtp = otp.join('');
+    const enteredOtp = otp.join("");
     if (enteredOtp.length !== 6) {
-      setError('Please enter the 6-digit OTP');
+      setError("Please enter the 6-digit OTP");
       return;
     }
 
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const payload = {
         user_id: userId,
-        otp: enteredOtp
+        otp: enteredOtp,
       };
 
-      console.log('Verifying OTP with payload:', payload);
+      console.log("Verifying OTP with payload:", payload);
 
-      const response = await api.post('/auth/verify-otp', payload);
-      console.log('OTP verification success:', response.data);
+      const response = await api.post("/auth/verify-otp", payload);
+      console.log("OTP verification success:", response.data);
       localStorage.setItem("snippet_otp_verified", "true");
-      navigate('/useronboarding/name-dob-gender');
+      navigate("/useronboarding/name-dob-gender");
     } catch (err) {
-      console.error('OTP verification failed:', err);
+      console.error("OTP verification failed:", err);
       if (err.response) {
-        setError(err.response.data.detail || 'Verification failed. Try again.');
+        setError(err.response.data.detail || "Verification failed. Try again.");
       } else {
-        setError('Server error. Please try later.');
+        setError("Server error. Please try later.");
       }
     } finally {
       setLoading(false);
@@ -94,11 +94,10 @@ export default function OtpVerificationPage() {
 
         {/* Email Display */}
         <p className="text-sm mb-2">
-          <span className="font-semibold">OTP sent to</span>{' '}
-          {savedEmail}{' '}
+          <span className="font-semibold">OTP sent to</span> {savedEmail}{" "}
           <span
             className="text-[#F06CB7] underline cursor-pointer"
-            onClick={() => navigate('/useronboarding/verify-email')}
+            onClick={() => navigate("/useronboarding/verify-email")}
           >
             edit
           </span>
@@ -122,14 +121,12 @@ export default function OtpVerificationPage() {
         </div>
 
         {/* Error message */}
-        {error && (
-          <p className="mt-4 text-sm text-red-500">{error}</p>
-        )}
+        {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
         {/* Timer */}
         <p className="mt-4 text-sm">
-          <span className="text-[#F06CB7]">Resend Code in</span>{' '}
-          {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}
+          <span className="text-[#F06CB7]">Resend Code in</span>{" "}
+          {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, "0")}
         </p>
       </div>
 
@@ -137,9 +134,11 @@ export default function OtpVerificationPage() {
       <div className="flex justify-end mt-10 mb-4">
         <button
           onClick={handleSubmit}
-          disabled={loading}
-          className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-[#2e2e2e]'
+          disabled={loading || otp.some((digit) => digit.trim() === "")}
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
+            loading || otp.some((digit) => digit.trim() === "")
+              ? "bg-gray-600 cursor-not-allowed opacity-50" 
+              : "bg-[#F06CB7] hover:bg-[#e05ca3]"
           }`}
         >
           {loading ? (

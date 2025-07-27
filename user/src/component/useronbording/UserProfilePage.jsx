@@ -20,6 +20,11 @@ export default function ProfilePage() {
     profileImage: "",
   });
 
+  useEffect(() => {
+  localStorage.clear();
+  console.log("LocalStorage cleared after full registration");
+}, []);
+
   // Helper: Format day as 1st, 2nd, 3rd, etc.
   const formatBirthday = (day, month) => {
     const suffix =

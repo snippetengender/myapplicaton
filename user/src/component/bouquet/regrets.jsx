@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,8 +11,22 @@ export default function RegretsModal() {
   };
 
   const handleClose = () => {
-    navigate("/bouquetfinalactivity");
+    navigate("/home", { replace: true });
   };
+
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+
+    const handlePopState = () => {
+      navigate("/home", { replace: true });
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-black text-white px-5 py-6">
@@ -47,7 +61,7 @@ export default function RegretsModal() {
         <div className="w-12 h-12 bg-gray-400 rounded-md"></div>
         <p className="text-gray-300 text-sm">
           {reminded
-            ? "I will remaind on time broskie, chillzz"
+            ? "I will remind on time broskie, chillzz"
             : "Now start a conversation by sending a warm message"}
         </p>
       </div>

@@ -7,11 +7,11 @@ export default function GradeInfoPage() {
   const navigate = useNavigate();
   const [course, setCourse] = useState("");
   const [year, setYear] = useState("");
-  const [degree, setDegree] = useState(""); 
+  const [degree, setDegree] = useState("");
   const [saving, setSaving] = useState(false);
 
   const years = ["1st", "2nd", "3rd", "4th", "5th"];
-  const degrees = ["Bachelors", "Masters"]; 
+  const degrees = ["Bachelors", "Masters"];
 
   const handleCourseChange = (e) => {
     const val = e.target.value;
@@ -20,43 +20,48 @@ export default function GradeInfoPage() {
   };
 
   const handleYearChange = (val) => {
-    const yearNumber = parseInt(val); 
+    const yearNumber = parseInt(val);
     setYear(yearNumber);
     saveToLocalStorage({ year: yearNumber });
   };
 
-  const handleDegreeChange = (val) => { 
+  const handleDegreeChange = (val) => {
     setDegree(val);
     saveToLocalStorage({ degree: val });
   };
 
-  const userInfo = JSON.parse(localStorage.getItem("snippet_user_info"))
+  const userInfo = JSON.parse(localStorage.getItem("snippet_user_info"));
   useEffect(() => {
-    if(!userInfo){
+    if (!userInfo) {
       console.warn("Please fill name dob page");
-      navigate("/useronboarding/name-dob-gender")
+      navigate("/useronboarding/name-dob-gender");
     }
-  },[navigate,userInfo])
+  }, [navigate, userInfo]);
 
   const saveToLocalStorage = (updatedFields) => {
     const currentData = {
       course,
       year,
-      degree, 
+      degree,
     };
-    
+
     const education_status = {
       ...currentData,
       ...updatedFields,
     };
-    
-    localStorage.setItem("snippet_user_education", JSON.stringify(education_status));
+
+    localStorage.setItem(
+      "snippet_user_education",
+      JSON.stringify(education_status)
+    );
   };
 
   const handleNext = async () => {
     setSaving(true);
     const user_id = localStorage.getItem("user_id");
-    const education_status = JSON.parse(localStorage.getItem("snippet_user_education"));
+    const education_status = JSON.parse(
+      localStorage.getItem("snippet_user_education")
+    );
 
     if (!user_id || !education_status || !education_status.degree) {
       console.error("Missing user_id or education_status or degree.");
@@ -108,9 +113,11 @@ export default function GradeInfoPage() {
             return (
               <button
                 key={yr}
-                onClick={() => handleYearChange(yearNumber.toString())} 
+                onClick={() => handleYearChange(yearNumber.toString())}
                 className={`px-4 py-1 rounded-md border ${
-                  year === yearNumber ? "border-[#F06CB7] text-white" : "border-zinc-500 text-zinc-300"
+                  year === yearNumber
+                    ? "border-[#F06CB7] text-white"
+                    : "border-zinc-500 text-zinc-300"
                 }`}
               >
                 {yr}
@@ -147,15 +154,25 @@ export default function GradeInfoPage() {
       <div className="flex justify-end mt-10 mb-4">
         <button
           onClick={handleNext}
-          disabled={saving}
-          className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
+          disabled={saving || !course.trim() || !year || !degree}
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
+            saving || !course.trim() || !year || !degree
+              ? "bg-gray-600 cursor-not-allowed opacity-50"
+              : "bg-[#F06CB7] hover:bg-[#e05ca3]"
+          }`}
         >
-          <ArrowRight className="text-white" size={22} />
+          {saving ? (
+            <span className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          ) : (
+            <ArrowRight className="text-white" size={22} />
+          )}
         </button>
       </div>
 
       {/* Saving Indicator */}
-      {saving && <p className="text-sm text-blue-400 mt-2">Saving changes...</p>}
+      {saving && (
+        <p className="text-sm text-blue-400 mt-2">Saving changes...</p>
+      )}
     </div>
   );
 }

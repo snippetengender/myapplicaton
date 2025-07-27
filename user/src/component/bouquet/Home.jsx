@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getAuth, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { FiSearch, FiSend, FiUser } from "react-icons/fi";
@@ -20,6 +20,34 @@ const Home = () => {
         console.error("Error signing out:", error);
       });
   };
+ 
+useEffect(() => {
+  const auth = getAuth();
+
+  const unsubscribe = auth.onAuthStateChanged((user) => {
+    if (!user) {
+      navigate("/lobby", { replace: true });
+    } else {
+      const userId = localStorage.getItem("user_id");
+      if (!userId) {
+        localStorage.setItem("user_id", user.uid);
+        localStorage.setItem("user_email", user.email || "");
+        localStorage.setItem("user_name", user.displayName || "");
+        console.log("User details stored in localStorage");
+      }
+      const allowedKeys = ["user_id", "user_email", "user_name"];
+      Object.keys(localStorage).forEach((key) => {
+        if (!allowedKeys.includes(key)) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      console.log("Cleaned localStorage except user info");
+    }
+  });
+
+  return () => unsubscribe();
+}, [navigate]);
 
   return (
     <div className="min-h-screen bg-black text-white p-4">
@@ -57,7 +85,7 @@ const Home = () => {
         className="text-gray-400 mb-2 cursor-pointer"
       >
         UK's history, finance, and influence stand strong. send stealth{" "}
-        <span style={{ color: "#F06CB7" }} className="font-semibold" onClick={() => navigate("/myscreen")}>
+        <span style={{ color: "#F06CB7" }} className="font-semibold" onClick={() => navigate("/bouquet/myscreen")}>
           bouquet
         </span>{" "}
         and check yours

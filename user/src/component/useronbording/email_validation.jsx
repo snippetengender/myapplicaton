@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import api from '../../providers/api';
-import { useNavigate } from 'react-router-dom';
-import { auth } from '../../constants/firebaseConfig';
+import React, { useState, useEffect } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import api from "../../providers/api";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../constants/firebaseConfig";
 
 export default function VerifyEmailPage() {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const selectedCollege = JSON.parse(localStorage.getItem("selected_college") || "null");
+  const selectedCollege = JSON.parse(
+    localStorage.getItem("selected_college") || "null"
+  );
 
   useEffect(() => {
     if (!selectedCollege) {
@@ -21,17 +23,17 @@ export default function VerifyEmailPage() {
 
   const handleVerify = async () => {
     if (!email.trim()) {
-      setError('Please enter your college email');
+      setError("Please enter your college email");
       return;
     }
 
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const user = auth.currentUser;
       if (!user) {
-        setError('You are not logged in. Please login again.');
+        setError("You are not logged in. Please login again.");
         setLoading(false);
         return;
       }
@@ -40,30 +42,32 @@ export default function VerifyEmailPage() {
       const college_id = selectedCollege?._id;
 
       if (!college_id) {
-        setError('College not selected. Please go back and select your college.');
+        setError(
+          "College not selected. Please go back and select your college."
+        );
         setLoading(false);
         return;
       }
 
-      console.log('Sending payload:', { user_id, email, college_id });
+      console.log("Sending payload:", { user_id, email, college_id });
 
       const payload = { user_id, email, college_id };
-      const response = await api.post('/auth/college-verify', payload);
+      const response = await api.post("/auth/college-verify", payload);
 
-      console.log('Verification API response:', response.data);
+      console.log("Verification API response:", response.data);
 
-      localStorage.setItem('snippet_email', email);
+      localStorage.setItem("snippet_email", email);
 
-      navigate('/useronboarding/otp-verification');
+      navigate("/useronboarding/otp-verification");
     } catch (err) {
-      console.error('Error verifying college email:', err);
+      console.error("Error verifying college email:", err);
 
       if (err.response) {
-        setError(err.response.data.detail || 'Verification failed. Try again.');
+        setError(err.response.data.detail || "Verification failed. Try again.");
       } else if (err.request) {
-        setError('Server not responding. Check your internet connection.');
+        setError("Server not responding. Check your internet connection.");
       } else {
-        setError('Something went wrong. Please try later.');
+        setError("Something went wrong. Please try later.");
       }
     } finally {
       setLoading(false);
@@ -82,7 +86,8 @@ export default function VerifyEmailPage() {
           Well, we need to verify <br /> YOU
         </h1>
         <p className="text-sm text-gray-300 mb-6">
-          Enter your <span className="font-semibold">college email</span> to verify.
+          Enter your <span className="font-semibold">college email</span> to
+          verify.
         </p>
 
         {/* Email Input */}
@@ -94,20 +99,18 @@ export default function VerifyEmailPage() {
           className="w-full px-4 py-3 rounded-md bg-transparent border border-zinc-600 placeholder:text-gray-400 text-sm outline-none"
         />
 
-        {error && (
-          <p className="mt-4 text-sm text-red-500">
-            {error}
-          </p>
-        )}
+        {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
       </div>
 
       {/* Bottom Navigation */}
       <div className="flex justify-end items-center mt-8 mb-4">
         <button
           onClick={handleVerify}
-          disabled={loading}
-          className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-[#2e2e2e]'
+          disabled={loading || !email.trim()}
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
+            loading || !email.trim()
+              ? "bg-gray-600 cursor-not-allowed opacity-50"
+              : "bg-[#F06CB7] hover:bg-[#e05ca3]" 
           }`}
         >
           {loading ? (
