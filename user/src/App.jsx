@@ -34,7 +34,11 @@ import Regrets from "./component/bouquet/regrets";
 import WannaHide from "./component/bouquet/wanna_hide";
 import SelectTagPage from "./component/mix/select_tag_page";
 import CommentTree from "./component/mix/comments_page";
-
+import CreateNetworkWrapper from "./component/creatingNetwork/CreateNetworkWrapper";
+import CommunityPage from "./component/creatingNetwork/Community_page";
+import MobileCreateNetwork1 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_1";
+import MobileCreateNetwork2 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_2";
+import MobileCreateNetwork3 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_3";
 function App() {
   return (
     <Router>
@@ -58,6 +62,12 @@ function App() {
         <Route path="/wannahide" element={<WannaHide />} />
         <Route path="/selecttag" element={<SelectTagPage />} />
         <Route path="/comments" element={<CommentTree />} />
+        <Route path="/createnetworkwrapper" element={<CreateNetworkWrapper />} />
+        <Route path="/communitypage" element={<CommunityPage />} />
+        <Route path="/mobile_createnetwork_1" element={<MobileCreateNetwork1 />} />
+<Route path="/mobile_createnetwork_2" element={<MobileCreateNetwork2 />} />
+<Route path="/mobile_createnetwork_3" element={<MobileCreateNetwork3 />} />
+
 
         {/* User Onboarding Routes */}
         <Route path="useronboarding">

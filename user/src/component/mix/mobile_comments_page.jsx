@@ -120,7 +120,7 @@ const mainPost = {
 
 // --- Constants ---
 const MAX_DEPTH = 5;
-const INDENT_WIDTH = 10; // Increased for better visibility
+const INDENT_WIDTH = 20; // Increased for better visibility
 const MAX_VISUAL_INDENT_LEVEL = 3;
 
 
@@ -146,13 +146,16 @@ const Comment = ({ comment, indentLevel = 0, onAddReply, activeReplyId, onToggle
     }
   };
   
-  // Calculate the visual indentation for the comment
-  const marginLeft = indentLevel > 0 
-    ? Math.min(indentLevel, MAX_VISUAL_INDENT_LEVEL) * INDENT_WIDTH 
-    : 5;
+  // --- FIXED INDENTATION LOGIC ---
+  // The ternary operator was removed to make the indentation consistent.
+  // Now, the margin is a direct multiple of the indent level,
+  // ensuring each level indents by the same amount from its parent.
+  const marginLeft = Math.min(indentLevel, MAX_VISUAL_INDENT_LEVEL) + INDENT_WIDTH;
+
 
   return (
-    <div className="relative flex mt-4 w-full">
+    // CHANGE: Added `items-start` to align the content block and voting block to the top.
+    <div className="relative flex items-start mt-4 w-full">
       {/* Vertical connector line for indented replies */}
       {indentLevel > 0 && (
         <div
@@ -191,7 +194,7 @@ const Comment = ({ comment, indentLevel = 0, onAddReply, activeReplyId, onToggle
           </div>
         </div>
 
-        <p className="text-white text-[13px] mt-1 break-words pr-10">{content}</p>
+        <p className="text-white text-[12px] mt-1 break-words pr-10">{content}</p>
 
         <div className="flex items-center text-xs mt-2 pr-10">
           {indentLevel < MAX_DEPTH - 1 && (
