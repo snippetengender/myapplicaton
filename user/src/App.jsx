@@ -39,6 +39,11 @@ import CommunityPage from "./component/creatingNetwork/Community_page";
 import MobileCreateNetwork1 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_1";
 import MobileCreateNetwork2 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_2";
 import MobileCreateNetwork3 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_3";
+import ManageNetworkScreen from "./component/Admin/manage_network/manage_network_page";
+import NetworkCommunityPage from "./component/Admin/network_community/network_community_page";
+import EditNetworkPage from "./component/Admin/Edit_network/edit_network_page";
+import DitchNetworkPage from "./component/Admin/ditch_network/ditch_network_page";
+import FinalPage from "./component/Admin/final_page";
 function App() {
   return (
     <Router>
@@ -67,6 +72,11 @@ function App() {
         <Route path="/mobile_createnetwork_1" element={<MobileCreateNetwork1 />} />
 <Route path="/mobile_createnetwork_2" element={<MobileCreateNetwork2 />} />
 <Route path="/mobile_createnetwork_3" element={<MobileCreateNetwork3 />} />
+        <Route path="/managenetwork" element={<ManageNetworkScreen />} />
+        <Route path="/networkcommunity" element={<NetworkCommunityPage />} />
+        <Route path="/editnetwork" element={<EditNetworkPage />} />
+        <Route path="/ditchnetwork" element={<DitchNetworkPage />} />
+        <Route path="/finalpage" element={<FinalPage />} />
 
 
         {/* User Onboarding Routes */}
