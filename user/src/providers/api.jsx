@@ -41,21 +41,31 @@ const getToken = async () => {
   }
 };
 
+// your api.js file
+
 api.interceptors.request.use(
   async (config) => {
     console.log(` API Request: ${config.method?.toUpperCase()} ${config.url}`);
-
+    
     const token = await getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.warn("Sending request without Authorization header (no token).");
     }
+
+    // --- ADD THIS BLOCK ---
+    // If the request is a file upload, remove the default Content-Type header.
+    // This allows the browser to set the correct 'multipart/form-data' header 
+    // with the necessary boundary.
+    if (config.data instanceof FormData) {
+      config.headers['Content-Type'] = 'multipart/form-data';
+    }
+    // --- END OF CHANGE ---
 
     return config;
   },
   (error) => Promise.reject(error)
 );
+
 
 api.interceptors.response.use(
   (response) => response,

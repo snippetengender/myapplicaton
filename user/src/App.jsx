@@ -24,11 +24,12 @@ import RelationshipStatusPage from "./component/useronbording/RelationshipStatus
 import UserProfilePage from "./component/useronbording/UserProfilePage";
 import UsernamePage from "./component/useronbording/UsernamePage";
 import BouquetOutlet from "../Outlet/BouquetOutlet";
+
 // Auth Wrapper
 import ProtectedRoute from "./component/useronbording/ProtectedRoute";
 
 // Authenticated Pages
-import Home from "./component/bouquet/Home";
+import Home from "./component/Home_page/Home";
 import MyScreenPage from "./component/bouquet/my_scree_page";
 import FindEm from "./component/bouquet/find_em";
 import EmResult from "./component/bouquet/em_result";
@@ -41,14 +42,31 @@ import Regrets from "./component/bouquet/regrets";
 import WannaHide from "./component/bouquet/wanna_hide";
 import SendBouquetPage from "./component/bouquet/my_scree_page";
 
+import SelectTagPage from "./component/mix/select_tag_page";
+import CommentTree from "./component/mix/comments_page";
+import NetworkSelectPage from "./component/mix/networkSelectMobile.jsx";
+import CreateNetworkWrapper from "./component/creatingNetwork/CreateNetworkWrapper";
+import CommunityPage from "./component/creatingNetwork/Community_page";
+import MobileCreateNetwork1 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_1";
+import MobileCreateNetwork2 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_2";
+import MobileCreateNetwork3 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_3";
+
+import ManageNetworkScreen from "./component/Admin/manage_network/manage_network_page";
+import NetworkCommunityPage from "./component/Admin/network_community/network_community_page";
+import EditNetworkPage from "./component/Admin/Edit_network/edit_network_page";
+import DitchNetworkPage from "./component/Admin/ditch_network/ditch_network_page";
+import FinalPage from "./component/Admin/final_page";
+
 function App() {
   return (
     <Router>
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<LandingRouter />} />
         <Route path="/lobby" element={<Lobby />} />
         <Route path="/login" element={<Login />} />
 
+        {/* Onboarding */}
         <Route path="/useronboarding/google-login" element={<GoogleLogin />} />
         <Route
           path="/useronboarding/select-region"
@@ -86,9 +104,36 @@ function App() {
         />
         <Route path="/useronboarding/user-name" element={<UsernamePage />} />
 
+        {/* Mix / Networks */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/home" element={<Home />} />
+          <Route path="/selecttag" element={<SelectTagPage />} />
+          <Route path="/comments" element={<CommentTree />} />
+          <Route
+            path="/createnetworkwrapper"
+            element={<CreateNetworkWrapper />}
+          />
+          <Route path="/communitypage" element={<CommunityPage />} />
+          <Route
+            path="/mobile_createnetwork_1"
+            element={<MobileCreateNetwork1 />}
+          />
+          <Route
+            path="/mobile_createnetwork_2"
+            element={<MobileCreateNetwork2 />}
+          />
+          <Route
+            path="/mobile_createnetwork_3"
+            element={<MobileCreateNetwork3 />}
+          />
+          <Route path="/managenetwork" element={<ManageNetworkScreen />} />
+          <Route path="/networkcommunity" element={<NetworkCommunityPage />} />
+          <Route path="/editnetwork" element={<EditNetworkPage />} />
+          <Route path="/ditchnetwork" element={<DitchNetworkPage />} />
+          <Route path="/finalpage" element={<FinalPage />} />
+          <Route path="/select-network" element={<NetworkSelectPage />} />
 
+          {/* Protected routes */}
+          <Route path="/home" element={<Home />} />
           <Route path="/bouquet" element={<BouquetOutlet />}>
             <Route path="myscreen" element={<MyScreenPage />} />
             <Route path="sendbouquet" element={<SendBouquetPage />} />
@@ -107,6 +152,7 @@ function App() {
           </Route>
         </Route>
 
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
