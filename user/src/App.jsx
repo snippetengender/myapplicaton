@@ -44,6 +44,14 @@ import NetworkCommunityPage from "./component/Admin/network_community/network_co
 import EditNetworkPage from "./component/Admin/Edit_network/edit_network_page";
 import DitchNetworkPage from "./component/Admin/ditch_network/ditch_network_page";
 import FinalPage from "./component/Admin/final_page";
+import AddClubs from "./component/addClubs/mobileAddClubs";
+import RegisterClubPage from "./component/addClubs/mobileRegisterClub";
+import ClubApproval from "./component/Admin/clubApproval/mobileClubApproval";
+import ClubSignInPage from "./component/addClubs/mobileClubSignInPage";
+import ClubAdminPage from "./component/addClubs/mobileClubAdminPage";
+import CreateEventPage from "./component/addClubs/mobileAddEventPage";
+
+
 function App() {
   return (
     <Router>
@@ -77,7 +85,12 @@ function App() {
         <Route path="/editnetwork" element={<EditNetworkPage />} />
         <Route path="/ditchnetwork" element={<DitchNetworkPage />} />
         <Route path="/finalpage" element={<FinalPage />} />
-
+        <Route path="/addclubs" element={<AddClubs />} />
+        <Route path="/registerclub" element={<RegisterClubPage />} />
+        <Route path="/clubapproval" element={<ClubApproval />} />
+        <Route path="/club-signin" element={<ClubSignInPage />} />
+        <Route path="/club-admin" element={<ClubAdminPage />} />
+        <Route path="/add-event" element={<CreateEventPage />} />
 
         {/* User Onboarding Routes */}
         <Route path="useronboarding">
