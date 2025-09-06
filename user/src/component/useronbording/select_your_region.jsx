@@ -80,9 +80,9 @@ export default function RegionSelect() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
       <div>
-        <button className="text-white mb-4" onClick={() => navigate(-1)}>
+        <button className="text-[#E7E9EA] mb-4" onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
         </button>
         <h1 className="text-2xl font-semibold mb-2">Select your Region</h1>
@@ -139,7 +139,7 @@ export default function RegionSelect() {
         </div>
       </div>
       <div className="flex justify-between items-center mt-10 mb-4">
-        <p className="text-sm text-white">
+        <p className="text-sm text-[#E7E9EA]">
           Can't find your Region?{" "}
           <span className="text-[#F06CB7] underline cursor-pointer">Add em</span>
         </p>
@@ -147,7 +147,7 @@ export default function RegionSelect() {
           className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
           onClick={handleNext}
         >
-          <ArrowRight size={22} className="text-white" />
+          <ArrowRight size={22} className="text-[#E7E9EA]" />
         </button>
       </div>
     </div>

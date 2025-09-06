@@ -83,11 +83,11 @@ export default function PromptEditor() {
     setSaving(false);
   };
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
       {/* Top Navigation */}
       <div>
         <button className="mb-5">
-          <ArrowLeft className="text-white" size={24} />
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
         {/* Heading */}
@@ -109,7 +109,7 @@ export default function PromptEditor() {
               {activePrompt === prompt.id ? (
                 <div className="transition-all duration-100 transform scale-95">
                   <div className="border border-zinc-600 p-3 rounded-lg">
-                    <label className="block text-white mb-2 text-sm">
+                    <label className="block text-[#E7E9EA] mb-2 text-sm">
                       {prompt.text}
                     </label>
                     <textarea
@@ -118,7 +118,7 @@ export default function PromptEditor() {
                       placeholder="Open up now"
                       value={inputValue}
                       onChange={(e) => handleInputChange(e.target.value)}
-                      className="w-full bg-transparent rounded-lg p-3 text-white placeholder-zinc-500 text-xl font-bold outline-none"
+                      className="w-full bg-transparent rounded-lg p-3 text-[#E7E9EA] placeholder-zinc-500 text-xl font-bold outline-none"
                     />
                     <div className="text-xs text-zinc-500 mt-1">
                       {inputValue.length}/150
@@ -132,7 +132,7 @@ export default function PromptEditor() {
                   }`}
                   onClick={() => handlePromptClick(prompt.id)}
                 >
-                  <p className="text-white text-sm">{prompt.text}</p>
+                  <p className="text-[#E7E9EA] text-sm">{prompt.text}</p>
                   <Pencil size={18} className="text-zinc-400" />
                 </div>
               )}
@@ -152,7 +152,7 @@ export default function PromptEditor() {
               : "bg-[#2e2e2e]"
           }`}
         >
-          <ArrowRight className="text-white" size={22} />
+          <ArrowRight className="text-[#E7E9EA]" size={22} />
         </button>
       </div>
     </div>

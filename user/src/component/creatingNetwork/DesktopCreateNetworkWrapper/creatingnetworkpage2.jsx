@@ -3,13 +3,13 @@ import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
 
 export default function CreatingNetworkPage2({ onNext, onBack }) {
   return (
-    <div className="text-white">
+    <div className="text-[#E7E9EA]">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <button onClick={onBack}>
-          <ArrowLeft className="text-white" />
+          <ArrowLeft className="text-[#E7E9EA]" />
         </button>
-        <div className="bg-[#2E2E2E] text-xs text-white px-3 py-1 rounded-full">
+        <div className="bg-[#2E2E2E] text-xs text-[#E7E9EA] px-3 py-1 rounded-full">
           2/3
         </div>
       </div>
@@ -27,7 +27,7 @@ export default function CreatingNetworkPage2({ onNext, onBack }) {
        <div className="mt-6 rounded-xl border border-[#2F3336]">
         {/* Add Banner Button */}
         <div className="flex justify-end p-4">
-          <button className="text-sm border border-gray-600 text-white rounded-full px-4 py-1">
+          <button className="text-sm border border-gray-600 text-[#E7E9EA] rounded-full px-4 py-1">
             add banner
           </button>
         </div>
@@ -56,7 +56,7 @@ export default function CreatingNetworkPage2({ onNext, onBack }) {
       <div className="flex justify-end mt-6">
         <button
           onClick={onNext}
-          className="flex items-center gap-1 bg-[#2E2E2E] text-white px-4 py-2 rounded-full text-sm"
+          className="flex items-center gap-1 bg-[#2E2E2E] text-[#E7E9EA] px-4 py-2 rounded-full text-sm"
         >
           next <ArrowRight className="w-4 h-4" />
         </button>

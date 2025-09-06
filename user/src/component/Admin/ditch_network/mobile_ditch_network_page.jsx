@@ -18,7 +18,7 @@ const DitchNetworkPageMobile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 font-sans flex flex-col">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-4 font-sans flex flex-col">
       {/* Header Section */}
       <div className="flex items-center mb-6">
         <button className="p-1">
@@ -50,7 +50,7 @@ const DitchNetworkPageMobile = () => {
         {/* Ditch Network Button */}
         <button 
           onClick={() => navigate('/finalpage')}
-          className="w-full bg-[#2A2A2A] text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+          className="w-full bg-[#2A2A2A] text-[#E7E9EA] px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
           disabled={!networkName.trim()}
         >
           Ditch Network

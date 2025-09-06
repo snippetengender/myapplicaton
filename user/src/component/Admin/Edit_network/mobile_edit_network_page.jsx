@@ -8,7 +8,7 @@ const EditNetworkPageMobile = () => {
   const [description, setDescription] = React.useState('');
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 font-sans flex flex-col">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-4 font-sans flex flex-col">
       {/* Header Section */}
       <div className="flex items-center justify-between mb-6">
         <button className="p-1">
@@ -67,7 +67,7 @@ const EditNetworkPageMobile = () => {
       <div className="mt-8">
         <h2 className="text-base font-semibold mb-4">Preview</h2>
         <div className="bg-black border border-gray-600 rounded-2xl p-4 relative">
-          <div className='mt-20'><button className="absolute top-4 right-4 text-xs bg-black text-white px-4 py-1 rounded-full border border-gray-500">
+          <div className='mt-20'><button className="absolute top-4 right-4 text-xs bg-black text-[#E7E9EA] px-4 py-1 rounded-full border border-gray-500">
             edit banner
           </button></div>
           <div>
@@ -82,7 +82,7 @@ const EditNetworkPageMobile = () => {
             </div>
             <span className="font-bold text-lg">{networkName}</span>
           </div>
-          <p className="text-sm text-white mt-3 leading-relaxed">
+          <p className="text-sm text-[#E7E9EA] mt-3 leading-relaxed">
             Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
           </p>
           </div>

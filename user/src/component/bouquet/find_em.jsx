@@ -15,7 +15,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-3 py-6 flex flex-col justify-between font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-3 py-6 flex flex-col justify-between font-sans">
       <div>
         <ArrowLeft className="w-6 h-6 mb-4"  onClick={() => navigate("/myscreen")}/>
 
@@ -113,7 +113,7 @@ export default function App() {
           className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
           onClick={() => navigate("/emresult")}
         >
-          <ArrowRight size={22} className="text-white" />
+          <ArrowRight size={22} className="text-[#E7E9EA]" />
         </button>
       </div>
     </div>

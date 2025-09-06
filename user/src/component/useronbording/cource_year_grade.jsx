@@ -76,11 +76,11 @@ export default function GradeInfoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
       <div>
         {/* Back Button */}
         <button className="mb-6" onClick={() => navigate(-1)}>
-          <ArrowLeft className="text-white" size={24} />
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
         {/* Heading */}
@@ -110,7 +110,7 @@ export default function GradeInfoPage() {
                 key={yr}
                 onClick={() => handleYearChange(yearNumber.toString())} 
                 className={`px-4 py-1 rounded-md border ${
-                  year === yearNumber ? "border-[#F06CB7] text-white" : "border-zinc-500 text-zinc-300"
+                  year === yearNumber ? "border-[#F06CB7] text-[#E7E9EA]" : "border-zinc-500 text-zinc-300"
                 }`}
               >
                 {yr}
@@ -126,7 +126,7 @@ export default function GradeInfoPage() {
             <label
               key={d}
               className={`flex items-center justify-between text-2xl font-bold ${
-                degree === d ? "text-white" : "text-zinc-500"
+                degree === d ? "text-[#E7E9EA]" : "text-zinc-500"
               }`}
             >
               {d}
@@ -150,7 +150,7 @@ export default function GradeInfoPage() {
           disabled={saving}
           className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
         >
-          <ArrowRight className="text-white" size={22} />
+          <ArrowRight className="text-[#E7E9EA]" size={22} />
         </button>
       </div>
 

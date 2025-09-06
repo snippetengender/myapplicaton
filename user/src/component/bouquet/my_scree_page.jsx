@@ -31,7 +31,7 @@ export default function SendBouquetPage() {
   ];
 
   return (
-    <div className="bg-black min-h-screen text-white px-2 py-4">
+    <div className="bg-black min-h-screen text-[#E7E9EA] px-2 py-4">
       {/* Back button */}
       <ArrowLeft className="w-6 h-6 mb-4" onClick={() => navigate("/home")} />
 

@@ -53,7 +53,7 @@ const NetworkSelectionPopup = ({ onClose, onSelectNetwork, triggerRef }) => {
   return (
     <div 
       ref={popupRef}
-      className="absolute bg-[#1d1d1d] border border-zinc-700 text-white z-30 p-4 rounded-lg shadow-lg"
+      className="absolute bg-[#1d1d1d] border border-zinc-700 text-[#E7E9EA] z-30 p-4 rounded-lg shadow-lg"
       style={{ top: position.top, left: position.left, width: position.width }}
     >
        <div className="relative mb-4">
@@ -108,7 +108,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
       {isPopupOpen && <NetworkSelectionPopup onClose={() => setIsPopupOpen(false)} onSelectNetwork={handleSelectNetwork} triggerRef={networkButtonRef} />}
       <Header />
       <div className="flex">
@@ -136,9 +136,9 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-3">
                     <div className="w-5 h-5 rounded-full bg-blue-500" />
-                    <span className="text-sm font-semibold text-white">{selectedNetwork.name}</span>
+                    <span className="text-sm font-semibold text-[#E7E9EA]">{selectedNetwork.name}</span>
                   </div>
-                  <button onClick={handleResetNetwork} className="text-sm text-zinc-400 hover:text-white">Reset</button>
+                  <button onClick={handleResetNetwork} className="text-sm text-zinc-400 hover:text-[#E7E9EA]">Reset</button>
                 </div>
               )}
             </div>
@@ -149,7 +149,7 @@ export default function Dashboard() {
                   key={tag}
                   onClick={() => setSelectedTag(prev => prev === tag ? "" : tag)}
                   className={`px-4 py-1 rounded-full border text-sm ${
-                    selectedTag === tag ? "border-zinc-300 text-white" : "border-zinc-700 text-zinc-400"
+                    selectedTag === tag ? "border-zinc-300 text-[#E7E9EA]" : "border-zinc-700 text-zinc-400"
                   }`}
                 >
                   {tag}
@@ -164,7 +164,7 @@ export default function Dashboard() {
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   maxLength={200}
-                  className="w-full h-32 bg-transparent border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 resize-none"
+                  className="w-full h-32 bg-transparent border border-gray-700 rounded-xl p-4 text-[#E7E9EA] placeholder-gray-500 resize-none"
                 />
                 <span className="absolute bottom-2 right-4 text-gray-500 text-sm">{text.length}/200</span>
               </div>
@@ -190,7 +190,7 @@ export default function Dashboard() {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     maxLength={1000}
-                    className="w-full h-40 bg-transparent border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 resize-none"
+                    className="w-full h-40 bg-transparent border border-gray-700 rounded-xl p-4 text-[#E7E9EA] placeholder-gray-500 resize-none"
                   />
                   <span className="absolute bottom-2 right-4 text-gray-500 text-sm">{text.length}/1000</span>
                 </div>

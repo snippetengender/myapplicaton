@@ -8,7 +8,7 @@ const CloseIcon = () => (
     viewBox="0 0 24 24" 
     fill="none" 
     xmlns="http://www.w3.org/2000/svg"
-    className="text-white"
+    className="text-[#E7E9EA]"
   >
     <path 
       d="M18 6L6 18" 
@@ -31,7 +31,7 @@ const CloseIcon = () => (
 // Main component for the "Work in Progress" screen
 const WorkInProgressPage = () => {
   return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col items-center justify-center font-sans z-50">
+    <div className="fixed inset-0 bg-black text-[#E7E9EA] flex flex-col items-center justify-center font-sans z-50">
       {/* Close button positioned at the top-left corner */}
       <button className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-800">
         <CloseIcon />

@@ -52,7 +52,7 @@ export default function App() {
   }, [searchQuery, allUsers]);
 
   return (
-    <div className="min-h-screen bg-black text-white px-0 py-6 flex flex-col font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-0 py-6 flex flex-col font-sans">
       {/* Top Section with padding */}
       <div className="px-2">
         {/* Back button */}

@@ -17,7 +17,7 @@ export default function ProtectedRoute() {
   }, []);
 
   if (loading) {
-    return <div className="text-center text-white">Loading...</div>;
+    return <div className="text-center text-[#E7E9EA]">Loading...</div>;
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/useronboarding/google-login" replace />;

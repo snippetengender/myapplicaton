@@ -68,14 +68,14 @@ export default function ProfilePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-[#E7E9EA]">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-6">
         <button>
-          <ArrowLeft className="text-white" size={24} />
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
         <button>
-          <MoreVertical className="text-white" size={24} />
+          <MoreVertical className="text-[#E7E9EA]" size={24} />
         </button>
       </div>
 
@@ -142,7 +142,7 @@ export default function ProfilePage() {
             onClick={() => setActiveTab("mixes")}
             className={`flex-1 py-3 text-sm font-medium ${
               activeTab === "mixes"
-                ? "text-white border-b-2 border-white"
+                ? "text-[#E7E9EA] border-b-2 border-white"
                 : "text-zinc-400"
             }`}
           >
@@ -152,7 +152,7 @@ export default function ProfilePage() {
             onClick={() => setActiveTab("stuffs")}
             className={`flex-1 py-3 text-sm font-medium ${
               activeTab === "stuffs"
-                ? "text-white border-b-2 border-white"
+                ? "text-[#E7E9EA] border-b-2 border-white"
                 : "text-zinc-400"
             }`}
           >

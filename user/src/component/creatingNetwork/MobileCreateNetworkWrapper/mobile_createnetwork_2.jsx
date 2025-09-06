@@ -14,12 +14,12 @@ export default function MobileCreateNetwork2() {
   const handleBack = () => navigate('/mobile_createnetwork_1');
 
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col p-6 pb-28">
+    <div className="bg-black text-[#E7E9EA] min-h-screen flex flex-col p-6 pb-28">
       {/* Header */}
       <header className="flex items-center justify-between w-full mb-6">
         <button 
           onClick={handleBack} 
-          className="p-2 -ml-2 text-neutral-300 hover:text-white transition-colors"
+          className="p-2 -ml-2 text-neutral-300 hover:text-[#E7E9EA] transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
@@ -30,7 +30,7 @@ export default function MobileCreateNetwork2() {
 
       {/* Main Content */}
       <main className="w-full">
-        <h1 className="text-2xl font-semibold text-white mb-2">
+        <h1 className="text-2xl font-semibold text-[#E7E9EA] mb-2">
           Style your Network
         </h1>
         <p className="text-xs text-neutral-400 leading-relaxed mb-8">
@@ -46,7 +46,7 @@ export default function MobileCreateNetwork2() {
           </div>
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-neutral-200 rounded-full flex-shrink-0"></div>
-            <span className="font-semibold text-lg text-white">something</span>
+            <span className="font-semibold text-lg text-[#E7E9EA]">something</span>
           </div>
           <p className="text-sm text-neutral-400 leading-relaxed">
             Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
@@ -60,7 +60,7 @@ export default function MobileCreateNetwork2() {
           onClick={handleNext}
           className="w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center hover:bg-neutral-700 transition-colors"
         >
-          <ArrowRight size={24} className="text-white" />
+          <ArrowRight size={24} className="text-[#E7E9EA]" />
         </button>
       </footer>
     </div>

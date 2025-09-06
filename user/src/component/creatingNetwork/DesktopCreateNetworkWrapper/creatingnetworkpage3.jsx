@@ -13,13 +13,13 @@ export default function CreatingNetworkPage3({ onBack }) {
   const navigate = useNavigate();
 
   return (
-    <div className="text-white min-h-[calc(100vh-64px)]"> {/* Adjust height below header */}
+    <div className="text-[#E7E9EA] min-h-[calc(100vh-64px)]"> {/* Adjust height below header */}
       {/* Header */}
       <div className="flex items-center justify-between">
         <button onClick={onBack}>
-          <ArrowLeft className="text-white" />
+          <ArrowLeft className="text-[#E7E9EA]" />
         </button>
-        <div className="bg-[#2E2E2E] text-xs text-white px-3 py-1 rounded-full">
+        <div className="bg-[#2E2E2E] text-xs text-[#E7E9EA] px-3 py-1 rounded-full">
           3/3
         </div>
       </div>
@@ -40,13 +40,13 @@ export default function CreatingNetworkPage3({ onBack }) {
           <input
             type="text"
             placeholder="Search for topics"
-            className="bg-transparent text-white text-sm w-full outline-none placeholder-gray-500"
+            className="bg-transparent text-[#E7E9EA] text-sm w-full outline-none placeholder-gray-500"
           />
         </div>
       </div>
 
       {/* Select One Label */}
-      <p className="text-sm text-white mt-6 mb-2 font-medium">
+      <p className="text-sm text-[#E7E9EA] mt-6 mb-2 font-medium">
         Select One ({selectedTag ? "1" : "0"}/1)
       </p>
 
@@ -77,7 +77,7 @@ export default function CreatingNetworkPage3({ onBack }) {
         <button
           disabled={!selectedTag}
           className={`flex items-center gap-1 px-5 py-2 rounded-full text-sm font-medium transition
-            ${selectedTag ? "bg-white text-black" : "bg-gray-600 text-white cursor-not-allowed"}`}
+            ${selectedTag ? "bg-white text-black" : "bg-gray-600 text-[#E7E9EA] cursor-not-allowed"}`}
             onClick={() => navigate("/communitypage")}
         >
           create network <ArrowRight className="w-4 h-4" />
@@ -111,7 +111,7 @@ const Tag = ({ label, isSelected, onClick }) => (
     className={`px-4 py-1 border text-sm rounded-full transition
       ${isSelected
         ? "border-[#F06CB7] text-[#F06CB7]"
-        : "border-gray-600 text-white "}`}
+        : "border-gray-600 text-[#E7E9EA] "}`}
   >
     {label}
   </button>

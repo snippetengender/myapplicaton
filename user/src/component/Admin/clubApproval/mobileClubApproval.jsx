@@ -57,12 +57,12 @@ const RequestCard = ({ request, onApprove }) => {
     <div className="border-b border-gray-800 py-6">
       <div className="space-y-1">
         {detailItems.map(item => (
-            <p key={item.label} className="text-white">
+            <p key={item.label} className="text-[#E7E9EA]">
                 {item.label} : <span className="text-gray-400">{item.value}</span>
             </p>
         ))}
         {request.status === 'approved' && (
-             <p className="text-white">
+             <p className="text-[#E7E9EA]">
                 password : <span className="text-gray-400">{request.password}</span>
             </p>
         )}
@@ -75,11 +75,11 @@ const RequestCard = ({ request, onApprove }) => {
             placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="flex-grow bg-black border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-pink-500"
+            className="flex-grow bg-black border border-gray-700 rounded-lg px-4 py-2 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-pink-500"
           />
           <button 
             onClick={handleApproveClick}
-            className="bg-black border border-gray-700 text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-800 transition-colors"
+            className="bg-black border border-gray-700 text-[#E7E9EA] font-semibold py-2 px-6 rounded-lg hover:bg-gray-800 transition-colors"
           >
             add club
           </button>
@@ -104,16 +104,16 @@ const AdminApprovalPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-0 flex flex-col">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-0 flex flex-col">
       {/* Top Bar with back navigation */}
       <header className="px-4 pt-4 mb-8">
-        <button onClick={() => navigate(-1)} className="text-white">
+        <button onClick={() => navigate(-1)} className="text-[#E7E9EA]">
           <ArrowBackIcon />
         </button>
       </header>
 
       <main className="flex-grow px-4">
-        <h1 className="text-2xl font-bold text-white mb-2">Club Requests</h1>
+        <h1 className="text-2xl font-bold text-[#E7E9EA] mb-2">Club Requests</h1>
         <p className="text-gray-400 mb-4">
           Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
         </p>

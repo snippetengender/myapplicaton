@@ -47,10 +47,10 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between font-sans">
       {/* Top Section */}
       <div>
-        <button className="text-white mb-6" onClick={() => navigate(-1)}> {/* Simulate back navigation */}
+        <button className="text-[#E7E9EA] mb-6" onClick={() => navigate(-1)}> {/* Simulate back navigation */}
           <ArrowLeft size={24} />
         </button>
 
@@ -90,7 +90,7 @@ export default function VerifyEmailPage() {
           {loading ? (
             <span className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
           ) : (
-            <ArrowRight className="text-white" size={22} />
+            <ArrowRight className="text-[#E7E9EA]" size={22} />
           )}
         </button>
       </div>

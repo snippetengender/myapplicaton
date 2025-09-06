@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [description, setDescription] = useState('Lorem ipsum dolor sit amet consectetur.');
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
       <Header />
       <div className="flex">
         <LeftSidebar />
@@ -77,7 +77,7 @@ export default function Dashboard() {
           {/* Preview Section */}
           <div className="mt-10 max-w-2xl">
             <div className="bg-black border border-gray-700 rounded-2xl p-6 relative ">
-              <button className="absolute top-4 right-4 text-xs bg-black text-white px-4 py-1 rounded-full border border-gray-500 hover:bg-gray-800 mt-6">
+              <button className="absolute top-4 right-4 text-xs bg-black text-[#E7E9EA] px-4 py-1 rounded-full border border-gray-500 hover:bg-gray-800 mt-6">
                 edit banner
               </button>
               
@@ -92,7 +92,7 @@ export default function Dashboard() {
                 <span className="font-bold text-2xl">rantcit</span>
               </div>
               
-              <p className="text-sm text-white mt-4 leading-relaxed">
+              <p className="text-sm text-[#E7E9EA] mt-4 leading-relaxed">
                 Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus. Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
               </p>
             </div>

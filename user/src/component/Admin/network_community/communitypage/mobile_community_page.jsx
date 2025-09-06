@@ -7,7 +7,7 @@ export default function MobileNetworkPage() {
   
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
       <div className="relative w-full h-30 rounded-lg overflow-hidden">
         <img
           src="https://i.pinimg.com/736x/8c/90/d9/8c90d9c67afd8c9bbf92cbe73fbe4102.jpg"
@@ -22,14 +22,14 @@ export default function MobileNetworkPage() {
             onClick={() => navigate('/createnetworkwrapper')} 
             className="bg-black bg-opacity-70 p-2 rounded-full"
           >
-            <ChevronLeft className="text-white" size={20} />
+            <ChevronLeft className="text-[#E7E9EA]" size={20} />
           </button>
         </div>
 
         {/* Right Menu Icon - Vertically Centered */}
         <div className="absolute top-3/4 right-2 -translate-y-1/2 pr-1">
           <button className="bg-black bg-opacity-70 p-2 rounded-full">
-            <MoreVertical className="text-white" size={20} />
+            <MoreVertical className="text-[#E7E9EA]" size={20} />
           </button>
         </div>
       </div>
@@ -46,7 +46,7 @@ export default function MobileNetworkPage() {
               </p>
             </div>
           </div>
-          <button className="bg-black border border-[#7E8389] text-white text-sm px-3 py-1 rounded-full">
+          <button className="bg-black border border-[#7E8389] text-[#E7E9EA] text-sm px-3 py-1 rounded-full">
             got in
           </button>
         </div>
@@ -69,8 +69,8 @@ export default function MobileNetworkPage() {
       {/* Footer Action Input */}
       <div className="fixed bottom-1 left-0 right-0 px-2 py-1 z-10">
         <div className="backdrop-blur-md  border border-[#2F3336] rounded-3xl px-4 py-2 flex justify-between items-center">
-          <span className="text-sm text-white">Open up now</span>
-          <button className="bg-white/10 border border-[#2F3336] text-white px-4 py-1 rounded-xl hover:bg-white/30" onClick={() => navigate("/selecttag")}>
+          <span className="text-sm text-[#E7E9EA]">Open up now</span>
+          <button className="bg-white/10 border border-[#2F3336] text-[#E7E9EA] px-4 py-1 rounded-xl hover:bg-white/30" onClick={() => navigate("/selecttag")}>
             mix
           </button>
         </div>

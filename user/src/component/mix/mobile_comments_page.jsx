@@ -179,7 +179,7 @@ const Comment = ({ comment, indentLevel = 0, onAddReply, activeReplyId, onToggle
           {/* Username + ID + Time */}
           <div className="flex min-w-0 items-center gap-1 flex-grow">
             <span
-              className={`font-semibold text-white truncate`}
+              className={`font-semibold text-[#E7E9EA] truncate`}
               style={{ fontSize: user.name.length > 12 ? "0.75rem" : "0.875rem" }}
             >
               {feelLike === "user" ? `<${user.name}>` : user.name}
@@ -190,11 +190,11 @@ const Comment = ({ comment, indentLevel = 0, onAddReply, activeReplyId, onToggle
               </span>
             )}
             <span className="text-gray-400 text-xs flex-shrink-0">• {time}</span>
-            <FaRegFlag className="ml-2 h-4 w-3 text-gray-500 hover:text-white cursor-pointer flex-shrink-0" />
+            <FaRegFlag className="ml-2 h-4 w-3 text-gray-500 hover:text-[#E7E9EA] cursor-pointer flex-shrink-0" />
           </div>
         </div>
 
-        <p className="text-white text-[12px] mt-1 break-words pr-10">{content}</p>
+        <p className="text-[#E7E9EA] text-[12px] mt-1 break-words pr-10">{content}</p>
 
         <div className="flex items-center text-xs mt-2 pr-10">
           {indentLevel < MAX_DEPTH - 1 && (
@@ -215,7 +215,7 @@ const Comment = ({ comment, indentLevel = 0, onAddReply, activeReplyId, onToggle
               onChange={(e) => setReplyText(e.target.value)}
               maxLength={1000}
               rows={3}
-              className="w-full bg-transparent text-white border-none resize-none outline-none"
+              className="w-full bg-transparent text-[#E7E9EA] border-none resize-none outline-none"
               placeholder="Write a reply..."
               autoFocus
             />
@@ -254,14 +254,14 @@ const Comment = ({ comment, indentLevel = 0, onAddReply, activeReplyId, onToggle
       {/* Voting */}
       <div className="absolute right-0 top-0 flex flex-col items-center flex-shrink-0 z-10">
         <FiChevronUp
-          className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white"
+          className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]"
           onClick={handleUpvote}
         />
         <span className="text-pink-500 text-base font-semibold">
           {currentVotes}
         </span>
         <FiChevronDown
-          className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white"
+          className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]"
           onClick={handleDownvote}
         />
       </div>
@@ -350,11 +350,11 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 flex flex-col w-full max-w-2xl mx-auto overflow-hidden">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-4 flex flex-col w-full max-w-2xl mx-auto overflow-hidden">
       {/* Top Bar */}
       <div className="flex items-center mb-6 w-full flex-shrink-0">
         <RxCross2
-          className="h-6 w-6 text-white cursor-pointer mr-4"
+          className="h-6 w-6 text-[#E7E9EA] cursor-pointer mr-4"
           onClick={() => navigate(-1)}
         />
         <h1 className="text-xl font-bold text-nowrap overflow-hidden text-ellipsis">
@@ -367,7 +367,7 @@ const App = () => {
         <div className="flex items-center gap-2 text-sm flex-wrap">
           {mainPost.feelLike === "user" ? (
             <>
-              <span className="font-semibold text-white text-nowrap">
+              <span className="font-semibold text-[#E7E9EA] text-nowrap">
                 &lt;{mainPost.user.name}&gt;
               </span>
               <span className="text-[#616161] text-nowrap">
@@ -376,7 +376,7 @@ const App = () => {
             </>
           ) : (
             <>
-              <span className="font-semibold text-white text-nowrap">
+              <span className="font-semibold text-[#E7E9EA] text-nowrap">
                 {mainPost.user.name}
               </span>
               <span className="text-[#616161] text-nowrap">
@@ -388,7 +388,7 @@ const App = () => {
             {mainPost.label}
           </span>
         </div>
-        <p className="text-white text-[15px] mt-2 break-words">
+        <p className="text-[#E7E9EA] text-[15px] mt-2 break-words">
           {mainPost.content}
         </p>
         <div className="flex justify-between items-center mt-3 text-xs text-gray-400 flex-wrap">
@@ -436,7 +436,7 @@ const App = () => {
                         placeholder="Open up here now"
                         maxLength={200}
                         rows={3}
-                        className="w-full bg-transparent text-white text-sm resize-none outline-none"
+                        className="w-full bg-transparent text-[#E7E9EA] text-sm resize-none outline-none"
                         autoFocus
                     />
                     <div className="flex justify-between items-center mt-2">
@@ -462,7 +462,7 @@ const App = () => {
                 <input
                     type="text"
                     placeholder="Open up here now"
-                    className="w-full bg-[#1A1A1A] border border-gray-700 text-white text-sm rounded-lg py-3 px-4 focus:outline-none focus:border-pink-500"
+                    className="w-full bg-[#1A1A1A] border border-gray-700 text-[#E7E9EA] text-sm rounded-lg py-3 px-4 focus:outline-none focus:border-pink-500"
                     onFocus={() => setIsInputExpanded(true)}
                     value={mainReplyText} // Keep value to prevent loss on blur
                     readOnly // Prevent typing in collapsed state

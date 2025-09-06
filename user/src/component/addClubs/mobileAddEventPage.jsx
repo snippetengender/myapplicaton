@@ -20,7 +20,7 @@ const FormInput = ({ placeholder, type = 'text', value, onChange }) => (
     placeholder={placeholder}
     value={value}
     onChange={onChange}
-    className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-pink-500"
+    className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-pink-500"
   />
 );
 
@@ -48,7 +48,7 @@ const ImageUploadModal = ({ isOpen, onClose, onImageSelect }) => {
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-500 file:text-white hover:file:bg-pink-600"
+          className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-500 file:text-[#E7E9EA] hover:file:bg-pink-600"
         />
       </div>
     </div>
@@ -87,12 +87,12 @@ const AddEventPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-0">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-0">
       <ImageUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onImageSelect={setBannerImage} />
       
       <header className="px-4 pt-4 mb-4">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="text-white">
+          <button onClick={() => navigate(-1)} className="text-[#E7E9EA]">
             <ArrowBackIcon />
           </button>
           <h1 className="text-xl font-bold">Add Event</h1>
@@ -133,12 +133,12 @@ const AddEventPage = () => {
           {/* Event Name */}
           <div>
             <h2 className="text-xl font-semibold mb-2">Event Name</h2>
-            <textarea placeholder="Event description goes here" value={eventName} onChange={(e) => setEventName(e.target.value)} maxLength="1000" className="w-full h-24 bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-pink-500 resize-none"></textarea>
+            <textarea placeholder="Event description goes here" value={eventName} onChange={(e) => setEventName(e.target.value)} maxLength="1000" className="w-full h-24 bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-pink-500 resize-none"></textarea>
             <p className="text-right text-xs text-gray-500">{eventName.length}/1000</p>
           </div>
 
           {/* Category Dropdown */}
-           <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white appearance-none focus:outline-none focus:border-pink-500">
+           <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] appearance-none focus:outline-none focus:border-pink-500">
               <option value="" disabled>category</option>
               <option value="Tech">Tech</option>
               <option value="Music">Music</option>
@@ -146,7 +146,7 @@ const AddEventPage = () => {
            </select>
           
           {/* Date and Time Picker */}
-          <input type="datetime-local" value={dateTime} onChange={(e) => setDateTime(e.target.value)} className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-pink-500" />
+          <input type="datetime-local" value={dateTime} onChange={(e) => setDateTime(e.target.value)} className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-pink-500" />
           
           {/* Event Type Radio */}
           <div>
@@ -176,7 +176,7 @@ const AddEventPage = () => {
             <p className="font-semibold mb-2">Perks</p>
             <div className="flex flex-wrap gap-2">
               {perksList.map(perk => (
-                <button key={perk} type="button" onClick={() => togglePerk(perk)} className={`px-3 py-1 text-sm border rounded-full transition-colors ${selectedPerks.includes(perk) ? 'bg-pink-500 border-pink-500 text-white' : 'border-gray-600 text-gray-400'}`}>
+                <button key={perk} type="button" onClick={() => togglePerk(perk)} className={`px-3 py-1 text-sm border rounded-full transition-colors ${selectedPerks.includes(perk) ? 'bg-pink-500 border-pink-500 text-[#E7E9EA]' : 'border-gray-600 text-gray-400'}`}>
                   {perk}
                 </button>
               ))}

@@ -5,14 +5,14 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const InReview = () => (
   <div className="border-y border-gray-800 py-6">
-    <h2 className="text-xl font-semibold text-white">Your Club in Review</h2>
+    <h2 className="text-xl font-semibold text-[#E7E9EA]">Your Club in Review</h2>
   </div>
 );
 
 
 const ReviewDone = ({ credentials }) => (
   <div className="border-y border-gray-800 py-6">
-    <h2 className="text-xl font-semibold text-white">Review's Done</h2>
+    <h2 className="text-xl font-semibold text-[#E7E9EA]">Review's Done</h2>
     <p className="text-gray-400 mt-1">You can login now</p>
     <p className="text-gray-400 mt-4">Email: {credentials.email}</p>
     <p className="text-gray-400">Password: {credentials.password}</p>
@@ -32,10 +32,10 @@ const ClubLoginPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white p-0 flex flex-col">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-0 flex flex-col">
       {/* Top Bar with back navigation */}
       <header className="px-4 pt-4 mb-8">
-        <button onClick={() => navigate(-1)} className="text-white">
+        <button onClick={() => navigate(-1)} className="text-[#E7E9EA]">
           <ArrowBackIcon />
         </button>
       </header>

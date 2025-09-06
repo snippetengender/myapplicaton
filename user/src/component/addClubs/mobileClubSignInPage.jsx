@@ -13,7 +13,7 @@ const FormInput = ({ placeholder, type = 'text', value, onChange }) => (
     placeholder={placeholder}
     value={value}
     onChange={onChange}
-    className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-pink-500"
+    className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-pink-500"
   />
 );
 
@@ -33,17 +33,17 @@ const ClubSignInPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-0 flex flex-col">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-0 flex flex-col">
       {/* Top Bar with back navigation */}
       <header className="px-4 pt-4 mb-8">
-        <button onClick={() => navigate(-1)} className="text-white">
+        <button onClick={() => navigate(-1)} className="text-[#E7E9EA]">
           <ArrowBackIcon />
         </button>
       </header>
 
       <main className="flex-grow px-4">
-        <h1 className="text-3xl font-bold text-white leading-tight">Heyy, welcome back</h1>
-        <h1 className="text-3xl font-bold text-white mb-2">AGAIN bro</h1>
+        <h1 className="text-3xl font-bold text-[#E7E9EA] leading-tight">Heyy, welcome back</h1>
+        <h1 className="text-3xl font-bold text-[#E7E9EA] mb-2">AGAIN bro</h1>
         
         <p className="text-gray-400 mb-8">
           Lorem ipsum dolor sit amet consectetur. Sit porta blandit montes cursus. Tempus accumsan mauris in cras sit. Learn more
@@ -59,7 +59,7 @@ const ClubSignInPage = () => {
       <div className="px-4 pb-8">
         <button 
           onClick={handleLogin}
-          className="float-right bg-gray-800 text-white rounded-full h-14 w-14 flex items-center justify-center hover:bg-gray-700 transition-colors"
+          className="float-right bg-gray-800 text-[#E7E9EA] rounded-full h-14 w-14 flex items-center justify-center hover:bg-gray-700 transition-colors"
         >
           <ArrowForwardIosIcon />
         </button>

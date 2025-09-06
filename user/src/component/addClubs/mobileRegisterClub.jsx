@@ -12,7 +12,7 @@ const FormInput = ({ placeholder, value, onChange }) => (
     placeholder={placeholder}
     value={value}
     onChange={onChange}
-    className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-pink-500"
+    className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-pink-500"
   />
 );
 
@@ -37,16 +37,16 @@ const RegisterClubPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-0 flex flex-col">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-0 flex flex-col">
       {/* Top Bar with back navigation */}
       <header className="px-4 pt-4 mb-8">
-        <button onClick={() => navigate(-1)} className="text-white">
+        <button onClick={() => navigate(-1)} className="text-[#E7E9EA]">
           <ArrowBackIcon />
         </button>
       </header>
 
       <main className="flex-grow px-4">
-        <h1 className="text-xl font-bold text-white mb-2">Add Club/Sympo Request Form</h1>
+        <h1 className="text-xl font-bold text-[#E7E9EA] mb-2">Add Club/Sympo Request Form</h1>
         <p className="text-gray-400 text-sm mb-8">
           Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
         </p>
@@ -62,7 +62,7 @@ const RegisterClubPage = () => {
             <select
               value={college}
               onChange={(e) => setCollege(e.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white text-sm appearance-none focus:outline-none focus:border-pink-500"
+              className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] text-sm appearance-none focus:outline-none focus:border-pink-500"
             >
               <option value="" disabled>College</option>
               <option value="CIT">Coimbatore Institute of Technology</option>
@@ -76,7 +76,7 @@ const RegisterClubPage = () => {
             </div>
           </div>
           
-          <button type="submit" className="w-full bg-black border border-gray-700 text-white font-semibold py-3 rounded-lg hover:bg-gray-800 transition-colors mt-4">
+          <button type="submit" className="w-full bg-black border border-gray-700 text-[#E7E9EA] font-semibold py-3 rounded-lg hover:bg-gray-800 transition-colors mt-4">
             Add Club
           </button>
         </form>

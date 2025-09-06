@@ -40,7 +40,7 @@ const EventCard = ({ event }) => (
     <div className="bg-[#161616] border border-[#2F3336] rounded-xl p-4 flex gap-4 relative">
         <div className="flex-grow">
             <p className="text-xs text-gray-400 mb-1">{event.time}</p>
-            <h3 className="text-white font-bold text-md mb-2">{event.title}</h3>
+            <h3 className="text-[#E7E9EA] font-bold text-md mb-2">{event.title}</h3>
             <div className="flex items-center text-xs text-gray-400 mb-1">
                 <span className="text-pink-500 mr-2 text-md leading-none">●</span>
                 By {event.organizer}
@@ -51,7 +51,7 @@ const EventCard = ({ event }) => (
             </div>
         </div>
         <div className="flex-shrink-0 w-24 h-full bg-[#3E2723] rounded-lg"></div>
-        <button className="absolute top-2 right-2 text-white text-xs font-semibold flex items-center">
+        <button className="absolute top-2 right-2 text-[#E7E9EA] text-xs font-semibold flex items-center">
             edit event <ChevronRightIcon sx={{ fontSize: 16 }} />
         </button>
     </div>
@@ -67,7 +67,7 @@ const ClubAdminPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-0">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-0">
       <header 
         className="relative h-40 bg-cover bg-center rounded-b-2xl p-4 flex items-start"
         style={headerStyle}
@@ -127,7 +127,7 @@ const ClubAdminPage = () => {
         {/* Add Event Banner */}
         <button onClick={() => navigate('/add-event')} className="w-full text-left border-y border-gray-800 py-4 flex justify-between items-center mb-6">
           <div>
-            <h2 className="font-bold text-white">Add your Event</h2>
+            <h2 className="font-bold text-[#E7E9EA]">Add your Event</h2>
             <p className="text-sm text-gray-400">Showcase your Event to thousands for Free</p>
           </div>
           <ChevronRightIcon />

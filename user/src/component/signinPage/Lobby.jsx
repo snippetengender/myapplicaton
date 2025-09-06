@@ -14,7 +14,7 @@ export default function Lobby() {
 
   return (
     <div className="flex flex-col justify-end items-center min-h-screen bg-black p-6">
-      <h1 className="text-white text-lg font-semibold mb-6">The Snippet</h1>
+      <h1 className="text-[#E7E9EA] text-lg font-semibold mb-6">The Snippet</h1>
       <div className="w-full max-w-sm space-y-4">
         <button
           onClick={handleGetStarted}

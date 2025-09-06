@@ -77,11 +77,11 @@ export default function FallingPromptsEditor() {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
       {/* Top Navigation */}
       <div>
         <button className="mb-5" onClick={() => navigate(-1)}>
-          <ArrowLeft className="text-white" size={24} />
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
         {/* Heading */}
@@ -126,7 +126,7 @@ export default function FallingPromptsEditor() {
                 // Expanded Category View (removed transition)
                 <div className="transition-all duration-300 ease-in-out transform scale-y-100 origin-top">
                   <div className="border border-gray-600 p-3 rounded-lg space-y-3 ">
-                    <label className="block text-white mb-2 text-sm">
+                    <label className="block text-[#E7E9EA] mb-2 text-sm">
                       {category.title}
                     </label>
                     {category.prompts.map((prompt, idx) => (
@@ -150,7 +150,7 @@ export default function FallingPromptsEditor() {
                   className={`flex justify-between items-center cursor-pointer hover:bg-neutral-800 px-2 py-1 rounded`}
                   onClick={() => handleCategoryClick(category.id)}
                 >
-                  <p className="text-white text-sm">{category.title}</p>
+                  <p className="text-[#E7E9EA] text-sm">{category.title}</p>
                   {/* ArrowRight icon removed from here */}
                 </div>
               )}

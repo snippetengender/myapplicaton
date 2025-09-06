@@ -34,12 +34,12 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white px-0 py-6 font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-0 py-6 font-sans">
       {/* Top Section with padding */}
       <div className="px-2">
         {/* Back button */}
         <button className="mb-5" onClick={() => navigate("/myscreen")}>
-          <ArrowLeft className="text-white" size={24} />
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
         {/* Title */}
@@ -52,7 +52,7 @@ export default function App() {
           <div key={message.id} className="border-b border-gray-800 px-4 py-4">
             <p className="text-base text-gray-200 leading-relaxed">
               {message.type === "bouquet" ? (
-                <span className="text-white ">You got a <span className="text-[#F06CB7] font-semibold">bouquet</span></span>
+                <span className="text-[#E7E9EA] ">You got a <span className="text-[#F06CB7] font-semibold">bouquet</span></span>
               ) : (
                 `"${message.text}"`
               )}{" "}

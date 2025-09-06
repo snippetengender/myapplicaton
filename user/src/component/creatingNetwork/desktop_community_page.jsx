@@ -4,7 +4,7 @@ import LeftSidebar from "../desktop_components/LeftSidebar";
 
 export default function NetworkProfilePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white">
+    <div className="min-h-screen flex flex-col bg-black text-[#E7E9EA]">
       <Header />
 
       <div className="flex flex-1">
@@ -48,7 +48,7 @@ export default function NetworkProfilePage() {
   {/* Top Row: Circle + Title */}
   <div className="flex items-center gap-3">
     <div className="w-10 h-10 rounded-full bg-gray-500" />
-    <p className="text-lg font-bold text-white">Open up now pal</p>
+    <p className="text-lg font-bold text-[#E7E9EA]">Open up now pal</p>
   </div>
 
   {/* Subtitle: Full width below */}
@@ -60,7 +60,7 @@ export default function NetworkProfilePage() {
 
 
           {/* Right side - Button */}
-          <button className="px-5 py-2 mt-10 border border-white rounded-full text-sm text-white hover:bg-white hover:text-black transition">
+          <button className="px-5 py-2 mt-10 border border-white rounded-full text-sm text-[#E7E9EA] hover:bg-white hover:text-black transition">
           open up now
           </button>
           </div>
@@ -83,8 +83,8 @@ export default function NetworkProfilePage() {
                 Tempus accumsan mauris in cras sit.
               </p>
               <p className="text-xs text-[#616161] font-medium gap-2">
-                <span className="text-lg font-bold text-white">45K</span> <span className="pr-1">members&nbsp;</span>
-                <span className="text-lg font-bold text-white">450</span> mixes
+                <span className="text-lg font-bold text-[#E7E9EA]">45K</span> <span className="pr-1">members&nbsp;</span>
+                <span className="text-lg font-bold text-[#E7E9EA]">450</span> mixes
               </p>
               <p className="text-sm text-[#616161]">network by</p>
               <div className="flex items-center gap-2">

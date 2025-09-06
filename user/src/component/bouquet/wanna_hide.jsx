@@ -10,7 +10,7 @@ export default function HidePromptHistory() {
   };
 
   return (
-    <div className="bg-black min-h-screen text-white px-4 py-6">
+    <div className="bg-black min-h-screen text-[#E7E9EA] px-4 py-6">
       {/* Close button */}
       <X className="w-6 h-6 mb-4" onClick={handleClose} />
 

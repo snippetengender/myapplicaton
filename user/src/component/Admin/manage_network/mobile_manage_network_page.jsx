@@ -65,7 +65,7 @@ const ManageNetworkScreen = () => {
       {/* Header Section */}
       <div style={styles.header}>
         <button>
-            <ArrowLeft className="text-white" size={24} onClick={() => navigate("/home")} />
+            <ArrowLeft className="text-[#E7E9EA]" size={24} onClick={() => navigate("/home")} />
           </button>
         
       </div>

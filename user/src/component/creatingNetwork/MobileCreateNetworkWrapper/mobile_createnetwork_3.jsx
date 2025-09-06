@@ -24,7 +24,7 @@ export default function MobileCreateNetwork3() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 pt-6 pb-28">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 pt-6 pb-28">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         {/* CORRECTED: Back button now navigates to page 2 */}
@@ -81,7 +81,7 @@ export default function MobileCreateNetwork3() {
           className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
           onClick={() => navigate("/communitypage")}
         >
-          <ArrowRight size={22} className="text-white" />
+          <ArrowRight size={22} className="text-[#E7E9EA]" />
         </button>
       </footer>
     </div>

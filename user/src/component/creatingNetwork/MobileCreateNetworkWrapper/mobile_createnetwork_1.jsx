@@ -17,12 +17,12 @@ export default function MobileCreateNetwork1() {
   const handleBack = () => navigate('/communitypage');
 
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col p-6 pb-10">
+    <div className="bg-black text-[#E7E9EA] min-h-screen flex flex-col p-6 pb-10">
       {/* Header */}
       <header className="flex items-center justify-between w-full">
         <button 
           onClick={handleBack} 
-          className="p-2 -ml-2 text-neutral-300 hover:text-white transition-colors"
+          className="p-2 -ml-2 text-neutral-300 hover:text-[#E7E9EA] transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
@@ -33,7 +33,7 @@ export default function MobileCreateNetwork1() {
 
       {/* Main Content */}
       <main className="flex-grow w-full pt-4">
-        <h1 className="text-2xl font-semibold text-white mb-2">
+        <h1 className="text-2xl font-semibold text-[#E7E9EA] mb-2">
           About your Network
         </h1>
         <p className="text-xs text-neutral-400 leading-relaxed mb-6">
@@ -42,11 +42,11 @@ export default function MobileCreateNetwork1() {
         
         {/* Title Input Section */}
         <div className="space-y-2">
-          <label className="text-base text-white">
+          <label className="text-base text-[#E7E9EA]">
             give your network a
           </label>
           <div className="flex justify-between items-baseline mt-1">
-            <div className="flex items-center text-2xl text-white flex-grow">
+            <div className="flex items-center text-2xl text-[#E7E9EA] flex-grow">
               <input
                 type="text"
                 value={title}
@@ -56,7 +56,7 @@ export default function MobileCreateNetwork1() {
                 className="w-full bg-transparent font-semibold placeholder:text-[#676767] focus:outline-none border-l-2 border-neutral-600 pl-1"
               />
             </div>
-            <span className="text-xs text-white whitespace-nowrap ml-4">
+            <span className="text-xs text-[#E7E9EA] whitespace-nowrap ml-4">
               #15 character only for Title
             </span>
           </div>
@@ -95,7 +95,7 @@ export default function MobileCreateNetwork1() {
           onClick={handleNext}
           className="w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center hover:bg-neutral-700 transition-colors"
         >
-          <ArrowRight size={24} className="text-white" />
+          <ArrowRight size={24} className="text-[#E7E9EA]" />
         </button>
       </footer>
     </div>

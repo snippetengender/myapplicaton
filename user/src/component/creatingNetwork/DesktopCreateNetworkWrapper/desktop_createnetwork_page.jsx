@@ -32,7 +32,7 @@ export default function CreateNetworkWrapper() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
       <Header />
       <div className="flex">
         <LeftSidebar />
