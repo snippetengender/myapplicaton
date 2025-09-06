@@ -19,9 +19,9 @@ const Community = () => {
   return (
     <>
       {isMobile ? (
-        <MobileCommunity pageId={id} /> 
+        <MobileCommunity /> // No longer passes the id prop
       ) : (
-        <DesktopCommunity pageId={id} />
+        <DesktopCommunity />
       )}
     </>
   );

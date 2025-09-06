@@ -99,7 +99,7 @@ function App() {
           element={<RelationshipStatusPage />}
         />
         <Route
-          path="/useronboarding/user-profile"
+          path="/useronboarding/user-profile/:userId"
           element={<UserProfilePage />}
         />
         <Route path="/useronboarding/user-name" element={<UsernamePage />} />
@@ -112,7 +112,7 @@ function App() {
             path="/createnetworkwrapper"
             element={<CreateNetworkWrapper />}
           />
-          <Route path="/communitypage" element={<CommunityPage />} />
+          <Route path="/communitypage/:id" element={<CommunityPage />} />
           <Route
             path="/mobile_createnetwork_1"
             element={<MobileCreateNetwork1 />}
@@ -127,9 +127,9 @@ function App() {
           />
           <Route path="/managenetwork" element={<ManageNetworkScreen />} />
           <Route path="/networkcommunity" element={<NetworkCommunityPage />} />
-          <Route path="/editnetwork" element={<EditNetworkPage />} />
-          <Route path="/ditchnetwork" element={<DitchNetworkPage />} />
-          <Route path="/finalpage" element={<FinalPage />} />
+          <Route path="/communitypage/:id/editnetwork" element={<EditNetworkPage />} />
+          <Route path="/communitypage/:id/ditchnetwork" element={<DitchNetworkPage />} />
+          <Route path="/communitypage/:id/finalpage" element={<FinalPage />} />
           <Route path="/select-network" element={<NetworkSelectPage />} />
 
           {/* Protected routes */}

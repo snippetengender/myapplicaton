@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { getAuth, signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FiSearch, FiSend, FiUser } from "react-icons/fi";
 import PostCardSkeleton from "./postSkeleton";
 import { useMixes } from "../../shared/useMixes";
+import { useSelector, useDispatch } from "react-redux";
+import { clearUser } from "../../features/userSlice/userSlice";
 
 const PostCard = ({ post }) => {
   const { user, time, label, content, stats } = post;
-
   return (
     <div className="border-b border-gray-800 p-2">
       <div className="flex justify-between">
@@ -69,18 +70,23 @@ const PostCard = ({ post }) => {
 };
 
 const Home = () => {
+  const userId = useSelector((state) => state.user.userId);
+  const dispatch = useDispatch()
   const { posts, loading, error, hasMore, loadMoreRef, isInitialLoad } =
     useMixes();
 
   const navigate = useNavigate();
   const auth = getAuth();
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef(null);
 
   const [hasNotification, setHasNotification] = useState(true);
   const [showLogout, setShowLogout] = useState(false);
-
+  // 2. Enhance handleLogout to clear Redux state
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
+        dispatch(clearUser()); // Clear user data from Redux and localStorage
         console.log("User signed out");
         navigate("/lobby", { replace: true });
       })
@@ -88,6 +94,20 @@ const Home = () => {
         console.error("Error signing out:", error);
       });
   };
+
+  // 3. Add useEffect to handle clicks outside the menu to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [profileMenuRef]);
 
   return (
     <div className="min-h-screen bg-black text-white p-0 flex flex-col">
@@ -105,20 +125,39 @@ const Home = () => {
               ></span>
             )}
           </div>
-          <div className="relative">
+          <div ref={profileMenuRef} className="relative">
             <FiUser
               className="h-6 w-6 cursor-pointer"
-              onClick={() => setShowLogout(!showLogout)}
+              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} // Toggle menu
             />
-            {showLogout && (
-              <button
-                onClick={handleLogout}
-                className="absolute right-0 mt-2 py-2 px-4 bg-gray-700 text-white rounded shadow-lg hover:bg-gray-600 focus:outline-none"
-              >
-                Logout
-              </button>
+
+            {isProfileMenuOpen && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-neutral-800 border border-neutral-700 rounded-md shadow-lg z-20">
+                <ul className="py-1 text-white">
+                  <li>
+                    <button
+                      onClick={() => {
+                        if (userId) navigate(`/useronboarding/user-profile/${userId}`);
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-700"
+                    >
+                      Profile
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-neutral-700"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
             )}
           </div>
+
         </div>
       </div>
 
