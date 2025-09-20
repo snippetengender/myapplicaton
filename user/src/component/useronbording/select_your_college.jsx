@@ -64,10 +64,10 @@ export default function CollegeSelect() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
       {/* Top Section */}
       <div>
-        <button className="text-white mb-4" onClick={() => navigate(-1)}>
+        <button className="text-[#E7E9EA] mb-4" onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
         </button>
 
@@ -130,7 +130,7 @@ export default function CollegeSelect() {
 
       {/* Bottom Navigation */}
       <div className="flex justify-between items-center mt-10 mb-4">
-        <p className="text-sm text-white">
+        <p className="text-sm text-[#E7E9EA]">
           Can’t find your College?{" "}
           <span className="text-[#F06CB7] underline cursor-pointer">
             Add it
@@ -145,7 +145,7 @@ export default function CollegeSelect() {
           onClick={handleNext}
           disabled={!selectedCollege}
         >
-          <ArrowRight size={22} className="text-white" />
+          <ArrowRight size={22} className="text-[#E7E9EA]" />
         </button>
       </div>
     </div>

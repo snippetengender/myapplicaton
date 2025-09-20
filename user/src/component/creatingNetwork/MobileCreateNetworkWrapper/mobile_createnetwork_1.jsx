@@ -46,10 +46,13 @@ export default function MobileCreateNetwork1() {
   const handleBack = () => navigate("/communitypage");
 
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col p-6 pb-10">
+    <div className="bg-black text-[#E7E9EA] min-h-screen flex flex-col p-6 pb-10">
       {/* Header */}
       <header className="flex items-center justify-between w-full">
-        <button onClick={handleBack} className="p-2 -ml-2 text-neutral-300">
+        <button 
+          onClick={handleBack} 
+          className="p-2 -ml-2 text-neutral-300 hover:text-[#E7E9EA] transition-colors"
+        >
           <ArrowLeft size={24} />
         </button>
         <div className="bg-neutral-800 text-xs rounded-full px-3 py-1.5">
@@ -59,17 +62,20 @@ export default function MobileCreateNetwork1() {
 
       {/* Main Content */}
       <main className="flex-grow w-full pt-4">
-        <h1 className="text-2xl font-semibold mb-2">About your Network</h1>
-        <p className="text-xs text-neutral-400 mb-6">
-          Start with a name and a short description to tell people what your
-          network is about.
+        <h1 className="text-2xl font-semibold text-[#E7E9EA] mb-2">
+          About your Network
+        </h1>
+        <p className="text-xs text-neutral-400 leading-relaxed mb-6">
+          Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
         </p>
 
         {/* Title Input Section */}
         <div className="space-y-2">
-          <label className="text-base">give your network a</label>
+          <label className="text-base text-[#E7E9EA]">
+            give your network a
+          </label>
           <div className="flex justify-between items-baseline mt-1">
-            <div className="flex items-center text-2xl flex-grow">
+            <div className="flex items-center text-2xl text-[#E7E9EA] flex-grow">
               <input
                 type="text"
                 name="name" // Added name attribute
@@ -81,8 +87,8 @@ export default function MobileCreateNetwork1() {
                 className="w-full bg-transparent font-semibold placeholder:text-[#676767] focus:outline-none focus:bg-transparent"
               />
             </div>
-            <span className="text-xs whitespace-nowrap ml-4">
-              #15 character only
+            <span className="text-xs text-[#E7E9EA] whitespace-nowrap ml-4">
+              #15 character only for Title
             </span>
           </div>
         </div>
@@ -129,7 +135,7 @@ export default function MobileCreateNetwork1() {
           onClick={handleNext}
           className="w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center"
         >
-          <ArrowRight size={24} className="text-white" />
+          <ArrowRight size={24} className="text-[#E7E9EA]" />
         </button>
       </footer>
     </div>

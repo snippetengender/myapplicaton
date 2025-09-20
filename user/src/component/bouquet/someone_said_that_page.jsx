@@ -84,44 +84,33 @@ export default function SomeoneSaidThat() {
   };
 
   return (
-    <div className="bg-black min-h-screen text-white px-2 py-4">
-      {/* Back */}
-      <ArrowLeft
-        className="w-6 h-6 mb-4 cursor-pointer"
-        onClick={() => navigate("/bouquet/myscreen")}
-      />
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-0 py-6 font-sans">
+      {/* Top Section with padding */}
+      <div className="px-2">
+        {/* Back button */}
+        <button className="mb-5" onClick={() => navigate("/myscreen")}>
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
+        </button>
 
-      <h1 className="text-2xl font-bold mb-4">Someone said that</h1>
+        {/* Title */}
+        <h1 className="text-2xl font-semibold mb-6">Someone said that</h1>
+      </div>
 
-      {loading ? (
-        <p className="text-gray-400 text-sm">Loading bouquets...</p>
-      ) : someoneSaidThat.length === 0 ? (
-        <p className="text-gray-300 text-sm mb-4">
-          Stay excited, we can't wait to surprise you with beautiful bouquets
-          coming your way.
-        </p>
-      ) : (
-        someoneSaidThat.map((item, idx) => (
-          <p
-            key={item.id}
-            className="text-gray-200 text-sm mb-2 border-b border-gray-700 pb-2 cursor-pointer"
-            onClick={() => handleDoubleTap(item, idx)}
-          >
-            {item.type === "liked" && <span className="text-pink-500">♡ </span>}
-            {item.text}
-            <span className="text-gray-400 text-[10px] ml-1">
-              • {item.time}
-            </span>
-          </p>
-        ))
-      )}
-
-      {!loading && someoneSaidThat.length !== 0 && (
-        <p className="text-gray-300 text-sm mt-4">
-          Note: Double tap the prompt to like it. This simple gesture means a
-          lot to the person who shared it.
-        </p>
-      )}
+      {/* Messages List */}
+      <div className="flex flex-col">
+        {messages.map((message) => (
+          <div key={message.id} className="border-b border-gray-800 px-4 py-4">
+            <p className="text-base text-gray-200 leading-relaxed">
+              {message.type === "bouquet" ? (
+                <span className="text-[#E7E9EA] ">You got a <span className="text-[#F06CB7] font-semibold">bouquet</span></span>
+              ) : (
+                `"${message.text}"`
+              )}{" "}
+              <span className="text-gray-500 text-[10px]">• {message.time}</span>
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -5,18 +5,17 @@ const initialState = {
   userId: localStorage.getItem('user_id') || null, 
   profile: {
     data: null,
-    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    status: 'idle',
     error: null,
   },
 };
 
-// Thunk to fetch a user's profile by their ID
 export const fetchUserProfile = createAsyncThunk(
   'user/fetchProfile',
   async (userId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/user/${userId}`);
-      return response.data; // The API response is the data object itself
+      return response.data; 
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -27,13 +26,11 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    // Action to clear user data on logout
     clearUser: (state) => {
       state.userId = null;
       state.profile = initialState.profile;
       localStorage.removeItem('user_id');
     },
-    // You could add an action here to set the userId on login
     setUserId: (state, action) => {
         state.userId = action.payload;
         localStorage.setItem('user_id', action.payload);

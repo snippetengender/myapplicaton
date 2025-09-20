@@ -57,12 +57,11 @@ export default function RelationshipStatusPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-5 py-6 flex flex-col justify-between">
-      {/* Top Section */}
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-5 py-6 flex flex-col justify-between">
       <div>
         {/* Back Arrow */}
         <button className="mb-6" onClick={() => navigate(-1)}>
-          <ArrowLeft className="text-white" size={24} />
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
         {/* Headings */}
@@ -105,7 +104,7 @@ export default function RelationshipStatusPage() {
               : "bg-[#2e2e2e] hover:bg-[#1f1f1f]"
           }`}
         >
-          <ArrowRight className="text-white" size={22} />
+          <ArrowRight className="text-[#E7E9EA]" size={22} />
         </button>
       </div>
 

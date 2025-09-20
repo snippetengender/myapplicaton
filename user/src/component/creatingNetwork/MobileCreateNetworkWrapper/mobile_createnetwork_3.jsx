@@ -69,18 +69,17 @@ export default function MobileCreateNetwork3() {
     }
   };
   return (
-    <div className="min-h-screen bg-black text-white px-4 pt-6 pb-28">
-      <header className="flex items-center gap-2 mb-4">
-        <button
-          onClick={() => navigate("/mobile_createnetwork_2")}
-          className="p-2 -ml-2"
-        >
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 pt-6 pb-28">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-4">
+        {/* CORRECTED: Back button now navigates to page 2 */}
+        <button onClick={() => navigate('/mobile_createnetwork_2')} className="p-2 -ml-2">
           <ArrowLeft className="w-6 h-6 text-neutral-300" />
         </button>
         <span className="ml-auto bg-[#2F3336] px-3 py-1 rounded-full text-sm">
           3/3
         </span>
-      </header>
+    </div>
       <h2 className="text-lg font-semibold">Network interest</h2>
       <p className="text-gray-400 text-sm mb-4">
         Pick one interest that best describes your network. This helps others
@@ -137,11 +136,7 @@ export default function MobileCreateNetwork3() {
           disabled={!selectedInterest || creationStatus === "loading"}
           className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center disabled:opacity-50"
         >
-          {creationStatus === "loading" ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-          ) : (
-            <ArrowRight size={22} className="text-white" />
-          )}
+          <ArrowRight size={22} className="text-[#E7E9EA]" />
         </button>
       </footer>
     </div>

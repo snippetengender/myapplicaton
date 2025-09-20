@@ -32,7 +32,7 @@ const PostCard = ({ post }) => {
                   </span>
                 </div>
               ) : (
-                <div className="flex items-center gap-1 text-white font-semibold">
+                <div className="flex items-center gap-1 text-[#E7E9EA] font-semibold">
                   {user.name}{" "}
                   <span className="text-gray-400 font-normal">• {time}</span>
                   <span className="ml-2 text-xs px-2 py-0.5 rounded-full border border-gray-700 bg-gray-900">
@@ -41,9 +41,7 @@ const PostCard = ({ post }) => {
                 </div>
               )}
             </div>
-            <p className="text-white text-sm mt-2 whitespace-pre-line">
-              {content}
-            </p>
+            <p className="text-[#E7E9EA] text-sm mt-2 whitespace-pre-line">{content}</p>
           </div>
         </div>
         <button className="text-gray-400 text-xl font-bold">•••</button>
@@ -73,7 +71,7 @@ export default function Dashboard() {
     useMixes();
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
       <Header />
       <div className="flex">
         <LeftSidebar />
@@ -86,7 +84,7 @@ export default function Dashboard() {
                   <div className="w-8 h-8 bg-[#F06CB7F0] rounded-full mr-3"></div>
                   <input
                     type="text"
-                    className="bg-transparent text-white text-lg font-semibold placeholder-gray-500 w-full"
+                    className="bg-transparent text-[#E7E9EA] text-lg font-semibold placeholder-gray-500 w-full"
                     placeholder="Open up now pal"
                   />
                 </div>

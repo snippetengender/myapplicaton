@@ -57,11 +57,11 @@ export default function RealHappiness() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-2 py-6">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-2 py-6">
       {/* Header */}
       <div className="px-2">
         <button className="mb-5" onClick={() => navigate("/bouquet/myscreen")}>
-          <ArrowLeft className="text-white" size={24} />
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
         <div className="flex items-center mb-4">
           <h1 className="text-2xl font-semibold">Real Happiness</h1>

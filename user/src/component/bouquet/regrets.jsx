@@ -29,10 +29,10 @@ export default function RegretsModal() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-black text-white px-5 py-6">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-5 py-6">
       {/* Close button */}
       <button className="mb-6" onClick={handleClose}>
-        <X size={24} className="text-white" />
+        <X size={24} className="text-[#E7E9EA]" />
       </button>
 
       {/* Title */}
@@ -50,7 +50,7 @@ export default function RegretsModal() {
       {!reminded && (
         <button
           onClick={handleRemind}
-          className="border border-gray-400 text-white text-sm rounded-full px-4 py-2 mb-6"
+          className="border border-gray-400 text-[#E7E9EA] text-sm rounded-full px-4 py-2 mb-6"
         >
           Remind me after 6 hours
         </button>

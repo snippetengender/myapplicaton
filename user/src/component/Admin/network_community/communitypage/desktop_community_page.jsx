@@ -52,10 +52,10 @@ const PostCard = ({ post }) => {
         </div>
       )}
 
-      <h3 className="font-bold text-white text-md mt-3 ml-1">
+      <h3 className="font-bold text-[#E7E9EA] text-md mt-3 ml-1">
         Pitch your SaaS in 3 words
       </h3>
-      <p className="text-white/80 text-[14px] mt-1 ml-1 whitespace-pre-line leading-relaxed">
+      <p className="text-[#E7E9EA]/80 text-[14px] mt-1 ml-1 whitespace-pre-line leading-relaxed">
         {content}
       </p>
 
@@ -117,7 +117,7 @@ export default function NetworkProfilePage() {
     };
 
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white font-sans">
+    <div className="min-h-screen flex flex-col bg-black text-[#E7E9EA] font-sans">
       <NetworkHeader />
       <div className="flex flex-1">
         <NetworkLeftSidebar />
@@ -149,7 +149,7 @@ export default function NetworkProfilePage() {
                 <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-gray-800" />
                     <div>
-                        <p className="font-bold text-white">Open up now pal</p>
+                        <p className="font-bold text-[#E7E9EA]">Open up now pal</p>
                         <p className="text-sm text-gray-400 mt-1">
                             There is no one whos gonna judge you in this network<br />Rely on us
                         </p>
@@ -174,8 +174,8 @@ export default function NetworkProfilePage() {
                     Lorem ipsum dolor sit amet consectetur. Sit porta blandit montes cursus. Tempus accumsan mauris in cras sit.
                 </p>
                 <p className="text-xs text-gray-400 font-medium space-x-4">
-                    <span className="text-lg font-bold text-white">45K</span><span>members</span>
-                    <span className="text-lg font-bold text-white">450</span><span>mixes</span>
+                    <span className="text-lg font-bold text-[#E7E9EA]">45K</span><span>members</span>
+                    <span className="text-lg font-bold text-[#E7E9EA]">450</span><span>mixes</span>
                 </p>
                 <p className="text-sm text-gray-500 mt-4">network by</p>
                 <div className="flex items-center gap-2 mt-2">
@@ -183,7 +183,7 @@ export default function NetworkProfilePage() {
                     <span className="text-sm font-medium">&lt;karthikraja&gt;</span>
                     <span className="text-xs text-gray-400">• m@cit</span>
                 </div>
-                <div className="mt-8 space-y-4 text-white font-medium">
+                <div className="mt-8 space-y-4 text-[#E7E9EA] font-medium">
                     <p className="cursor-pointer hover:underline">edit network</p>
                     <p className="cursor-pointer hover:underline">ditch network</p>
                     <p className="cursor-pointer hover:underline">introduce rules</p>

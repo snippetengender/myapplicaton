@@ -12,8 +12,8 @@ const NetworkItem = ({ title, onClick }) => (
     onClick={onClick}
     className="flex justify-between items-center py-4 border-b border-gray-800 cursor-pointer hover:bg-gray-900/50"
   >
-    <span className="text-white text-base">{title}</span>
-    <ChevronRight className="text-white h-5 w-5" />
+    <span className="text-[#E7E9EA] text-base">{title}</span>
+    <ChevronRight className="text-[#E7E9EA] h-5 w-5" />
   </div>
 );
 
@@ -21,7 +21,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
       <Header />
       <div className="flex">
         <LeftSidebar />

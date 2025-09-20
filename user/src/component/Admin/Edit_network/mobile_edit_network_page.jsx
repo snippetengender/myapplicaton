@@ -62,7 +62,7 @@ export default function EditNetworkPageMobile() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
-
+  console.log(id);
   const logoInputRef = useRef(null);
   const bannerInputRef = useRef(null);
   const [logoPreview, setLogoPreview] = useState(null);
@@ -81,7 +81,15 @@ export default function EditNetworkPageMobile() {
   const debouncedName = useDebounce(formData?.name, 500);
 
   useEffect(() => {
-    if (id) dispatch(fetchNetworkById(id));
+    if (id) {
+      dispatch(
+        fetchNetworkById({
+          networkId: id,
+          networkMembership: true,
+          totalMixes: true,
+        })
+      );
+    }
     return () => dispatch(clearCurrentNetwork());
   }, [id, dispatch]);
 
@@ -164,7 +172,7 @@ export default function EditNetworkPageMobile() {
 
     if (updateNetwork.fulfilled.match(resultAction)) {
       alert("Network updated successfully!");
-      navigate(`/communitypage/${id}`);
+      navigate(`/networkadmin/${id}`);
     } else {
       const errorMessage =
         resultAction.payload?.detail || "An error occurred during the update.";
@@ -177,7 +185,7 @@ export default function EditNetworkPageMobile() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 font-sans flex flex-col">
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-4 font-sans flex flex-col">
       <input
         type="file"
         accept="image/*"
@@ -286,7 +294,7 @@ export default function EditNetworkPageMobile() {
           ) : (
             <button
               onClick={() => bannerInputRef.current.click()}
-              className="absolute top-6 right-6 text-xs bg-black text-white px-3 py-1 rounded-full border border-gray-500"
+              className="absolute top-6 right-6 text-xs bg-black text-[#E7E9EA] px-3 py-1 rounded-full border border-gray-500"
             >
               edit banner
             </button>
@@ -314,9 +322,10 @@ export default function EditNetworkPageMobile() {
               {formData.name || "Network Name"}
             </span>
           </div>
-          <p className="text-sm text-gray-400 mt-3 leading-relaxed">
-            {formData.description ||
-              "Your network description will appear here."}
+          <p className="text-sm text-white mt-3 leading-relaxed">
+            Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean
+            tristique risus eu vitae felis. Donec lacus accumsan ultricies
+            metus.
           </p>
         </div>
       </div>

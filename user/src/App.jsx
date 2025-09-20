@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import LandingRouter from "./component/signinPage/LandingRouter";
 import Lobby from "./component/signinPage/Lobby";
@@ -50,16 +45,23 @@ import CommunityPage from "./component/creatingNetwork/Community_page";
 import MobileCreateNetwork1 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_1";
 import MobileCreateNetwork2 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_2";
 import MobileCreateNetwork3 from "./component/creatingNetwork/MobileCreateNetworkWrapper/mobile_createnetwork_3";
-
+import LowkeyProfile from "./component/lowkey/LowKey.jsx";
 import ManageNetworkScreen from "./component/Admin/manage_network/manage_network_page";
 import NetworkCommunityPage from "./component/Admin/network_community/network_community_page";
 import EditNetworkPage from "./component/Admin/Edit_network/edit_network_page";
 import DitchNetworkPage from "./component/Admin/ditch_network/ditch_network_page";
 import FinalPage from "./component/Admin/final_page";
+import AddClubs from "./component/addClubs/mobileAddClubs";
+import RegisterClubPage from "./component/addClubs/mobileRegisterClub";
+import ClubApproval from "./component/Admin/clubApproval/mobileClubApproval";
+import ClubSignInPage from "./component/addClubs/mobileClubSignInPage";
+import ClubAdminPage from "./component/addClubs/mobileClubAdminPage";
+import CreateEventPage from "./component/addClubs/mobileAddEventPage";
+import MobileNetworkAdmin from "./component/creatingNetwork/communitypage/MobileCommunityAdmin.jsx";
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<LandingRouter />} />
@@ -106,8 +108,8 @@ function App() {
 
         {/* Mix / Networks */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/selecttag" element={<SelectTagPage />} />
-          <Route path="/comments" element={<CommentTree />} />
+          <Route path="/selecttag/:id" element={<SelectTagPage />} />
+          <Route path="/comments/:mixId" element={<CommentTree />} />
           <Route
             path="/createnetworkwrapper"
             element={<CreateNetworkWrapper />}
@@ -127,11 +129,28 @@ function App() {
           />
           <Route path="/managenetwork" element={<ManageNetworkScreen />} />
           <Route path="/networkcommunity" element={<NetworkCommunityPage />} />
-          <Route path="/communitypage/:id/editnetwork" element={<EditNetworkPage />} />
-          <Route path="/communitypage/:id/ditchnetwork" element={<DitchNetworkPage />} />
+          <Route path="/networkadmin/:id" element={<MobileNetworkAdmin /> } />
+          {}
+          <Route
+            path="/communitypage/:id/editnetwork"
+            element={<EditNetworkPage />}
+          />
+          <Route
+            path="/communitypage/:id/ditchnetwork"
+            element={<DitchNetworkPage />}
+          />
           <Route path="/communitypage/:id/finalpage" element={<FinalPage />} />
+          <Route path="/addclubs" element={<AddClubs />} />
+          <Route path="/registerclub" element={<RegisterClubPage />} />
+          <Route path="/clubapproval" element={<ClubApproval />} />
+          <Route path="/club-signin" element={<ClubSignInPage />} />
+          <Route path="/club-admin" element={<ClubAdminPage />} />
+          <Route path="/add-event" element={<CreateEventPage />} />
           <Route path="/select-network" element={<NetworkSelectPage />} />
+          <Route path="/lowkey" element={<LowkeyProfile />} />
+       
 
+        {/* Authenticated routes */}
           {/* Protected routes */}
           <Route path="/home" element={<Home />} />
           <Route path="/bouquet" element={<BouquetOutlet />}>
@@ -153,9 +172,9 @@ function App() {
         </Route>
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 

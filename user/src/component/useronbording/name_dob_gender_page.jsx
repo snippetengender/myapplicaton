@@ -97,11 +97,11 @@ export default function UserInfoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
       <div>
         {/* Back Arrow */}
         <button className="mb-6" onClick={() => navigate(-1)}>
-          <ArrowLeft size={24} className="text-white" />
+          <ArrowLeft size={24} className="text-[#E7E9EA]" />
         </button>
 
         {/* Title & Subtitle */}
@@ -138,7 +138,7 @@ export default function UserInfoPage() {
               ))}
             </select>
             <ChevronDown
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-white"
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-[#E7E9EA]"
               size={16}
             />
           </div>
@@ -157,7 +157,7 @@ export default function UserInfoPage() {
               ))}
             </select>
             <ChevronDown
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-white"
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-[#E7E9EA]"
               size={16}
             />
           </div>
@@ -199,7 +199,7 @@ export default function UserInfoPage() {
           {saving ? (
             <span className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
           ) : (
-            <ArrowRight className="text-white" size={22} />
+            <ArrowRight className="text-[#E7E9EA]" size={22} />
           )}
         </button>
       </div>

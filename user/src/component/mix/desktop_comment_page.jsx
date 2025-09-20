@@ -168,14 +168,14 @@ const Comment = ({ comment, indentLevel = 0, onAddReply, activeReplyId, onToggle
             />
           </div>
           <div className="flex min-w-0 items-center gap-1 flex-grow">
-            <span className="font-semibold text-white truncate">
+            <span className="font-semibold text-[#E7E9EA] truncate">
               {feelLike === "user" ? `<${user.name}>` : user.name}
             </span>
             <span className="text-gray-400 text-xs flex-shrink-0">• {time}</span>
-            <FaRegFlag className="ml-2 h-4 w-3 text-gray-500 hover:text-white cursor-pointer flex-shrink-0" />
+            <FaRegFlag className="ml-2 h-4 w-3 text-gray-500 hover:text-[#E7E9EA] cursor-pointer flex-shrink-0" />
           </div>
         </div>
-        <p className="text-white text-[13px] mt-1 break-words pr-10">{content}</p>
+        <p className="text-[#E7E9EA] text-[13px] mt-1 break-words pr-10">{content}</p>
         <div className="flex items-center text-xs mt-2 pr-10">
           {indentLevel < MAX_DEPTH - 1 && (
             <span
@@ -193,7 +193,7 @@ const Comment = ({ comment, indentLevel = 0, onAddReply, activeReplyId, onToggle
               onChange={(e) => setReplyText(e.target.value)}
               maxLength={1000}
               rows={3}
-              className="w-full bg-transparent text-white border-none resize-none outline-none"
+              className="w-full bg-transparent text-[#E7E9EA] border-none resize-none outline-none"
               placeholder="Write a reply..."
               autoFocus
             />
@@ -228,14 +228,14 @@ const Comment = ({ comment, indentLevel = 0, onAddReply, activeReplyId, onToggle
       </div>
       <div className="absolute right-0 top-0 flex flex-col items-center flex-shrink-0 z-10">
         <FiChevronUp
-          className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white"
+          className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]"
           onClick={handleUpvote}
         />
         <span className="text-pink-500 text-base font-semibold">
           {currentVotes}
         </span>
         <FiChevronDown
-          className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white"
+          className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]"
           onClick={handleDownvote}
         />
       </div>
@@ -313,7 +313,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
       <Header />
       <div className="flex">
         <LeftSidebar />
@@ -321,7 +321,7 @@ export default function Dashboard() {
           
           <div className="flex items-center mb-6 w-full">
             <RxCross2
-              className="h-6 w-6 text-white cursor-pointer mr-4"
+              className="h-6 w-6 text-[#E7E9EA] cursor-pointer mr-4"
               onClick={() => navigate(-1)}
             />
             <h1 className="text-xl font-bold">Snippet Slays Right</h1>
@@ -329,13 +329,13 @@ export default function Dashboard() {
 
           <div className="border-b border-gray-800 pb-4 mb-4 w-full">
             <div className="flex items-center gap-2 text-sm flex-wrap">
-              <span className="font-semibold text-white">&lt;{mainPost.user.name}&gt;</span>
+              <span className="font-semibold text-[#E7E9EA]">&lt;{mainPost.user.name}&gt;</span>
               <span className="text-[#616161]">@{mainPost.user.id} • {mainPost.time}</span>
               <span className="ml-2 text-xs px-2 py-0.5 rounded-full border border-gray-700">
                 {mainPost.label}
               </span>
             </div>
-            <p className="text-white text-[15px] mt-2 break-words">{mainPost.content}</p>
+            <p className="text-[#E7E9EA] text-[15px] mt-2 break-words">{mainPost.content}</p>
             <div className="flex justify-between items-center mt-3 text-xs text-gray-400">
               <span>{mainPost.stats.nah} nah, {mainPost.stats.hmm} hmm, {mainPost.stats.hellYeah} hell yeah</span>
               <div className="flex items-center">
@@ -356,7 +356,7 @@ export default function Dashboard() {
       onChange={(e) => setMainReplyText(e.target.value)}
       placeholder="Comment your thought"
       rows={1}
-      className="flex-grow bg-transparent text-white text-sm resize-none outline-none overflow-hidden"
+      className="flex-grow bg-transparent text-[#E7E9EA] text-sm resize-none outline-none overflow-hidden"
       style={{
         maxHeight: '150px',
       }}

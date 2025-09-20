@@ -82,11 +82,11 @@ export default function InterestPage() {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
       <div>
         {/* Back Arrow */}
         <button className="mb-6" onClick={() => navigate(-1)}>
-          <ArrowLeft className="text-white" size={24} />
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
         {/* Headings */}
@@ -105,7 +105,7 @@ export default function InterestPage() {
             placeholder="Search for interests"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent outline-none w-full text-sm text-white placeholder-zinc-500"
+            className="bg-transparent outline-none w-full text-sm text-[#E7E9EA] placeholder-zinc-500"
           />
         </div>
 
@@ -114,7 +114,7 @@ export default function InterestPage() {
           {selectedInterests.map((item) => (
             <span
               key={item.reference_id}
-              className="px-3 py-1 border border-[#F06CB7] rounded-full text-sm text-white"
+              className="px-3 py-1 border border-[#F06CB7] rounded-full text-sm text-[#E7E9EA]"
             >
               {item.name}
             </span>
@@ -138,7 +138,7 @@ export default function InterestPage() {
                     selectedInterests.find(
                       (i) => i.reference_id === interest.id
                     )
-                      ? "border-[#F06CB7] text-white"
+                      ? "border-[#F06CB7] text-[#E7E9EA]"
                       : "border-zinc-500 text-zinc-300"
                   }`}
                 >
@@ -168,7 +168,7 @@ export default function InterestPage() {
           {saving ? (
             <span className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
           ) : (
-            <ArrowRight className="text-white" size={22} />
+            <ArrowRight className="text-[#E7E9EA]" size={22} />
           )}
         </button>
       </div>

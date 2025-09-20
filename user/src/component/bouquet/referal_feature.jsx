@@ -21,12 +21,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 flex flex-col justify-between font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between font-sans">
       {/* Top Section */}
       <div>
         {/* Back button */}
         <button className="mb-5" onClick={() => navigate("/bouquetprompt")}>
-          <ArrowLeft className="text-white" size={24} />
+          <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
         {/* Title and Description */}
@@ -68,7 +68,7 @@ export default function App() {
             type="text"
             id="refCode"
             placeholder="Enter code" // Added a placeholder for clarity
-            className="w-full bg-transparent border-b border-gray-800 text-white text-lg pb-2 outline-none focus:border-[#F06CB7]"
+            className="w-full bg-transparent border-b border-gray-800 text-[#E7E9EA] text-lg pb-2 outline-none focus:border-[#F06CB7]"
             value={refCode}
             onChange={(e) => {
               setRefCode(e.target.value);
@@ -93,7 +93,7 @@ export default function App() {
           className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
           onClick={handleNext}
         >
-          <ArrowRight size={22} className="text-white" />
+          <ArrowRight size={22} className="text-[#E7E9EA]" />
         </button>
       </div>
     </div>

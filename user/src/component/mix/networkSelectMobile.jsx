@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { X, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useNetworks } from "../../shared/useNetworks";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  fetchAllNetworks,
+  setSearchTerm,
+  resetAllNetworks,
+} from "../../features/networkCreate/networkSlice"; // Adjust path
 
 function NetworkSkeleton() {
   return (
@@ -17,20 +22,79 @@ function NetworkSkeleton() {
 
 export default function NetworkSelectPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  // 1. Get all state from the Redux store
   const {
-    networks,
-    loading,
+    items: networks = [],
+    status,
     error,
-    lastNetworkElementRef,
+    currentPage,
+    hasMore,
     searchTerm,
-    handleSearchChange,
-  } = useNetworks();
+  } = useSelector((state) => state.network.allNetworks) || {};
+  const loading = status === "loading";
+
+  // Local state for handling the debounced input
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      dispatch(setSearchTerm(localSearch));
+    }, 500);
+    return () => clearTimeout(timerId);
+  }, [localSearch, dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchAllNetworks({ page: 1, searchTerm }));
+  }, [searchTerm, dispatch]);
+
+  const observer = useRef(null);
+
+  const lastNetworkElementRef = useCallback(
+    (node) => {
+      if (loading) return;
+
+      // Disconnect old observer
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          dispatch(fetchAllNetworks({ page: currentPage + 1, searchTerm }));
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore, currentPage, searchTerm, dispatch]
+  );
 
   const handleSelectNetwork = (network) => {
     localStorage.setItem("selectedNetwork", JSON.stringify(network));
-    navigate(-1); // go back to post page
+    navigate(-1);
   };
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetAllNetworks());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (networks.length > 0 && !loading) {
+      // Wait for list to be rendered, then attach observer
+      const lastItem = document.querySelector(".network-item:last-child");
+      if (lastItem) {
+        if (observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && hasMore) {
+            dispatch(fetchAllNetworks({ page: currentPage + 1, searchTerm }));
+          }
+        });
+        observer.current.observe(lastItem);
+      }
+    }
+  }, [networks, loading, hasMore, currentPage, searchTerm, dispatch]);
 
   return (
     <div className="fixed inset-0 bg-black text-white z-50 p-4 flex flex-col">
@@ -59,53 +123,51 @@ export default function NetworkSelectPage() {
         <input
           type="text"
           placeholder="search for network"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="w-full bg-transparent border border-zinc-700 rounded-lg pl-10 pr-4 py-2 text-sm placeholder-zinc-500"
+          value={localSearch}
+          onChange={(e) => setLocalSearch(e.target.value)}
+          className="w-full bg-transparent border border-zinc-700 rounded-lg pl-10 pr-4 py-2 text-sm"
         />
       </div>
 
-      {/* Networks */}
+      {/* Networks List */}
       <div className="flex-1 overflow-y-auto">
-        {/* Show skeletons when loading initial page */}
-        {loading && networks.length === 0 && (
-          <>
-            <NetworkSkeleton />
-            <NetworkSkeleton />
-            <NetworkSkeleton />
-            <NetworkSkeleton />
-            <NetworkSkeleton />
-            <NetworkSkeleton />
-            <NetworkSkeleton />
-          </>
-        )}
+        {/* Skeletons for the very first load */}
+        {loading &&
+          networks.length === 0 &&
+          Array.from({ length: 7 }).map((_, i) => <NetworkSkeleton key={i} />)}
 
-        {/* Real networks */}
-        {networks.map((network, index) => {
-          const isLastElement = networks.length === index + 1;
-          return (
-            <div
-              key={network.id}
-              ref={isLastElement ? lastNetworkElementRef : null}
-              className="flex items-center gap-4 py-3 cursor-pointer hover:bg-zinc-900 rounded-lg px-2"
-              onClick={() => handleSelectNetwork(network)}
-            >
-              <div className="w-12 h-12 bg-zinc-300 rounded-full flex-shrink-0" />
-              <div>
-                <p className="font-semibold">{network.name}</p>
-                <p className="text-sm text-zinc-400">
-                  talks about{" "}
-                  <span className="font-semibold text-white">
-                    {network.interests?.name}
-                  </span>
-                </p>
-              </div>
+        {/* Render the list of networks */}
+        {networks.map((network, index) => (
+          <div
+            key={network.id}
+            ref={networks.length === index + 1 ? lastNetworkElementRef : null}
+            className="flex items-center gap-4 py-3 cursor-pointer hover:bg-zinc-900 rounded-lg px-2"
+            onClick={() => handleSelectNetwork(network)}
+          >
+            {network.image ? (
+              <img
+                src={network.image}
+                alt={`Profile of ${network.name}`}
+                className="w-12 h-12 bg-zinc-700 rounded-full object-cover flex-shrink-0"
+              />
+            ) : (
+              <div className="w-12 h-12 bg-zinc-700 rounded-full flex-shrink-0 flex items-center justify-center" />
+            )}
+
+            <div>
+              <p className="font-semibold">{network.name}</p>
+              <p className="text-sm text-zinc-400">
+                talks about{" "}
+                <span className="font-semibold text-white">
+                  {network.interests?.name}
+                </span>
+              </p>
             </div>
-          );
-        })}
+          </div>
+        ))}
 
-        {/* Skeletons while fetching more pages */}
-        {loading && networks.length > 5 && (
+        {/* Skeletons for loading subsequent pages */}
+        {loading && networks.length > 0 && (
           <>
             <NetworkSkeleton />
             <NetworkSkeleton />

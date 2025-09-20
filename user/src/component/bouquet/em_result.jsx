@@ -30,7 +30,7 @@ export default function EmResult() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-6 font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 font-sans">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <ArrowLeft

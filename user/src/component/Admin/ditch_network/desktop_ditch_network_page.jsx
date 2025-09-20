@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [networkName, setNetworkName] = useState('');
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
       <Header />
       <div className="flex" style={{ height: 'calc(100vh - 4rem)' }}>
         <LeftSidebar />

@@ -31,7 +31,7 @@ export default function Header() {
           </svg>
         </span>
       </div>
-      <div className="flex items-center gap-6 text-md text-white">
+      <div className="flex items-center gap-6 text-md text-[#E7E9EA]">
         <span className="cursor-pointer">notifications</span>
         <span onClick={() => navigate("/selecttag")} className="cursor-pointer">open up now</span>
         <span className="cursor-pointer">messages</span>

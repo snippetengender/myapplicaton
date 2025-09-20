@@ -18,9 +18,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center font-sans relative p-4">
+    <div className="min-h-screen bg-black text-[#E7E9EA] flex flex-col items-center justify-center font-sans relative p-4">
       {/* Close Icon at Top Left */}
-      <button className="absolute top-4 left-4 text-white" onClick={handleClose}>
+      <button className="absolute top-4 left-4 text-[#E7E9EA]" onClick={handleClose}>
         <X size={24} onClick={() => navigate("/home")}/>
       </button>
 
@@ -43,7 +43,7 @@ export default function App() {
         </p>
 
         <button
-          className="bg-[#2e2e2e] text-white py-3 px-8 rounded-full text-sm font-semibold hover:bg-gray-700 transition-colors duration-200"
+          className="bg-[#2e2e2e] text-[#E7E9EA] py-3 px-8 rounded-full text-sm font-semibold hover:bg-gray-700 transition-colors duration-200"
           onClick={handleGotIt}
         >
           Got it

@@ -79,7 +79,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-3 py-6 flex flex-col justify-between font-sans relative">
+    <div className="min-h-screen bg-black text-[#E7E9EA] px-3 py-6 flex flex-col justify-between font-sans relative">
       <div>
         <ArrowLeft
           className="w-6 h-6 mb-4"
@@ -214,7 +214,7 @@ export default function App() {
           onClick={handleNext}
           disabled={!isFormValid}
         >
-          <ArrowRight size={22} className="text-white" />
+          <ArrowRight size={22} className="text-[#E7E9EA]" />
         </button>
       </div>
     </div>

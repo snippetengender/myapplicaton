@@ -107,7 +107,7 @@ export default function MyScreen() {
   }, [userId]);
 
   return (
-    <div className="bg-black min-h-screen text-white px-2 py-4">
+    <div className="bg-black min-h-screen text-[#E7E9EA] px-2 py-4">
       <ArrowLeft className="w-6 h-6 mb-4" onClick={() => navigate("/home")} />
 
       <h1 className="text-2xl font-bold mb-2">
