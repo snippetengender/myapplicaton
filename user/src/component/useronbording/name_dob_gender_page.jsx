@@ -13,18 +13,27 @@ export default function UserInfoPage() {
 
   const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   useEffect(() => {
-  const otpVerified = localStorage.getItem("snippet_otp_verified");
-  if (!otpVerified) {
-    console.warn("OTP not verified. Redirecting to OTP page.");
-    navigate("/useronboarding/otp-verification", { replace: true });
-  }
-}, [navigate]);
-
+    const otpVerified = localStorage.getItem("snippet_otp_verified");
+    if (!otpVerified) {
+      console.warn("OTP not verified. Redirecting to OTP page.");
+      navigate("/useronboarding/otp-verification", { replace: true });
+    }
+  }, [navigate]);
 
   const saveToLocalStorage = (updatedFields) => {
     const userInfo = {
@@ -180,10 +189,18 @@ export default function UserInfoPage() {
       <div className="flex justify-end mt-10 mb-4">
         <button
           onClick={handleNext}
-          disabled={saving}
-          className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
+          disabled={saving || !name.trim() || !day || !month || !gender}
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
+            saving || !name.trim() || !day || !month || !gender
+              ? "bg-gray-600 cursor-not-allowed opacity-50"
+              : "bg-[#F06CB7] hover:bg-[#e05ca3]"
+          }`}
         >
-          <ArrowRight className="text-[#E7E9EA]" size={22} />
+          {saving ? (
+            <span className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          ) : (
+            <ArrowRight className="text-[#E7E9EA]" size={22} />
+          )}
         </button>
       </div>
 

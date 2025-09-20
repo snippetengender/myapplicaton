@@ -1,75 +1,435 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, MoreVertical } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // 1. Import useNavigate
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchNetworkById,
+  clearCurrentNetwork,
+  joinNetwork,
+  leaveNetwork,
+} from "../../../features/networkCreate/networkSlice";
+import {
+  fetchMixesByNetwork,
+  resetNetworkMixes,
+  reactMix,
+} from "../../../features/mixes/mixSlice";
+import upvoteInactive from "../../assets/Upvote.svg";
+import downvoteInactive from "../../assets/Downvote.svg";
+import upvoteActive from "../../assets/upvoteActive.svg";
+import downvoteActive from "../../assets/downvoteActive.svg";
+
+export const PollComponent = ({ post }) => {
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  return (
+    <div className="mt-3 space-y-2">
+      {/* Options */}
+      {post.options.map((option, index) => (
+        <div
+          key={index}
+          onClick={() => setSelectedOption(index)}
+          className={`border rounded-lg p-3 flex justify-between items-center cursor-pointer transition-all duration-200 ${
+            selectedOption === index ? "border-pink-500" : "border-gray-700"
+          }`}
+        >
+          <span className="font-semibold">{option.text}</span>
+          <span className="text-gray-400">{option.votes}%</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const NetworkPostCard = ({ post }) => {
+  const navigate = useNavigate();
+  const { user = {}, time, label, title, content, imageUrl, stats = {} } = post;
+  console.log(post);
+  const profileType = user.profileType || "user";
+  const dispatch = useDispatch();
+
+  const handleReaction = (reactionType) => {
+    const newReaction =
+      post.userReaction === reactionType ? "neutral" : reactionType;
+    dispatch(reactMix({ mixId: post.id, reaction: newReaction }));
+  };
+
+  const netScore = stats.upvote - stats.downvote;
+
+  return (
+    <div className="border-b border-gray-700 py-4">
+      {/* Header */}
+      <div className="px-1">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-3">
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.name || "Network"}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white">
+                {user.name?.[0]?.toUpperCase() || "?"}
+              </div>
+            )}
+            <div className="text-sm">
+              <div
+                className="flex items-center gap-1.5 text-md font-semibold cursor-pointer"
+                onClick={() =>
+                  navigate(`/useronboarding/user-profile/${user.id}`)
+                }
+              >
+                {"<"}
+                {user.username}
+                {">"}
+                <span className="text-[#616161] font-normal">
+                  {user.degree ? (user.degree === "masters" ? "m" : "b") : ""}
+                  {user.college} • {time}
+                </span>
+                <span className="ml-1 text-xs px-2 py-0.5 rounded-full border border-gray-700">
+                  {label}
+                </span>
+              </div>
+            </div>
+          </div>
+          <button className="text-gray-400">•••</button>
+        </div>
+      </div>
+
+      <div className="px-4 ml-0.5 pl-1 mt-3">
+        {title && (
+          <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">{title}</h2>
+        )}
+        {content && (
+          <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+            {content}
+          </p>
+        )}
+
+        {imageUrl && (
+          <div className="relative w-full aspect-square mt-2">
+            <img
+              src={imageUrl}
+              alt={title || "Post image"}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+        {label === "Poll" && (
+          <PollComponent post={post} profileType={profileType} />
+        )}
+
+        {/* Reactions */}
+        <div className="flex justify-between items-center mt-3 text-xs">
+          <span
+            className="text-pink-500 font-medium cursor-pointer"
+            onClick={() => navigate(`/comments/${post.id}`)}
+          >
+            {stats.thoughts} thoughts
+          </span>
+          <div className="flex items-center gap-3">
+            {/* <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
+              {stats.nah} nah
+            </button>
+            <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
+              {stats.hmm} hmm
+            </button>
+            <button className="px-3 py-1 rounded-full border border-gray-700 text-pink-500">
+              {stats.hellYeah} hell yeah
+            </button> */}
+
+            <img
+              src={post.userReaction === "like" ? upvoteActive : upvoteInactive}
+              alt="upvote reaction"
+              onClick={() => handleReaction("like")}
+              className="w-6 h-6 cursor-pointer"
+            />
+
+            <p className="text-gray-400 text-xl font-semibold w-6 text-center">
+              {netScore}
+            </p>
+
+            {/* 5. Downvote image with conditional source */}
+            <img
+              src={
+                post.userReaction === "dislike"
+                  ? downvoteActive
+                  : downvoteInactive
+              }
+              alt="downvote reaction"
+              onClick={() => handleReaction("dislike")}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function MobileNetworkPage() {
-  const navigate = useNavigate(); // 2. Initialize the navigate function
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const {
+    networkPosts: networkMixes,
+    networkStatus: mixesStatus,
+    networkHasMore: hasMore,
+    networkPage: page,
+  } = useSelector((state) => state.mixes);
+
+  const { data: networkData, status } = useSelector(
+    (state) => state.network.currentNetwork
+  );
+
+  const { status: joinLeaveStatus, error: joinLeaveError } = useSelector(
+    (state) => state.network.joinLeaveStatus
+  );
+
+  useEffect(() => {
+    if (id) {
+      dispatch(resetNetworkMixes());
+      dispatch(
+        fetchNetworkById({
+          networkId: id,
+          networkMembership: true,
+          totalMixes: true,
+        })
+      );
+      dispatch(fetchMixesByNetwork({ networkId: id, page: 1 }));
+    }
+    return () => {
+      dispatch(clearCurrentNetwork());
+    };
+  }, [id, dispatch]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+  if (status === "failed" || !networkData) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        Error: Network not found.
+      </div>
+    );
+  }
+
+  const handleJoin = () => {
+    if (id) {
+      dispatch(joinNetwork(id));
+    }
+  };
+
+  const handleLeave = () => {
+    if (id) {
+      dispatch(leaveNetwork(id));
+    }
+  };
+
+  const isMember = () => {
+    return networkData?.network_membership && networkData.network_membership.id;
+  };
+
+  const isOwner = () => {
+    return networkData?.network_membership?.role === "owner";
+  };
+
+  const getButtonConfig = () => {
+    if (networkData?.network_membership?.role === "owner") {
+      return {
+        text: "Owner",
+        onClick: null,
+        disabled: true,
+        className:
+          "bg-gray-700 text-gray-400 text-sm px-3 py-1 rounded-full cursor-not-allowed",
+      };
+    }
+
+    if (networkData?.network_membership?.id) {
+      return {
+        text: joinLeaveStatus === "loading" ? "leaving..." : "got in",
+        onClick: handleLeave,
+        disabled: joinLeaveStatus === "loading",
+        className:
+          "bg-black border border-[#7E8389] text-[#E7E9EA] text-sm px-3 py-1 rounded-full disabled:opacity-50",
+      };
+    }
+
+    return {
+      text: joinLeaveStatus === "loading" ? "getting in..." : "get in",
+      onClick: handleJoin,
+      disabled: joinLeaveStatus === "loading",
+      className:
+        "bg-black border border-[#7E8389] text-[#E7E9EA] text-sm px-3 py-1 rounded-full disabled:opacity-50",
+    };
+  };
+
+  const buttonConfig = getButtonConfig();
 
   return (
     <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
-      <div className="relative w-full h-30 rounded-lg overflow-hidden">
+      <div className="relative w-full h-25 rounded-lg">
         <img
-          src="https://i.pinimg.com/736x/8c/90/d9/8c90d9c67afd8c9bbf92cbe73fbe4102.jpg"
+          src={networkData.banner || "default_banner_url.jpg"}
           alt="Banner"
           className="w-full h-full object-cover"
         />
 
-        {/* Left Back Icon - Vertically Centered */}
         <div className="absolute top-3/4 left-2 -translate-y-1/2">
-          {/* 3. Add the onClick handler */}
-          <button 
-            onClick={() => navigate('/createnetworkwrapper')} 
+          <button
+            onClick={() => navigate("/home")}
             className="bg-black bg-opacity-70 p-2 rounded-full"
           >
             <ChevronLeft className="text-[#E7E9EA]" size={20} />
           </button>
         </div>
 
-        {/* Right Menu Icon - Vertically Centered */}
-        <div className="absolute top-3/4 right-2 -translate-y-1/2 pr-1">
-          <button className="bg-black bg-opacity-70 p-2 rounded-full">
-            <MoreVertical className="text-[#E7E9EA]" size={20} />
-          </button>
-        </div>
+        {/* {isOwner() && (
+          <div
+            ref={menuRef}
+            className="absolute top-3/4 right-2 -translate-y-1/2"
+          >
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="bg-black bg-opacity-70 p-2 rounded-full"
+            >
+              <MoreVertical className="text-[#E7E9EA]" size={20} />
+            </button>
+
+            {isMenuOpen && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-neutral-800 border border-neutral-700 rounded-md shadow-lg z-20">
+                <ul className="py-1 text-white">
+                  <li>
+                    <button
+                      onClick={() => {
+                        navigate(`/communitypage/${id}/editnetwork`);
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-700"
+                    >
+                      Edit
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        navigate(`/communitypage/${id}/finalpage`);
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-700"
+                    >
+                      Introduce Rules
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        navigate(`/communitypage/${id}/ditchnetwork`);
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-neutral-700"
+                    >
+                      Ditch Network
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        )} */}
       </div>
 
-      {/* Profile Header */}
       <div className="p-4 space-y-2 border-b border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gray-600 rounded-full" />
+            <img
+              src={networkData.image}
+              alt="Logo"
+              className="w-12 h-12 bg-gray-600 rounded-full object-cover"
+            />
             <div>
-              <h2 className="text-lg text-[#D8D7DC] font-semibold">something</h2>
+              <h2 className="text-lg text-[#D8D7DC] font-semibold">
+                {networkData.name}
+              </h2>
+
               <p className="text-sm text-[#D8D7DC]">
-                21.8K <span className="text-[#616161]">members</span> • 382 <span className="text-[#616161]">mixes</span>
+                {networkData.members_count}{" "}
+                <span className="text-[#616161]">members</span>
+                <span className="mx-2">•</span>
+                {networkData.total_mixes ?? 0}{" "}
+                <span className="text-[#616161]">mixes</span>
               </p>
             </div>
           </div>
-          <button className="bg-black border border-[#7E8389] text-[#E7E9EA] text-sm px-3 py-1 rounded-full">
-            got in
-          </button>
+          <div>
+            <button
+              className={buttonConfig.className}
+              onClick={buttonConfig.onClick}
+              disabled={buttonConfig.disabled}
+            >
+              {buttonConfig.text}
+            </button>
+          </div>
         </div>
-        <p className="text-sm text-gray-300 mt-1">
-          /r/beermoneyindia is community for people to discuss mostly online
-          making-making opportunities in India. You could make dece...
-        </p>
-        <p className="text-xs text-gray-500 mt-2">
-          Network created by    
-        </p>
-        {/* Network By */}
+        <p className="text-sm text-gray-300 mt-1">{networkData.description}</p>
+        <p className="text-xs text-gray-500 mt-2">Network created by</p>
         <div className="flex items-center gap-2 text-sm text-gray-400">
-          <div className="w-6 h-6 bg-gray-500 rounded-full" />
-          <span className="text-[#D8D7DC]">&lt;tj&gt;</span>
-          <span>•</span>
-          <span>m@iitm</span>
+          <img
+            src={networkData.created_by.image_url || "default_avatar.png"}
+            alt="Creator"
+            className="w-6 h-6 bg-gray-500 rounded-full object-cover"
+          />
+          <span className="text-[#D8D7DC]">{networkData.created_by.name}</span>
         </div>
       </div>
+      <div className="px-2">
+        {mixesStatus === "loading" && (
+          <p className="text-gray-400">Loading posts...</p>
+        )}
 
-      {/* Footer Action Input */}
+        {networkMixes.length > 0
+          ? networkMixes.map((mix) => (
+              <NetworkPostCard key={mix.id} post={mix} />
+            ))
+          : mixesStatus === "succeeded" && (
+              <p className="text-gray-400 text-center mt-4">No posts yet.</p>
+            )}
+      </div>
+      {/* Show error message if join/leave fails */}
+      {joinLeaveError && (
+        <div className="px-4 py-2 bg-red-900/20 border border-red-600/20">
+          <p className="text-red-400 text-sm">{joinLeaveError}</p>
+        </div>
+      )}
+
+      {/* Footer remains the same */}
       <div className="fixed bottom-1 left-0 right-0 px-2 py-1 z-10">
         <div className="backdrop-blur-md bg-white/10 border border-[#2F3336] rounded-3xl px-4 py-2 flex justify-between items-center">
           <span className="text-sm text-[#E7E9EA]">Open up now</span>
-          <button className="bg-white/10 border border-[#2F3336] text-[#E7E9EA] px-4 py-1 rounded-xl hover:bg-white/30" onClick={() => navigate("/selecttag")}>
+          <button
+            className="bg-white/10 border border-[#2F3336] text-[#E7E9EA] px-4 py-1 rounded-xl hover:bg-white/30"
+            onClick={() => navigate("/selecttag")}
+          >
             mix
           </button>
         </div>

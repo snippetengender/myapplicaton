@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import api from '../../providers/api';
+import React, { useState, useEffect } from "react";
+import { ArrowLeft, ArrowRight, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import api from "../../providers/api";
 
 export default function InterestPage() {
   const navigate = useNavigate();
   const [allInterests, setAllInterests] = useState([]);
   const [selectedInterests, setSelectedInterests] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchInterests = async () => {
       try {
-        const res = await api.get('/entities/interests');
+        const res = await api.get("/entities/interests");
         setAllInterests(res.data.data || []);
       } catch (err) {
-        console.error(' Error fetching interests:', err.message);
+        console.error(" Error fetching interests:", err.message);
       } finally {
         setLoading(false);
       }
@@ -25,52 +25,59 @@ export default function InterestPage() {
     fetchInterests();
   }, []);
 
-  const user_edu = JSON.parse(localStorage.getItem("snippet_user_education"))
+  const user_edu = JSON.parse(localStorage.getItem("snippet_user_education"));
   useEffect(() => {
-    if(!user_edu){
+    if (!user_edu) {
       console.warn("Fill the previous page");
-      navigate("/useronboarding/course-year-branch")
+      navigate("/useronboarding/course-year-branch");
     }
-  },[navigate,user_edu])
+  }, [navigate, user_edu]);
 
   const toggleInterest = (interest) => {
-    const isSelected = selectedInterests.find(i => i.reference_id === interest.id);
+    const isSelected = selectedInterests.find(
+      (i) => i.reference_id === interest.id
+    );
     if (isSelected) {
-      setSelectedInterests(selectedInterests.filter(i => i.reference_id !== interest.id));
+      setSelectedInterests(
+        selectedInterests.filter((i) => i.reference_id !== interest.id)
+      );
     } else if (selectedInterests.length < 3) {
-      setSelectedInterests([...selectedInterests, {
-        reference_id: interest.id,
-        name: interest.name
-      }]);
+      setSelectedInterests([
+        ...selectedInterests,
+        {
+          reference_id: interest.id,
+          name: interest.name,
+        },
+      ]);
     }
   };
 
   const saveToLocalStorage = (interests) => {
-    localStorage.setItem('snippet_user_interests', JSON.stringify(interests));
+    localStorage.setItem("snippet_user_interests", JSON.stringify(interests));
   };
 
   const handleNext = async () => {
     saveToLocalStorage(selectedInterests);
 
-    const user_id = localStorage.getItem('user_id');
+    const user_id = localStorage.getItem("user_id");
     if (!user_id || selectedInterests.length === 0) {
-      console.error(' Missing user_id or no interests selected');
+      console.error(" Missing user_id or no interests selected");
       return;
     }
 
     setSaving(true);
     try {
       await api.patch(`/user/${user_id}`, { interests: selectedInterests });
-      console.log('Interests updated successfully');
-      navigate('/useronboarding/prompt');
+      console.log("Interests updated successfully");
+      navigate("/useronboarding/prompt");
     } catch (err) {
-      console.error('Error saving interests:', err.message);
+      console.error("Error saving interests:", err.message);
     } finally {
       setSaving(false);
     }
   };
 
-  const filteredInterests = allInterests.filter(i =>
+  const filteredInterests = allInterests.filter((i) =>
     i.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -128,9 +135,11 @@ export default function InterestPage() {
                   key={interest.id}
                   onClick={() => toggleInterest(interest)}
                   className={`px-3 py-1 rounded-full text-sm border transition ${
-                    selectedInterests.find(i => i.reference_id === interest.id)
-                      ? 'border-[#F06CB7] text-[#E7E9EA]'
-                      : 'border-zinc-500 text-zinc-300'
+                    selectedInterests.find(
+                      (i) => i.reference_id === interest.id
+                    )
+                      ? "border-[#F06CB7] text-[#E7E9EA]"
+                      : "border-zinc-500 text-zinc-300"
                   }`}
                 >
                   {interest.name}
@@ -144,15 +153,23 @@ export default function InterestPage() {
       {/* Bottom Section */}
       <div className="flex items-center justify-between mt-6">
         <p className="text-sm text-zinc-400">
-          Can’t find your Interest?{' '}
+          Can’t find your Interest?{" "}
           <span className="text-[#F06CB7] cursor-pointer">Add one</span>
         </p>
         <button
           onClick={handleNext}
-          disabled={saving || selectedInterests.length === 0}
-          className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
+          disabled={saving || selectedInterests.length < 3}
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
+            saving || selectedInterests.length < 3
+              ? "bg-gray-600 cursor-not-allowed opacity-50"
+              : "bg-[#F06CB7] hover:bg-[#e05ca3]"
+          }`}
         >
-          <ArrowRight className="text-[#E7E9EA]" size={22} />
+          {saving ? (
+            <span className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          ) : (
+            <ArrowRight className="text-[#E7E9EA]" size={22} />
+          )}
         </button>
       </div>
     </div>

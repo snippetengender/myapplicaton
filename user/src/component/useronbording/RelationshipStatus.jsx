@@ -13,7 +13,7 @@ export default function RelationshipStatusPage() {
   useEffect(() => {
     if (!prompt) {
       console.warn("Please fill the prompt page");
-      navigate("/useronboarding/prompt");
+      navigate("/useronboarding/prompt", { replace: true });
     }
 
     const savedStatus = localStorage.getItem("snippet_relationship_status");
@@ -30,7 +30,7 @@ export default function RelationshipStatusPage() {
 
   const handleStatusChange = (value) => {
     setStatus(value);
-    localStorage.setItem("snippet_relationship_status", value); 
+    localStorage.setItem("snippet_relationship_status", value);
   };
 
   const handleSaveAndNext = async () => {
@@ -47,35 +47,38 @@ export default function RelationshipStatusPage() {
       await api.patch(`/user/${user_id}`, {
         relationship_status: status,
       });
-      console.log("Relationship status updated on server");
+      console.log(" Relationship status updated on server");
       navigate("/useronboarding/user-name");
     } catch (err) {
-      console.error("Error saving relationship status:", err.message);
+      console.error(" Error saving relationship status:", err.message);
     } finally {
       setSaving(false);
     }
   };
+
   return (
     <div className="min-h-screen bg-black text-[#E7E9EA] px-5 py-6 flex flex-col justify-between">
       <div>
         {/* Back Arrow */}
-        <button className="mb-6">
+        <button className="mb-6" onClick={() => navigate(-1)}>
           <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
         {/* Headings */}
         <h1 className="text-2xl font-bold leading-tight">
-          BRAVO, leeus jump into <br /> Relationship Status
+          BRAVO, let’s jump into <br /> Relationship Status
         </h1>
         <p className="text-sm text-zinc-400 mt-3 mb-6 leading-relaxed">
           Choose your relationship status.
         </p>
 
-        {/* Options */}
+        {/* Radio Options */}
         {options.map((opt) => (
           <label
             key={opt.value}
-            className="flex items-center justify-between py-3 text-3xl font-bold text-zinc-400"
+            className={`flex items-center justify-between py-3 text-3xl font-bold transition-colors ${
+              status === opt.value ? "text-white" : "text-zinc-400"
+            }`}
           >
             {opt.label}
             <input
@@ -95,13 +98,20 @@ export default function RelationshipStatusPage() {
         <button
           disabled={!status || saving}
           onClick={handleSaveAndNext}
-          className={`w-14 h-14 rounded-full flex items-center justify-center ${
-            !status ? "bg-zinc-700 cursor-not-allowed" : "bg-[#2e2e2e]"
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors duration-200 ${
+            !status || saving
+              ? "bg-zinc-700 cursor-not-allowed"
+              : "bg-[#2e2e2e] hover:bg-[#1f1f1f]"
           }`}
         >
           <ArrowRight className="text-[#E7E9EA]" size={22} />
         </button>
       </div>
+
+      {/* Saving Indicator */}
+      {saving && (
+        <p className="text-sm text-blue-400 mt-2 text-right">Saving...</p>
+      )}
     </div>
   );
 }

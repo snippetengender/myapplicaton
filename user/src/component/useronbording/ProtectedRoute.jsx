@@ -1,14 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { auth } from "../../constants/firebaseConfig";
 
 export default function ProtectedRoute() {
-  const user = auth.currentUser;
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const [loading, setLoading] = React.useState(true);
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
-
-  React.useEffect(() => {
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
       setLoading(false);
@@ -20,5 +18,9 @@ export default function ProtectedRoute() {
     return <div className="text-center text-[#E7E9EA]">Loading...</div>;
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/useronboarding/google-login" replace />;
+  return isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/useronboarding/google-login" replace />
+  );
 }

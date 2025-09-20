@@ -2,51 +2,8 @@ import React from "react";
 import Header from "../desktop_components/Header";
 import LeftSidebar from "../desktop_components/LeftSidebar";
 import RightSidebar from "../desktop_components/RightSidebar";
-
-
-const posts = [
-  {
-    tag: "question",
-    user: {
-      profileType: "user",
-      name: "karthikraja",
-      id: "m@cit",
-      avatar: "https://i.pinimg.com/736x/c0/74/9b/c0749b7cc401421662ae901ec8f9f660.jpg",
-    },
-    time: "6h",
-    label: "confession",
-    content:
-      "While walking near my college canteen, I happened to see a beautiful girl. Her elegance and charm instantly caught my attention, making me pause for a moment.",
-    stats: { nah: 14, hmm: 0, hellYeah: 78, thoughts: 29 },
-  },
-  {
-    tag: "question",
-    user: {
-      profileType: "community",
-      name: "something",
-      avatar: "https://i.pinimg.com/736x/c0/74/9b/c0749b7cc401421662ae901ec8f9f660.jpg",
-    },
-    time: "1d",
-    label: "question",
-    content:
-      "Karikada bai Irukarangla ?\n\nOver the past year, I’ve been diving into software development and product management. Most of my projects have been ambitious and complex.",
-    stats: { nah: 14, hmm: 14, hellYeah: 78, thoughts: 49 },
-  },
-  {
-    tag: "question",
-    user: {
-      profileType: "user",
-      name: "tj",
-      id: "m@iimb",
-      avatar: "https://i.pinimg.com/736x/c0/74/9b/c0749b7cc401421662ae901ec8f9f660.jpg",
-    },
-    time: "6h",
-    label: "question",
-    content:
-      "What should I do when I get my girl friend pregnant? I am really confused, please help me people",
-    stats: { nah: 14, hmm: 14, hellYeah: 78, thoughts: 49 },
-  },
-];
+import PostCardSkeleton from "./postSkeleton";
+import { useMixes } from "../../shared/useMixes";
 
 const PostCard = ({ post }) => {
   const { user, time, label, content, stats } = post;
@@ -65,10 +22,10 @@ const PostCard = ({ post }) => {
               {user.profileType === "user" ? (
                 <div className="flex items-center flex-wrap gap-1 text-md font-semibold">
                   {"<"}
-                  {user.name}
+                  {user.id}
                   {">"}{" "}
                   <span className="text-gray-500 font-normal">
-                    @{user.id} • {time}
+                    {user.eduTag} • {time}
                   </span>
                   <span className="ml-2 text-xs px-2 py-0.5 rounded-full border border-gray-700 text-gray-300">
                     {label}
@@ -110,6 +67,9 @@ const PostCard = ({ post }) => {
 };
 
 export default function Dashboard() {
+  const { posts, loading, error, hasMore, loadMoreRef, isInitialLoad } =
+    useMixes();
+
   return (
     <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
       <Header />
@@ -128,13 +88,27 @@ export default function Dashboard() {
                     placeholder="Open up now pal"
                   />
                 </div>
-                <p className="text-gray-300 text-base">There is no one whos gonna judge you</p>
+                <p className="text-gray-300 text-base">
+                  There is no one whos gonna judge you
+                </p>
                 <p className="text-gray-300 text-base">Rely on us</p>
               </div>
-
-              {posts.map((post, index) => (
-                <PostCard key={index} post={post} />
+              {isInitialLoad &&
+                Array.from({ length: 5 }).map((_, i) => (
+                  <PostCardSkeleton key={i} />
+                ))}
+              {posts.map((post) => (
+                <PostCard key={post.id} post={post} />
               ))}
+              {/* --- Refined Bottom Section --- */}
+              {loading && hasMore && <PostCardSkeleton />}
+              {error && <p className="text-center text-red-500">{error}</p>}
+              {!loading && hasMore && <div ref={loadMoreRef} />}
+              {!hasMore && !isInitialLoad && (
+                <p className="text-center text-gray-500 py-4">
+                  You've reached the end!
+                </p>
+              )}
             </section>
 
             <RightSidebar />

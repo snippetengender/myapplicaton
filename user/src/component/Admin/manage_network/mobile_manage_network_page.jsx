@@ -1,117 +1,106 @@
-import React from 'react';
-import { ArrowLeft } from 'lucide-react';
-// Main component that renders the "Manage Network" screen
-const ManageNetworkScreen = () => {
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUserNetworks } from "../../../features/networkCreate/networkSlice"; // Adjust path
+// Import icons for the UI
+import { ArrowLeft, ChevronRight } from "lucide-react";
 
-  // Styles are defined as JavaScript objects for a CSS-in-JS approach.
-  const styles = {
-    // The main container that simulates the mobile screen
-    container: {
-      backgroundColor: '#000000', // Black background as seen in the image
-      color: '#FFFFFF', // White text color for contrast
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-      height: '100vh', // Takes up the full height of the viewport
-      display: 'flex',
-      flexDirection: 'column',
-      padding: '20px',
-      boxSizing: 'border-box', // Ensures padding is included in the element's total width and height
-    },
-    // Header section containing the back arrow and the main title
-    header: {
-      display: 'flex',
-      alignItems: 'center',
-      marginBottom: '24px',
-    },
-    // Style for the "Manage Network" title
-    title: {
-      fontSize: '24px',
-      fontWeight: 'bold',
-      marginBottom: '6px', // Provides space between the back arrow and the title
-    },
-    // Style for the descriptive paragraph below the title
-    description: {
-      fontSize: '14px',
-      color: '#B0B0B0', // A lighter gray for secondary text
-      lineHeight: '1.5', // Improves readability
-      marginBottom: '32px',
-    },
-    // Style for section sub-headings like "something"
-    subheading: {
-      fontSize: '14px',
-      color: '#B0B0B0',
-      textTransform: 'uppercase', // As seen in the design
-      letterSpacing: '1px', // Spacing out letters for the uppercase style
-      marginBottom: '12px',
-      paddingBottom: '12px',
-      borderBottom: '1px solid #333333', // The subtle separator line
-    },
-    // Style for the clickable list item ("establish network")
-    networkItem: {
-      display: 'flex',
-      justifyContent: 'space-between', // Pushes the text and arrow to opposite ends
-      alignItems: 'center',
-      padding: '16px 0',
-      borderBottom: '1px solid #333333', // Separator line for the list item
-      cursor: 'pointer', // Indicates to the user that this is a clickable element
-    },
-    // Style for the text within the list item
-    networkItemText: {
-      fontSize: '16px',
-    },
-  };
+const NetworkItem = ({ title, onClick }) => (
+  <div
+    onClick={onClick}
+    className="flex justify-between items-center py-4 border-b border-gray-800 cursor-pointer hover:bg-gray-900/50"
+  >
+    <span className="text-[#E7E9EA] text-base">{title}</span>
+    <ChevronRight className="text-[#E7E9EA] h-5 w-5" />
+  </div>
+);
+
+// A simple loading skeleton component to improve user experience
+const NetworkItemSkeleton = () => (
+  <div className="flex justify-between items-center py-4 border-b border-gray-800 animate-pulse">
+    <div className="h-6 bg-gray-700 rounded w-1/3"></div>
+    <div className="h-5 w-5 bg-gray-700 rounded-full"></div>
+  </div>
+);
+
+export default function ManageNetworkScreen() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const userId = useSelector((state) => state.user.userId);
+  const {
+    items: userNetworks,
+    status,
+    error,
+  } = useSelector((state) => state.network.userNetworks);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchUserNetworks(userId));
+    }
+  }, [userId, dispatch]);
 
   return (
-    <div style={styles.container}>
+    <div className="min-h-screen bg-black text-[#E7E9EA] p-5">
       {/* Header Section */}
-      <div style={styles.header}>
-        <button>
-            <ArrowLeft className="text-[#E7E9EA]" size={24} onClick={() => navigate("/home")} />
-          </button>
-        
+      <div className="flex items-center mb-6">
+        <button onClick={() => navigate(-1)} className="p-1 mr-4">
+          <ArrowLeft size={24} />
+        </button>
       </div>
-      <h1 style={styles.title}>Manage Network</h1>
-     
-      <p style={styles.description}>
-        Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
+
+      <h1 className="text-2xl font-bold mb-2">Manage Network</h1>
+
+      <p className="text-sm text-gray-400 leading-relaxed mb-8">
+        Here you can manage the networks you've created or establish a new one.
       </p>
 
-      
-     <div style={styles.networkItem}>
-        <span style={styles.networkItemText}>something</span>
-        
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M8.59003 16.59L13.17 12L8.59003 7.41L10 6L16 12L10 18L8.59003 16.59Z"
-            fill="white"
-          />
-        </svg>
-      </div>
-      {/* Network Item */}
-      <div style={styles.networkItem}>
-        <span style={styles.networkItemText}>establish network (2/3)</span>
-        
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M8.59003 16.59L13.17 12L8.59003 7.41L10 6L16 12L10 18L8.59003 16.59Z"
-            fill="white"
-          />
-        </svg>
-      </div>
+      {/* Conditional Rendering based on the fetch status from Redux */}
+      {status === "loading" && (
+        <>
+          <NetworkItemSkeleton />
+          <NetworkItemSkeleton />
+        </>
+      )}
 
+      {status === "failed" && (
+        <p className="text-center text-red-500">
+          {error || "Failed to load your networks."}
+        </p>
+      )}
+
+      {status === "succeeded" && (
+        <>
+          {/* Section for existing networks */}
+          {userNetworks.length > 0 ? (
+            <div>
+              <h2 className="text-sm uppercase text-gray-500 font-semibold tracking-wider pb-3 border-b border-gray-800">
+                Your Network
+              </h2>
+              {userNetworks.map((network) => (
+                <NetworkItem
+                  key={network.id}
+                  title={network.name}
+                  onClick={() => navigate(`/networkadmin/${network.id}`)}
+                />
+              ))}
+            </div>
+          ) : null}
+
+          {/* FIX: Conditionally render the "Create" section */}
+          {userNetworks.length < 3 && (
+            <div className="mt-8">
+              <h2 className="text-sm uppercase text-gray-500 font-semibold tracking-wider pb-3 border-b border-gray-800">
+                Create
+              </h2>
+              <NetworkItem
+                title="Establish your own network"
+                onClick={() => navigate("/mobile_createnetwork_1")}
+              />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
-};
-
-export default ManageNetworkScreen;
+}

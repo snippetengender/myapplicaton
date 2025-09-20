@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"; 
 import MobileCommunity from "./communitypage/mobile_community_page";
 import DesktopCommunity from "./desktop_community_page";
 
 const Community = () => {
+  const { id } = useParams(); 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -16,7 +18,11 @@ const Community = () => {
 
   return (
     <>
-      {isMobile ? <MobileCommunity /> : <DesktopCommunity />}
+      {isMobile ? (
+        <MobileCommunity /> // No longer passes the id prop
+      ) : (
+        <DesktopCommunity />
+      )}
     </>
   );
 };

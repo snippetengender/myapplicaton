@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ChevronLeft, Search, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from "react";
+import { ChevronLeft, Search, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import api from "../../providers/api";
 import debounce from "lodash.debounce";
 
@@ -20,27 +20,33 @@ export default function CollegeSelect() {
     }
   }, [navigate, selectedCity]);
 
-  const debouncedFetchColleges = useMemo(() => debounce(async (query = "") => {
-    if (query.trim().length < 3) {
-      setColleges([]);
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await api.get(`/college?name=${query}&city=${selectedCity}`);
-      console.log("Fetched colleges:", res.data.data);
-      setColleges(res.data.data);
-    } catch (err) {
-      console.error("Error fetching colleges:", err);
-      setColleges([]);
-    } finally {
-      setLoading(false);
-    }
-  }, 500), [selectedCity]);
+  const debouncedFetchColleges = useMemo(
+    () =>
+      debounce(async (query = "") => {
+        if (query.trim().length < 3) {
+          setColleges([]);
+          return;
+        }
+        setLoading(true);
+        try {
+          const res = await api.get(
+            `/college?name=${query}&city=${selectedCity}`
+          );
+          console.log("Fetched colleges:", res.data.data);
+          setColleges(res.data.data);
+        } catch (err) {
+          console.error("Error fetching colleges:", err);
+          setColleges([]);
+        } finally {
+          setLoading(false);
+        }
+      }, 500),
+    [selectedCity]
+  );
 
   useEffect(() => {
     debouncedFetchColleges(search);
-    return () => debouncedFetchColleges.cancel(); 
+    return () => debouncedFetchColleges.cancel();
   }, [search, debouncedFetchColleges]);
 
   const handleCollegeSelect = (college) => {
@@ -67,7 +73,8 @@ export default function CollegeSelect() {
 
         <h1 className="text-2xl font-semibold mb-2">Select your College</h1>
         <p className="text-sm text-gray-300 mb-4">
-          Showing colleges in <span className="text-[#F06CB7]">{selectedCity}</span>.
+          Showing colleges in{" "}
+          <span className="text-[#F06CB7]">{selectedCity}</span>.
         </p>
 
         {/* Search Box */}
@@ -96,7 +103,9 @@ export default function CollegeSelect() {
 
         {/* College List */}
         <div>
-          <p className="font-semibold text-base mb-3">Colleges in {selectedCity}</p>
+          <p className="font-semibold text-base mb-3">
+            Colleges in {selectedCity}
+          </p>
           {loading ? (
             <p className="text-gray-400">Loading colleges...</p>
           ) : (
@@ -123,11 +132,18 @@ export default function CollegeSelect() {
       <div className="flex justify-between items-center mt-10 mb-4">
         <p className="text-sm text-[#E7E9EA]">
           Can’t find your College?{" "}
-          <span className="text-[#F06CB7] underline cursor-pointer">Add it</span>
+          <span className="text-[#F06CB7] underline cursor-pointer">
+            Add it
+          </span>
         </p>
         <button
-          className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
+            selectedCollege
+              ? "bg-[#F06CB7] hover:bg-[#e05ca3]"
+              : "bg-[#2e2e2e] cursor-not-allowed opacity-50"
+          }`}
           onClick={handleNext}
+          disabled={!selectedCollege}
         >
           <ArrowRight size={22} className="text-[#E7E9EA]" />
         </button>

@@ -2,10 +2,10 @@ import axios from "axios";
 import { auth } from "../constants/firebaseConfig";
 
 let cachedToken = null;
-let tokenExpiresAt = 0; 
+let tokenExpiresAt = 0;
 
 const api = axios.create({
-  baseURL: "http://localhost:8000", 
+  baseURL: "http://localhost:8000",
   withCredentials: false,
   timeout: 30000,
 });
@@ -13,7 +13,7 @@ const api = axios.create({
 const getToken = async () => {
   const now = Date.now();
 
-  if (cachedToken && tokenExpiresAt - now > 5 * 60 * 1000) { 
+  if (cachedToken && tokenExpiresAt - now > 5 * 60 * 1000) {
     return cachedToken;
   }
 
@@ -30,7 +30,10 @@ const getToken = async () => {
 
     cachedToken = token;
     tokenExpiresAt = new Date(tokenResult.expirationTime).getTime();
-    console.log("New token cached, expires at:", new Date(tokenExpiresAt).toLocaleTimeString());
+    console.log(
+      "New token cached, expires at:",
+      new Date(tokenExpiresAt).toLocaleTimeString()
+    );
 
     return token;
   } catch (err) {
@@ -41,6 +44,8 @@ const getToken = async () => {
   }
 };
 
+// your api.js file
+
 api.interceptors.request.use(
   async (config) => {
     console.log(` API Request: ${config.method?.toUpperCase()} ${config.url}`);
@@ -48,9 +53,16 @@ api.interceptors.request.use(
     const token = await getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.warn("Sending request without Authorization header (no token).");
     }
+
+    // --- ADD THIS BLOCK ---
+    // If the request is a file upload, remove the default Content-Type header.
+    // This allows the browser to set the correct 'multipart/form-data' header
+    // with the necessary boundary.
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+    // --- END OF CHANGE ---
 
     return config;
   },
@@ -67,7 +79,7 @@ api.interceptors.response.use(
       console.warn(" 401 Unauthorized: Attempting token refresh...");
 
       cachedToken = null;
-      tokenExpiresAt = 0; 
+      tokenExpiresAt = 0;
 
       const token = await getToken();
       if (token) {

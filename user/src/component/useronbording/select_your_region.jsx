@@ -18,19 +18,21 @@ export default function RegionSelect() {
         setRegions([]);
         return;
       }
-      
+
       setLoading(true);
       setError("");
-      
+
       try {
         console.log("Fetching regions for query:", query);
         console.log("API base URL:", api.defaults.baseURL);
-        
-        const res = await api.get(`/college/city?name=${encodeURIComponent(query)}`);
+
+        const res = await api.get(
+          `/college/city?name=${encodeURIComponent(query)}`
+        );
         console.log("API Response:", res);
         console.log("Response data:", res.data);
         console.log("Regions data:", res.data.data);
-        
+
         setRegions(res.data.data || []);
       } catch (err) {
         console.error("Detailed error information:");
@@ -39,20 +41,26 @@ export default function RegionSelect() {
         console.error("Error config:", err.config);
         console.error("Error request:", err.request);
         console.error("Error response:", err.response);
-        
+
         if (err.response) {
           console.error("Response status:", err.response.status);
           console.error("Response data:", err.response.data);
           console.error("Response headers:", err.response.headers);
-          setError(`Server error: ${err.response.status} - ${err.response.data?.detail || err.response.statusText}`);
+          setError(
+            `Server error: ${err.response.status} - ${
+              err.response.data?.detail || err.response.statusText
+            }`
+          );
         } else if (err.request) {
           console.error("Request made but no response received");
-          setError("No response from server. Please check your internet connection.");
+          setError(
+            "No response from server. Please check your internet connection."
+          );
         } else {
           console.error("Error setting up request:", err.message);
           setError(`Request error: ${err.message}`);
         }
-        
+
         setRegions([]);
       } finally {
         setLoading(false);
@@ -100,13 +108,13 @@ export default function RegionSelect() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        
+
         {error && (
           <div className="mb-4 p-3 bg-red-900 border border-red-600 rounded-md">
             <p className="text-red-200 text-sm">{error}</p>
           </div>
         )}
-        
+
         {selected && (
           <div className="mb-6">
             <button
@@ -127,7 +135,9 @@ export default function RegionSelect() {
                 <button
                   key={index}
                   className={`border text-sm px-4 py-1 rounded-full ${
-                    selected === region.city ? "border-pink-500" : "border-white"
+                    selected === region.city
+                      ? "border-pink-500"
+                      : "border-white"
                   }`}
                   onClick={() => setSelected(region.city)}
                 >
@@ -141,11 +151,18 @@ export default function RegionSelect() {
       <div className="flex justify-between items-center mt-10 mb-4">
         <p className="text-sm text-[#E7E9EA]">
           Can't find your Region?{" "}
-          <span className="text-[#F06CB7] underline cursor-pointer">Add em</span>
+          <span className="text-[#F06CB7] underline cursor-pointer">
+            Add em
+          </span>
         </p>
         <button
-          className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center"
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
+            selected
+              ? "bg-[#F06CB7] hover:bg-[#e05ca3]"
+              : "bg-[#2e2e2e] cursor-not-allowed opacity-50"
+          }`}
           onClick={handleNext}
+          disabled={!selected}
         >
           <ArrowRight size={22} className="text-[#E7E9EA]" />
         </button>

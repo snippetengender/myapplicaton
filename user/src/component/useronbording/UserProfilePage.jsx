@@ -1,78 +1,117 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, MoreVertical, Info } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchUserProfile,
+  clearUserProfile,
+} from "../../features/userSlice/userSlice";
+
+const ProfileSkeleton = () => (
+  <div className="min-h-screen bg-black text-white p-4 animate-pulse">
+    {/* Header */}
+    <div className="flex items-center justify-between px-4 py-6">
+      <ArrowLeft className="text-gray-700" size={24} />
+      <MoreVertical className="text-gray-700" size={24} />
+    </div>
+
+    {/* Profile Section */}
+    <div className="px-4">
+      <div className="flex items-center gap-4 mb-4">
+        <div className="w-20 h-20 rounded-full bg-gray-800 mr-6"></div>
+        <div className="flex gap-2 flex-grow">
+          <div className="h-8 w-full bg-gray-800 rounded-full"></div>
+          <div className="h-8 w-full bg-gray-800 rounded-full"></div>
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="mb-6 space-y-3">
+        <div className="h-8 w-1/2 bg-gray-800 rounded"></div>
+        <div className="h-4 w-3/4 bg-gray-800 rounded"></div>
+        <div className="h-4 w-full bg-gray-800 rounded"></div>
+        <div className="h-4 w-5/6 bg-gray-800 rounded"></div>
+        <div className="h-4 w-1/2 bg-gray-800 rounded mt-4"></div>
+      </div>
+    </div>
+  </div>
+);
+
+const formatYear = (year) => {
+  if (!year) return "";
+  const suffix =
+    year === 1 ? "st" : year === 2 ? "nd" : year === 3 ? "rd" : "th";
+  return `${year}${suffix}`;
+};
+
+const formatCollegeTag = (degree, collegeShow) => {
+  if (!degree || !collegeShow) return "";
+  const degreeInitial = degree.charAt(0).toLowerCase(); // 'b' for bachelors, 'm' for masters
+  return `${degreeInitial}${collegeShow}`;
+};
+
+const formatBirthday = (day, month) => {
+  if (!day || !month) return "Not Set";
+  const suffix =
+    day % 10 === 1 && day !== 11
+      ? "st"
+      : day % 10 === 2 && day !== 12
+      ? "nd"
+      : day % 10 === 3 && day !== 13
+      ? "rd"
+      : "th";
+  // Abbreviated months
+  const months = [
+    "",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  return `${day}${suffix} ${months[month]}`;
+};
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("mixes");
-  const [profile, setProfile] = useState({
-    name: "",
-    username: "",
-    email: "",
-    region: "",
-    relationshipStatus: "",
-    birthday: "",
-    gender: "",
-    education: "",
-    college: "",
-    clout: "0",
-    promptText: "",
-    promptValue: "",
-    interests: [],
-    profileImage: "",
-  });
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { userId } = useParams();
 
-  // Helper: Format day as 1st, 2nd, 3rd, etc.
-  const formatBirthday = (day, month) => {
-    const suffix =
-      day === 1 || day === 21 || day === 31 ? "st" :
-      day === 2 || day === 22 ? "nd" :
-      day === 3 || day === 23 ? "rd" : "th";
-
-    const months = [
-      "", "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-
-    return `${day}${suffix} ${months[month]}`;
-  };
+  const { data: profile, status } =
+    useSelector((state) => state.user.profile) || {};
 
   useEffect(() => {
-    // Get data from localStorage
-    const userInfo = JSON.parse(localStorage.getItem("snippet_user_info") || "{}");
-    const userEducation = JSON.parse(localStorage.getItem("snippet_user_education") || "{}");
-    const userInterests = JSON.parse(localStorage.getItem("snippet_user_interests") || "[]");
-    const college = JSON.parse(localStorage.getItem("selected_college") || "{}");
-    const userPrompt = JSON.parse(localStorage.getItem("snippet_user_prompt") || "{}");
+    if (userId) {
+      dispatch(fetchUserProfile(userId));
+    }
+    return () => dispatch(clearUserProfile());
+  }, [userId, dispatch]);
 
-    setProfile({
-      name: userInfo.name || "No Name",
-      username: localStorage.getItem("snippet_username") || "unknown",
-      email: localStorage.getItem("snippet_email") || "No Email",
-      region: localStorage.getItem("snippet_region") || "Unknown",
-      relationshipStatus: localStorage.getItem("snippet_relationship_status") || "Single",
-      birthday: userInfo.birthday
-        ? formatBirthday(userInfo.birthday.day, userInfo.birthday.month)
-        : "Not set",
-      gender: userInfo.gender || "Unknown",
-      education: userEducation.course
-        ? `${userEducation.degree} ${userEducation.course}, Year ${userEducation.year}`
-        : "Not set",
-      college: college.name || "Unknown College",
-      clout: localStorage.getItem("snippet_clout") || "0",
-      promptText: userPrompt.text || "Prompt",
-      promptValue: userPrompt.name || "No prompt",
-      interests: userInterests.map((i) => i.name),
-      profileImage:
-        localStorage.getItem("snippet_profile_image") ||
-        "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-    });
-  }, []);
+  if (status === "loading" || status === "idle") {
+    return <ProfileSkeleton />;
+  }
+  if (status === "failed" || !profile) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        Error: Could not load profile.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-[#E7E9EA]">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-6">
-        <button>
-          <ArrowLeft className="text-[#E7E9EA]" size={24} />
+        <button onClick={() => navigate(-1)}>
+          <ArrowLeft className="text-white" size={24} />
         </button>
         <button>
           <MoreVertical className="text-[#E7E9EA]" size={24} />
@@ -81,59 +120,51 @@ export default function ProfilePage() {
 
       {/* Profile Section */}
       <div className="px-4">
-        {/* Profile Image and Actions */}
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-20 h-20 rounded-full overflow-hidden mr-6">
+        <div className="flex items-center justify-between mb-4">
+          {/* Profile Image */}
+          <div className="w-20 h-20 rounded-full overflow-hidden">
             <img
-              src={profile.profileImage}
+              src={profile.profile || "..."}
               alt="Profile"
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="flex gap-2">
-            <button className="px-2 py-1 bg-transparent border border-zinc-600 rounded-full text-sm ml-12">
-              send <span className="text-[#F06CB7]">bouquet</span>
-            </button>
-            <button className="px-2 py-1 bg-transparent border border-zinc-600 rounded-full text-sm">
-              pal up
-            </button>
-          </div>
+
+          <button
+            onClick={() => navigate("/managenetwork")}
+            className="px-4 py-1 bg-transparent border border-zinc-600 rounded-full text-sm font-semibold hover:bg-zinc-800"
+          >
+            Manage Network
+          </button>
         </div>
-
-        {/* Profile Info */}
-        <div className="mb-6">
+        <div className="mb-6 space-y-2 text-sm">
           <h1 className="text-2xl font-bold capitalize">{profile.name}</h1>
-          <p className="text-sm text-zinc-400 mb-2">
-            &lt;{profile.username}&gt; • {profile.college}
+          <p className="text-zinc-400">
+            &lt;{profile.username}&gt; • {formatCollegeTag(profile.education_status?.degree, profile.college_show)}
           </p>
-          <div className="mb-2 flex gap-2">
-            <p className="text-sm">Into</p>
-            <p className="text-sm">
-              {profile.interests.length > 0
-                ? profile.interests.join(", ")
-                : "No interests yet"}
-            </p>
-          </div>
-          <p className="text-sm text-zinc-300 mb-2">
-            {profile.education} • {profile.region}
+          <p className="text-zinc-300">
+            Into {profile.interests?.map(i => i.name).join(", ")}
           </p>
-          
-          <p className="text-sm text-zinc-300 mb-2 capitalize">
-            {profile.relationshipStatus}
+          <p className="text-zinc-300 capitalize">
+            {formatYear(profile.education_status?.year)} Year • {profile.education_status?.course} • {profile.relationship_status}
           </p>
-          <p className="text-sm text-zinc-400 mb-3">
-            Cake me on {profile.birthday}
+          <p className="text-zinc-400">
+            Cake me on {formatBirthday(profile.birthday?.day, profile.birthday?.month)}
           </p>
-
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg font-semibold">{profile.clout}</span>
-            <span className="text-sm text-zinc-400">Clout</span>
+          <div className="flex items-center gap-2 pt-1">
+            <span className="text-lg font-semibold">{profile.clout || '0'}K</span>
+            <span className="text-zinc-400">Snips</span>
             <Info size={14} className="text-zinc-500" />
           </div>
-
-          <p className="text-sm text-zinc-400 mb-4">
-            {profile.promptText}: <span className="text-[#F06CB7]">{profile.promptValue}</span>
-          </p>
+          {profile.clubs?.length > 0 && (
+            <p className="text-zinc-300">
+              member of <span className="text-[#F06CB7]">{profile.clubs.map(c => c.name).join(", ")}</span>
+            </p>
+          )}
+          <div className="pt-2">
+            <p className="text-zinc-400 text-sm">I want</p>
+            <p className="text-2xl font-bold">{profile.prompt?.name}</p>
+          </div>
         </div>
 
         {/* Tabs */}
