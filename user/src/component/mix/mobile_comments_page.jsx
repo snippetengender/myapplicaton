@@ -302,14 +302,29 @@
 
 // export default CommentsPage;
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { getComments, createComment } from "../../features/mixes/commentSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  getComments,
+  createComment,
+  resetComments,
+} from "../../features/mixes/commentSlice";
 import { FiChevronUp, FiChevronDown, FiImage, FiX } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
-
-const useNavigate = () => (path) => console.log(`Navigating to: ${path}`);
+import imageCompression from "browser-image-compression";
+import ProfileSelector from "./ProfileSelector";
+import { fetchUserProfile } from "../../features/userSlice/userSlice";
+import { fetchParticularMix } from "../../features/mixes/mixSlice";
+import CommentsPageSkeleton from "./CommentsPageSkeleton ";
+import { PostCard } from "./PostCard";
+import CommentSkeleton from "./CommentsSkeleton";
 
 const formatTimeAgo = (timestampMs) => {
   if (!timestampMs) return "";
@@ -351,17 +366,66 @@ const buildCommentTree = (comments = []) => {
   return tree;
 };
 
-const NewCommentInput = ({ placeholder, onSubmit, isSubmitting = false }) => {
+const NewCommentInput = ({
+  placeholder,
+  onSubmit,
+  isSubmitting = false,
+  userId,
+}) => {
+  // 1. State for text and image is now self-contained here
   const [text, setText] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
+  const [useLowkey, setUseLowkey] = useState(false);
+  const dispatch = useDispatch();
+  const { data: userDetails, status } = useSelector(
+    (state) => state.user.profile
+  );
+  const navigate = useNavigate();
+  useEffect(() => {
+    const currentUserId = userId;
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+    if (status === "idle") {
+      dispatch(fetchUserProfile(currentUserId));
+    }
+  }, [dispatch, status]);
+
+  useEffect(() => {
+    if (userDetails) {
+      console.log("User Details from Component:", userDetails);
+    }
+  }, [userDetails]);
+
+  const hasLowkeyProfile = userDetails && userDetails.lowkey_profile;
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    try {
+      // console.log(
+      //   `Original file size: ${(file.size / 1024 / 1024).toFixed(2)} MB`
+      // );
+      const compressedFile = await imageCompression(file, options);
+      // console.log(
+      //   `Compressed file size: ${(compressedFile.size / 1024 / 1024).toFixed(
+      //     2
+      //   )} MB`
+      // );
+
+      // Set the component's internal state
+      setImageFile(compressedFile);
+      setImagePreview(URL.createObjectURL(compressedFile));
+    } catch (err) {
+      console.error("Image compression error:", err);
+      alert("Failed to compress image.");
     }
   };
 
@@ -373,7 +437,12 @@ const NewCommentInput = ({ placeholder, onSubmit, isSubmitting = false }) => {
 
   const handleSubmit = () => {
     if (text.trim() || imageFile) {
-      onSubmit({ comment: text, imageFile });
+      const dataToSubmit = { comment: text, imageFile, is_lowkey: useLowkey };
+
+      // ADD THIS LOG:
+      console.log("1. Data being sent from NewCommentInput:", dataToSubmit);
+
+      onSubmit(dataToSubmit);
       setText("");
       removeImage();
     }
@@ -386,7 +455,7 @@ const NewCommentInput = ({ placeholder, onSubmit, isSubmitting = false }) => {
           <img
             src={imagePreview}
             alt="Preview"
-            className="w-full h-full object-contain rounded-lg"
+            className="w-full h-full object-cover rounded-lg" // Changed to object-cover
           />
           <button
             onClick={removeImage}
@@ -409,15 +478,46 @@ const NewCommentInput = ({ placeholder, onSubmit, isSubmitting = false }) => {
           type="file"
           accept="image/*"
           ref={fileInputRef}
-          onChange={handleImageChange}
+          onChange={handleFileChange}
           className="hidden"
         />
         <button
           onClick={() => fileInputRef.current.click()}
           className="text-gray-400 hover:text-white"
+          disabled={!!imageFile}
         >
           <FiImage size={20} />
         </button>
+
+        <div className="flex items-center gap-4">
+          {hasLowkeyProfile ? (
+            <ProfileSelector
+              userDetails={userDetails}
+              useLowkey={useLowkey}
+              setUseLowkey={setUseLowkey}
+            />
+          ) : (
+            <>
+              {/* <div className="flex items-center gap-2">
+                <img
+                  src={userDetails.profile}
+                  alt={userDetails.name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+                <div className="text-gray-400 text-md">
+                  {`<${userDetails.username}>`}
+                </div>
+              </div> */}
+              <div
+                onClick={() => navigate("/lowkey")}
+                className="text-sm text-pink-500 cursor-pointer whitespace-nowrap"
+              >
+                Create lowkey profile
+              </div>
+            </>
+          )}
+        </div>
+
         <button
           className={`text-sm font-semibold px-4 py-1 rounded-full ${
             (!text.trim() && !imageFile) || isSubmitting
@@ -434,158 +534,6 @@ const NewCommentInput = ({ placeholder, onSubmit, isSubmitting = false }) => {
   );
 };
 
-export const PollComponent = ({ post, profileType }) => {
-  const [selectedOption, setSelectedOption] = useState(null); // no default
-
-  return (
-    <div className="mt-3 space-y-2">
-      {/* For network: show title + description above options */}
-      {profileType === "network" && (
-        <>
-          {post.title && (
-            <h3 className="text-[#E7E9EA] font-bold text-lg mb-1">
-              {post.title}
-            </h3>
-          )}
-          {post.content && (
-            <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-3">
-              {post.content}
-            </p>
-          )}
-        </>
-      )}
-
-      {/* For user: only description above options */}
-      {profileType === "user" && post.content && (
-        <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-3">
-          {post.content}
-        </p>
-      )}
-
-      {/* Options */}
-      {post.options.map((option, index) => (
-        <div
-          key={index}
-          onClick={() => setSelectedOption(index)}
-          className={`border rounded-lg p-3 flex justify-between items-center cursor-pointer transition-all duration-200 ${
-            selectedOption === index ? "border-pink-500" : "border-gray-700"
-          }`}
-        >
-          <span className="font-semibold">{option.text}</span>
-          <span className="text-gray-400">{option.votes}%</span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export const PostCard = ({ post }) => {
-  const user = post.user || {};
-  const { time, label, content, stats = {}, tag, title, imageUrl } = post;
-
-  const navigate = useNavigate();
-
-  return (
-    <div className="border-b border-gray-700 py-4">
-      {/* Header */}
-      <div className="px-1">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-3">
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name || "User"}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white">
-                {user.username?.[0]?.toUpperCase() || "?"}
-              </div>
-            )}
-
-            <div className="text-sm">
-              <div
-                className="flex items-center gap-1.5 text-md font-semibold"
-                onClick={() =>
-                  navigate(`/useronboarding/user-profile/${user.id}`)
-                }
-              >
-                {"<"}
-                {user.username}
-                {">"}
-                <span className="text-[#616161] font-normal">
-                  {user.degree ? (user.degree === "masters" ? "m" : "b") : ""}
-                  {user.college} • {time}
-                </span>
-                <span className="ml-1 text-xs px-2 py-0.5 rounded-full border border-gray-700">
-                  {label}
-                </span>
-              </div>
-            </div>
-          </div>
-          <button className="text-gray-400">•••</button>
-        </div>
-      </div>
-
-      {/* Post content */}
-      <div className="px-4 ml-0.5 pl-1 mt-3">
-        {tag !== "poll" ? (
-          <>
-            {/* For image posts */}
-            {imageUrl ? (
-              <>
-                {profileType === "network" && title && (
-                  <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
-                    {title}
-                  </h2>
-                )}
-                {profileType === "user" && content && (
-                  <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
-                    {content}
-                  </p>
-                )}
-                <div className="relative w-full aspect-square mt-2">
-                  <img
-                    src={imageUrl}
-                    alt={title || "Post image"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </>
-            ) : (
-              <>
-                {profileType === "network" && title && (
-                  <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
-                    {title}
-                  </h2>
-                )}
-
-                {(profileType === "user" || profileType === "network") &&
-                  content && (
-                    <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
-                      {content}
-                    </p>
-                  )}
-              </>
-            )}
-          </>
-        ) : (
-          <PollComponent post={post} profileType={profileType} />
-        )}
-
-        <div className="flex justify-between items-center mt-3 text-xs">
-          <span
-            className="text-pink-500 font-medium cursor-pointer"
-            onClick={() => navigate(`/comments/${post.id}`)}
-          >
-            {stats.thoughts} thoughts
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Comment = (props) => {
   const {
     comment,
@@ -594,32 +542,119 @@ const Comment = (props) => {
     onToggleReply,
     dispatch,
     mixId,
+    loggedInUserId,
   } = props;
   const {
+    user_id,
     user_details,
     created_at,
     comment: content,
     image,
     replies = [],
     likes_count,
+    comment_type, // Add this to destructuring
   } = comment;
   const [currentVotes, setCurrentVotes] = useState(likes_count);
   const postStatus = useSelector((state) => state.comments.postStatus);
 
   const canReply = indentLevel < 1;
   const isReplyBoxOpen = activeReplyId === comment.id;
+  const isLowkeyComment = comment_type === "lowkey";
 
-  const handleAddReply = ({ comment: replyText, imageFile }) => {
+  // Check if user_details is empty or null
+  const hasValidUserDetails =
+    user_details && Object.keys(user_details).length > 0;
+
+  const handleAddReply = ({
+    comment: replyText,
+    imageFile,
+    is_lowkey: is_lowkey,
+  }) => {
     dispatch(
       createComment({
         mixId,
         comment: replyText,
         parentCommentId: comment.id,
         imageFile,
+        is_lowkey: is_lowkey,
       })
     );
     onToggleReply(null);
   };
+
+  if (!hasValidUserDetails) {
+    return (
+      <div
+        className="relative w-full"
+        style={{ marginLeft: `${indentLevel * 14}px` }}
+      >
+        {indentLevel > 0 && (
+          <div
+            className="absolute top-0 w-px bg-gray-700 h-full"
+            style={{ left: "-7px" }}
+          ></div>
+        )}
+        <div className="flex items-start mt-4">
+          <div className="flex-shrink-0 w-8 h-8 mr-3 rounded-full bg-gray-600"></div>
+          <div className="flex-grow min-w-0">
+            <div className="flex items-center text-sm gap-1 flex-wrap">
+              <span className="font-semibold text-gray-500">
+                {isLowkeyComment ? user_id.name : `<${user_id.name}>`} •{" "}
+              </span>
+              <span>{formatTimeAgo(created_at)}</span>
+            </div>
+            {image && (
+              <img
+                src={image}
+                alt="Comment attachment"
+                className="mt-2 rounded-lg max-w-full h-auto"
+              />
+            )}
+            {content && (
+              <p className="text-[#E7E9EA] text-sm mt-1 break-words">
+                {content}
+              </p>
+            )}
+            <div className="flex items-center text-xs mt-2">
+              {canReply && (
+                <span
+                  className="text-pink-500 font-medium cursor-pointer"
+                  onClick={() => onToggleReply(comment.id)}
+                >
+                  Reply
+                </span>
+              )}
+            </div>
+            {isReplyBoxOpen && (
+              <div className="mt-2">
+                <NewCommentInput
+                  placeholder="Write a reply..."
+                  onSubmit={handleAddReply}
+                  isSubmitting={postStatus === "loading"}
+                  userId={loggedInUserId}
+                />
+              </div>
+            )}
+            <div className="w-full">
+              {replies.map((reply) => (
+                <Comment
+                  key={reply.id}
+                  {...props}
+                  comment={reply}
+                  indentLevel={indentLevel + 1}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="absolute right-0 top-4 flex flex-col items-center">
+            <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
+            <span className="text-pink-500 font-semibold">{currentVotes}</span>
+            <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -641,28 +676,27 @@ const Comment = (props) => {
         <div className="flex-grow min-w-0">
           <div className="flex items-center text-sm gap-1 flex-wrap">
             <span className="font-semibold text-[#E7E9EA]">
-              {`<${user_details.username}>`} •{" "}
+              {isLowkeyComment
+                ? user_details.username
+                : `<${user_details.username}>`}{" "}
+              •{" "}
             </span>
             <span>
               {user_details.education_status?.degree?.charAt(0)}
-
               {user_details.college_show}
             </span>
-
             <span className="mx-1">•</span>
-
-            {/* Formatted "Time Ago" */}
             <span>{formatTimeAgo(created_at)}</span>
           </div>
-          {content && (
-            <p className="text-[#E7E9EA] text-sm mt-1 break-words">{content}</p>
-          )}
           {image && (
             <img
               src={image}
               alt="Comment attachment"
               className="mt-2 rounded-lg max-w-full h-auto"
             />
+          )}
+          {content && (
+            <p className="text-[#E7E9EA] text-sm mt-1 break-words">{content}</p>
           )}
           <div className="flex items-center text-xs mt-2">
             {canReply && (
@@ -680,6 +714,7 @@ const Comment = (props) => {
                 placeholder="Write a reply..."
                 onSubmit={handleAddReply}
                 isSubmitting={postStatus === "loading"}
+                userId={loggedInUserId}
               />
             </div>
           )}
@@ -705,73 +740,133 @@ const Comment = (props) => {
 };
 
 const CommentsPage = () => {
+  // --- STEP 1: MOVE ALL HOOKS TO THE TOP ---
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { mixId } = useParams();
+  const observer = useRef();
+  const [activeReplyId, setActiveReplyId] = useState(null);
+
+  const { selectedMix, status: mixStatus } = useSelector(
+    (state) => state.mixes
+  );
+
   const {
     comments: flatComments,
-    status,
-    error,
-    postStatus,
+    status: commentsStatus,
+    page,
+    hasMore,
+    loadingInitial,
+    loadingMore,
   } = useSelector((state) => state.comments);
+
+  const loggedInUserId = useSelector((state) => state.user.userId);
+
+  const isSubmitting = useSelector(
+    (state) => state.comments.postStatus === "loading"
+  );
+
   const nestedComments = useMemo(
     () => buildCommentTree(flatComments),
     [flatComments]
   );
-  const [activeReplyId, setActiveReplyId] = useState(null);
 
+  const loadMoreRef = useCallback(
+    (node) => {
+      if (commentsStatus === "loading") return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          dispatch(getComments({ mixId, page }));
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [commentsStatus, hasMore, page, mixId, dispatch]
+  );
+
+  // --- STEP 2: KEEP EFFECTS AFTER HOOKS ---
   useEffect(() => {
-    if (mixId) dispatch(getComments(mixId));
+    if (mixId) {
+      dispatch(resetComments());
+      dispatch(fetchParticularMix(mixId));
+      dispatch(getComments({ mixId, page: 1 }));
+    }
+    return () => {
+      dispatch(resetComments());
+    };
   }, [dispatch, mixId]);
 
+  // --- STEP 3: PLACE CONDITIONAL RETURNS AFTER ALL HOOKS ---
+  const isLoading = mixStatus === "loading" || mixStatus === "idle";
+  if (isLoading) {
+    return <CommentsPageSkeleton />;
+  }
+
+  if (mixStatus === "failed" || !selectedMix) {
+    return <div className="min-h-screen ...">Error loading post.</div>;
+  }
+
+  // --- Handlers can stay here, as they are not hooks ---
   const handleToggleReply = (commentId) => {
     setActiveReplyId((prevId) => (prevId === commentId ? null : commentId));
   };
 
-  const handlePostTopLevelComment = ({ comment, imageFile }) => {
-    dispatch(
-      createComment({ mixId, comment, imageFile, parentCommentId: null })
-    );
+  const handlePostTopLevelComment = ({ comment, imageFile, is_lowkey }) => {
+    dispatch(createComment({ mixId, comment, imageFile, is_lowkey }));
   };
 
   return (
     <div className="min-h-screen bg-black text-[#E7E9EA] p-4 flex flex-col w-full max-w-2xl mx-auto">
-      <div></div>
+      {/* Page Header */}
       <div className="flex items-center mb-6">
         <RxCross2
           className="h-6 w-6 cursor-pointer mr-4"
           onClick={() => navigate(-1)}
         />
-        <h1 className="text-xl font-bold">Comments</h1>
+        <h1 className="text-xl font-bold">Thoughts</h1>
       </div>
-      <div className="flex-grow overflow-y-auto pb-24">
-        <h2 className="text-lg font-semibold mb-4">Thoughts</h2>
+
+      {/* Main Post */}
+      <div className="border-b border-gray-700 pb-4">
+        <PostCard post={selectedMix} isPartial={true} />
+      </div>
+
+      {/* Comments Section */}
+      <div className="flex-grow overflow-y-auto pt-4 pb-24">
         <div className="mb-6">
           <NewCommentInput
             placeholder="Join the conversation..."
             onSubmit={handlePostTopLevelComment}
-            isSubmitting={postStatus === "loading"}
+            isSubmitting={isSubmitting}
+            userId={loggedInUserId}
           />
         </div>
-        {status === "loading" && nestedComments.length === 0 && (
-          <div>Loading...</div>
-        )}
-        {status === "failed" && (
-          <div>Error: {error?.detail || "Could not load."}</div>
-        )}
-        {(status === "succeeded" ||
-          (status === "loading" && nestedComments.length > 0)) &&
-          nestedComments.map((comment) => (
-            <Comment
-              key={comment.id}
-              comment={comment}
-              dispatch={dispatch}
-              mixId={mixId}
-              indentLevel={0}
-              activeReplyId={activeReplyId}
-              onToggleReply={handleToggleReply}
-            />
-          ))}
+
+        {/* Initial Comments Loading Skeletons */}
+        {commentsStatus === "loading" &&
+          flatComments.length === 0 &&
+          Array.from({ length: 3 }).map((_, i) => <CommentSkeleton key={i} />)}
+
+        {/* Rendered Comments */}
+        {nestedComments.map((comment) => (
+          <Comment
+            key={comment.id}
+            comment={comment}
+            dispatch={dispatch}
+            mixId={mixId}
+            indentLevel={0}
+            activeReplyId={activeReplyId}
+            onToggleReply={handleToggleReply}
+            loggedInUserId={loggedInUserId}
+          />
+        ))}
+
+        {/* Infinite Scroll Sentinel and Loader */}
+        {loadingInitial && <CommentSkeleton />}
+        <div ref={loadMoreRef}>
+          {loadingMore && <span>Loading more...</span>}
+        </div>
       </div>
     </div>
   );

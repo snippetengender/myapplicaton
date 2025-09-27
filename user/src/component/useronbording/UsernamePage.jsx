@@ -5,97 +5,38 @@ import imageCompression from "browser-image-compression";
 import Avatar from "react-avatar";
 import api from "../../providers/api";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  updateOnboardingData,
+  updateOnboardingStep,
+  uploadOnboardingProfileImage,
+} from "../../features/userSlice/onboardingSlice";
 
 export default function UsernamePage() {
-  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const { username } = useSelector((state) => state.onboarding.profileData);
+  const { status: submissionStatus, error } = useSelector(
+    (state) => state.onboarding
+  );
   const [isTaken, setIsTaken] = useState(null);
   const [checking, setChecking] = useState(false);
   const [profileImageFile, setProfileImageFile] = useState(null); // Actual File object
-  const [profileImagePreview, setProfileImagePreview] = useState(null); // Blob URL for preview
-  const [saving, setSaving] = useState(false);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [useReactAvatar, setUseReactAvatar] = useState(true); // Flag to control avatar type
   const [avatarColor, setAvatarColor] = useState(""); // Current avatar color
   const [avatarRef, setAvatarRef] = useState(null); // Reference to avatar component
 
   const fileInputRef = useRef(null);
-  const navigate = useNavigate();
 
-  const userId = localStorage.getItem("user_id");
-  const relationshipStatus = localStorage.getItem(
-    "snippet_relationship_status"
-  );
-
-  // Avatar color palette
   const avatarColors = ["#22c55e", "#ef4444", "#3b82f6", "#f97316"]; // green, red, blue, orange
 
-  // Get random color from palette
   const getRandomColor = () => {
     return avatarColors[Math.floor(Math.random() * avatarColors.length)];
   };
 
-  // Initialize avatar color on mount or username change
-  useEffect(() => {
-    if (username && useReactAvatar && !avatarColor) {
-      const newColor = getRandomColor();
-      setAvatarColor(newColor);
-      localStorage.setItem("snippet_avatar_color", newColor);
-    }
-  }, [username, useReactAvatar, avatarColor]);
-
-  // Redirect if relationship status missing
-  useEffect(() => {
-    if (!relationshipStatus) {
-      console.warn("Relationship status not found. Redirecting...");
-      navigate("/useronboarding/relationship-status", { replace: true });
-    }
-  }, [relationshipStatus, navigate]);
-
-  // Load saved data from localStorage
-  useEffect(() => {
-    const savedUsername = localStorage.getItem("snippet_username");
-    const savedImagePreview = localStorage.getItem(
-      "snippet_profile_image_preview"
-    );
-    const savedAvatarColor = localStorage.getItem("snippet_avatar_color");
-    const savedUseReactAvatar = localStorage.getItem(
-      "snippet_use_react_avatar"
-    );
-
-    if (savedUsername) setUsername(savedUsername);
-    if (savedImagePreview) {
-      setProfileImagePreview(savedImagePreview);
-      setUseReactAvatar(false);
-    }
-    if (savedAvatarColor) setAvatarColor(savedAvatarColor);
-    if (savedUseReactAvatar !== null) {
-      setUseReactAvatar(savedUseReactAvatar === "true");
-    }
-  }, []);
-
-  // Save username to localStorage
-  useEffect(() => {
-    if (username) localStorage.setItem("snippet_username", username);
-  }, [username]);
-
-  // Save avatar preferences to localStorage
-  useEffect(() => {
-    localStorage.setItem("snippet_use_react_avatar", useReactAvatar.toString());
-    if (avatarColor) {
-      localStorage.setItem("snippet_avatar_color", avatarColor);
-    }
-  }, [useReactAvatar, avatarColor]);
-
-  // Save preview URL to localStorage
-  useEffect(() => {
-    if (profileImagePreview) {
-      localStorage.setItem(
-        "snippet_profile_image_preview",
-        profileImagePreview
-      );
-    }
-  }, [profileImagePreview]);
-
-  // Debounced username availability check
   const checkUsername = useRef(
     debounce(async (name) => {
       if (name.trim().length < 3) {
@@ -107,7 +48,6 @@ export default function UsernamePage() {
         const res = await api.post("/user/check-username", { username: name });
         setIsTaken(!res.data.available); // true = taken, false = available
 
-        // Auto-update avatar when username is available and we're using react-avatar
         if (res.data.available && useReactAvatar) {
           if (!avatarColor) {
             const newColor = getRandomColor();
@@ -125,7 +65,7 @@ export default function UsernamePage() {
 
   const handleUsernameChange = (e) => {
     const value = e.target.value;
-    setUsername(value);
+    dispatch(updateOnboardingData({ username: value }));
     checkUsername(value);
   };
 
@@ -263,86 +203,30 @@ export default function UsernamePage() {
 
   const handleNext = async () => {
     if (!username || isTaken) {
-      alert("Please choose a valid username.");
+      alert("Please choose a valid and available username.");
       return;
     }
 
-    if (!profileImageFile && !useReactAvatar) {
+    let fileToUpload = profileImageFile;
+    if (useReactAvatar && username) {
+      fileToUpload = await convertAvatarToBlob();
+    }
+
+    if (!fileToUpload) {
       alert("Please select a profile image or use the generated avatar.");
       return;
     }
 
-    if (!userId) {
-      console.error("User ID missing in localStorage");
-      return;
-    }
-
-    try {
-      setSaving(true);
-
-      let fileToUpload = profileImageFile;
-
-      // If using react-avatar, convert it to image blob
-      if (useReactAvatar && username) {
-        fileToUpload = await convertAvatarToBlob();
-        if (!fileToUpload) {
-          alert("Failed to generate avatar image. Please try again.");
-          return;
-        }
-      }
-
-      if (!fileToUpload) {
-        alert("No profile image to upload.");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", fileToUpload, fileToUpload.name);
-
-      console.log("Uploading profile image...");
-      console.log("File details:", {
-        name: fileToUpload.name,
-        type: fileToUpload.type,
-        size: fileToUpload.size,
-      });
-
-      await api.post(`/user/${userId}/profile`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        timeout: 30000,
-      });
-
-      console.log("Profile image uploaded successfully.");
-
-      await api.patch(`/user/${userId}`, { username });
-      console.log("Username updated successfully.");
-
-      localStorage.setItem("snippet_username", username);
-      localStorage.removeItem("snippet_profile_image_preview");
-      localStorage.removeItem("snippet_avatar_color");
-      localStorage.removeItem("snippet_use_react_avatar");
-
-      navigate("/home");
-    } catch (err) {
-      console.error("Error saving profile details:", err);
-
-      if (err.response) {
-        console.error("Error response:", err.response.data);
-        if (err.response.status === 422) {
-          alert("Invalid file format. Please upload a valid image.");
-        } else {
-          alert(err.response.data?.detail || "An error occurred while saving.");
-        }
-      } else if (err.request) {
-        alert("Network error. Please check your connection.");
-      } else {
-        alert("Unexpected error: " + err.message);
-      }
-    } finally {
-      setSaving(false);
-    }
+    await dispatch(updateOnboardingStep({ username })).unwrap();
+    dispatch(uploadOnboardingProfileImage(fileToUpload));
   };
 
-  // Cleanup preview URL on unmount
+  useEffect(() => {
+    if (submissionStatus === "succeeded") {
+      navigate("/home");
+    }
+  }, [submissionStatus, navigate]);
+
   useEffect(() => {
     return () => {
       if (profileImagePreview && profileImagePreview.startsWith("blob:")) {
@@ -440,7 +324,7 @@ export default function UsernamePage() {
             type="text"
             placeholder="<username>"
             maxLength={15}
-            value={username}
+            value={username || ""}
             onChange={handleUsernameChange}
             className="bg-transparent text-xl font-bold outline-none w-full placeholder:text-zinc-600"
           />
@@ -474,24 +358,24 @@ export default function UsernamePage() {
           disabled={
             checking ||
             !username ||
-            saving ||
-            (!profileImageFile && !useReactAvatar)
+            isTaken ||
+            submissionStatus === "submitting"
           }
           className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            checking ||
-            !username ||
-            saving ||
-            (!profileImageFile && !useReactAvatar)
+            checking || !username || (!profileImageFile && !useReactAvatar)
               ? "bg-zinc-600 cursor-not-allowed"
               : "bg-[#2e2e2e] hover:bg-[#3e3e3e]"
           }`}
         >
-          {saving ? (
+          {submissionStatus === "submitting" ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
             <ArrowRight className="text-[#E7E9EA]" size={22} />
           )}
         </button>
+        {submissionStatus === "failed" && (
+          <p className="text-red-500 text-right">{error}</p>
+        )}
       </div>
     </div>
   );

@@ -1,51 +1,54 @@
 import axios from "axios";
 import { auth } from "../constants/firebaseConfig";
 
-let cachedToken = null;
-let tokenExpiresAt = 0;
-
 const api = axios.create({
   baseURL: "http://localhost:8000",
   withCredentials: false,
   timeout: 30000,
 });
 
+let cachedToken = null;
+let tokenExpiresAt = 0;
+let cachedUid = null;
+
 const getToken = async () => {
   const now = Date.now();
+  const user = auth.currentUser;
+
+  if (!user) {
+    console.warn("No Firebase user. Returning null token.");
+    cachedToken = null;
+    cachedUid = null;
+    return null;
+  }
+
+  // 🚨 If user switched accounts, reset cache
+  if (cachedUid && cachedUid !== user.uid) {
+    cachedToken = null;
+    tokenExpiresAt = 0;
+  }
 
   if (cachedToken && tokenExpiresAt - now > 5 * 60 * 1000) {
     return cachedToken;
   }
 
-  const user = auth.currentUser;
-  if (!user) {
-    console.warn("No Firebase user. Returning null token.");
-    return null;
-  }
-
   try {
-    console.log("Refreshing Firebase token...");
-    const token = await user.getIdToken(true);
+    const token = await user.getIdToken(true); // always refresh
     const tokenResult = await user.getIdTokenResult();
 
     cachedToken = token;
+    cachedUid = user.uid; // ✅ track per-user
     tokenExpiresAt = new Date(tokenResult.expirationTime).getTime();
-    console.log(
-      "New token cached, expires at:",
-      new Date(tokenExpiresAt).toLocaleTimeString()
-    );
 
     return token;
   } catch (err) {
     console.error("Failed to refresh Firebase token:", err);
     cachedToken = null;
     tokenExpiresAt = 0;
+    cachedUid = null;
     return null;
   }
 };
-
-// your api.js file
-
 api.interceptors.request.use(
   async (config) => {
     console.log(` API Request: ${config.method?.toUpperCase()} ${config.url}`);
@@ -55,14 +58,9 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // --- ADD THIS BLOCK ---
-    // If the request is a file upload, remove the default Content-Type header.
-    // This allows the browser to set the correct 'multipart/form-data' header
-    // with the necessary boundary.
     if (config.data instanceof FormData) {
       delete config.headers["Content-Type"];
     }
-    // --- END OF CHANGE ---
 
     return config;
   },

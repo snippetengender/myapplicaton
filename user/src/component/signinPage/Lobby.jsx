@@ -1,15 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+// Make sure this import path is correct for your project structure
+import { resetAuthState } from "../../features/userSlice/authSlice";
 
 export default function Lobby() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // This hook will run every time the Lobby component is shown
+  useEffect(() => {
+    // Dispatch the reset action to clear any previous login state/errors
+    dispatch(resetAuthState());
+  }, [dispatch]);
 
   const handleGetStarted = () => {
-    navigate("/useronboarding/google-login");
+    // We remove navigate from here and pass it in the component that needs it
+    navigate("/useronboarding/google-login", { state: { mode: "getStarted" } });
   };
 
   const handleLogin = () => {
-    navigate("/home");
+    navigate("/useronboarding/google-login", { state: { mode: "login" } });
   };
 
   return (

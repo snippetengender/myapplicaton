@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import LandingRouter from "./component/signinPage/LandingRouter";
 import Lobby from "./component/signinPage/Lobby";
-import Login from "./component/signinPage/Login";
+import GoogleLoginPage from "./component/signinPage/GoogleLoginPage.jsx";
 
 // Onboarding (Public)
 import GoogleLogin from "./component/useronbording/Googlelogin";
@@ -36,7 +36,7 @@ import RealHappynessPage from "./component/bouquet/real_happyness_page";
 import Regrets from "./component/bouquet/regrets";
 import WannaHide from "./component/bouquet/wanna_hide";
 import SendBouquetPage from "./component/bouquet/my_scree_page";
-
+import SearchNetworkPage from "./component/Home_page/SearchNetwork.jsx";
 import SelectTagPage from "./component/mix/select_tag_page";
 import CommentTree from "./component/mix/comments_page";
 import NetworkSelectPage from "./component/mix/networkSelectMobile.jsx";
@@ -58,6 +58,11 @@ import ClubSignInPage from "./component/addClubs/mobileClubSignInPage";
 import ClubAdminPage from "./component/addClubs/mobileClubAdminPage";
 import CreateEventPage from "./component/addClubs/mobileAddEventPage";
 import MobileNetworkAdmin from "./component/creatingNetwork/communitypage/MobileCommunityAdmin.jsx";
+import AlreadyRegisteredPage from "./component/signinPage/AlreadyRegisteredPage.jsx";
+import DomainErrorPage from "./component/signinPage/DomainNotAllowed.jsx";
+import ProfileOwner from "./component/useronbording/userProfileOwner.jsx";
+import LowKeyProfilePage from "./component/lowkey/LowKeyProfile.jsx";
+import ProfileOwnerRoute from "./component/useronbording/ProfileOwnerRoute.jsx";
 
 function App() {
   return (
@@ -66,10 +71,16 @@ function App() {
         {/* Public routes */}
         <Route path="/" element={<LandingRouter />} />
         <Route path="/lobby" element={<Lobby />} />
-        <Route path="/login" element={<Login />} />
-
         {/* Onboarding */}
-        <Route path="/useronboarding/google-login" element={<GoogleLogin />} />
+        <Route
+          path="/useronboarding/google-login"
+          element={<GoogleLoginPage />}
+        />
+        <Route path="/domain-not-allowed" element={<DomainErrorPage />} />
+        <Route
+          path="/auth/already-registered"
+          element={<AlreadyRegisteredPage />}
+        />{" "}
         <Route
           path="/useronboarding/select-region"
           element={<SelectRegionPage />}
@@ -100,14 +111,20 @@ function App() {
           path="/useronboarding/relationship-status"
           element={<RelationshipStatusPage />}
         />
-        <Route
-          path="/useronboarding/user-profile/:userId"
-          element={<UserProfilePage />}
-        />
-        <Route path="/useronboarding/user-name" element={<UsernamePage />} />
-
-        {/* Mix / Networks */}
+        <Route path="/user-profile/:userId" element={<UserProfilePage />} />
         <Route element={<ProtectedRoute />}>
+
+         <Route element={<ProfileOwnerRoute />}>
+            <Route path="/user-profile-owner/:userId" element={<ProfileOwner />} />
+          </Route>
+
+        
+          <Route path="/useronboarding/user-name" element={<UsernamePage />} />
+          <Route
+            path="/lowkey-profile/:userId"
+            element={<LowKeyProfilePage />}
+          />
+
           <Route path="/selecttag/:id" element={<SelectTagPage />} />
           <Route path="/comments/:mixId" element={<CommentTree />} />
           <Route
@@ -129,7 +146,7 @@ function App() {
           />
           <Route path="/managenetwork" element={<ManageNetworkScreen />} />
           <Route path="/networkcommunity" element={<NetworkCommunityPage />} />
-          <Route path="/networkadmin/:id" element={<MobileNetworkAdmin /> } />
+          <Route path="/networkadmin/:id" element={<MobileNetworkAdmin />} />
           {}
           <Route
             path="/communitypage/:id/editnetwork"
@@ -148,9 +165,8 @@ function App() {
           <Route path="/add-event" element={<CreateEventPage />} />
           <Route path="/select-network" element={<NetworkSelectPage />} />
           <Route path="/lowkey" element={<LowkeyProfile />} />
-       
-
-        {/* Authenticated routes */}
+          <Route path="/search-network" element={<SearchNetworkPage />} />
+          {/* Authenticated routes */}
           {/* Protected routes */}
           <Route path="/home" element={<Home />} />
           <Route path="/bouquet" element={<BouquetOutlet />}>
@@ -170,7 +186,6 @@ function App() {
             <Route path="wannahide" element={<WannaHide />} />
           </Route>
         </Route>
-
         {/* Fallback */}
         {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>

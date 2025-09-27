@@ -5,12 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserProfile,
   clearUserProfile,
-  fetchLowkeyProfile,
 } from "../../features/userSlice/userSlice";
-import {
-  fetchParticularUserMix,
-  resetUserMixes,
-} from "../../features/mixes/mixSlice";
+import { fetchParticularUserMix, resetUserMixes } from "../../features/mixes/mixSlice";
 import { PostCard } from "../mix/PostCard";
 import { MixCardSkeleton } from "../lowkey/LowKeyProfile";
 
@@ -86,7 +82,7 @@ const formatBirthday = (day, month) => {
   return `${day}${suffix} ${months[month]}`;
 };
 
-export default function ProfilePage() {
+export default function ProfileOwner() {
   const [activeTab, setActiveTab] = useState("mixes");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -150,6 +146,15 @@ export default function ProfilePage() {
     );
   }
 
+  const handleLowKeyClick = () => {
+  if (profile && profile.lowkey_profile) {
+    navigate(`/lowkey-profile/${profile.lowkey_profile.user_id}`);
+  } else {
+    navigate('/lowkey');
+  }
+};
+
+
   return (
     <div className="min-h-screen bg-black text-[#E7E9EA]">
       {/* Header */}
@@ -174,12 +179,18 @@ export default function ProfilePage() {
             />
           </div>
 
-          {/* <button
+          <button
+            onClick={handleLowKeyClick}
+            className="px-4 py-1 bg-transparent border border-zinc-600 rounded-full text-sm font-semibold hover:bg-zinc-800"
+          >
+            LowKey Profile
+          </button>
+          <button
             onClick={() => navigate("/managenetwork")}
             className="px-4 py-1 bg-transparent border border-zinc-600 rounded-full text-sm font-semibold hover:bg-zinc-800"
           >
             Manage Network
-          </button> */}
+          </button>
         </div>
         <div className="mb-6 space-y-2 text-sm">
           <h1 className="text-2xl font-bold capitalize">{profile.name}</h1>
@@ -203,9 +214,9 @@ export default function ProfilePage() {
           </p>
           <div className="flex items-center gap-2 pt-1">
             <span className="text-lg font-semibold">
-              {profile.clout || "0"}K
+              {profile.clouts || "0"}
             </span>
-            <span className="text-zinc-400">Snips</span>
+            <span className="text-zinc-400">Clouts</span>
             <Info size={14} className="text-zinc-500" />
           </div>
           {profile.clubs?.length > 0 && (
@@ -223,30 +234,29 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-700 mx-4">
+        <div className="flex border-b border-zinc-800 mb-6">
           <button
-            className={`flex-1 py-3 text-center text-lg font-semibold ${
-              activeTab === "mixes"
-                ? "text-pink-500 border-b-2 border-pink-500"
-                : "text-gray-500"
-            }`}
             onClick={() => setActiveTab("mixes")}
+            className={`flex-1 py-3 text-sm font-medium ${
+              activeTab === "mixes"
+                ? "text-[#E7E9EA] border-b-2 border-white"
+                : "text-zinc-400"
+            }`}
           >
             mixes
           </button>
           <button
-            className={`flex-1 py-3 text-center text-lg font-semibold ${
-              activeTab === "thoughts"
-                ? "text-pink-500 border-b-2 border-pink-500"
-                : "text-gray-500"
+            onClick={() => setActiveTab("stuffs")}
+            className={`flex-1 py-3 text-sm font-medium ${
+              activeTab === "stuffs"
+                ? "text-[#E7E9EA] border-b-2 border-white"
+                : "text-zinc-400"
             }`}
-            onClick={() => setActiveTab("thoughts")}
           >
-            thoughts
+            stuffs
           </button>
         </div>
 
-        {/* Content Area */}
         <div className="p-4">
           {activeTab === "mixes" && (
             <>
