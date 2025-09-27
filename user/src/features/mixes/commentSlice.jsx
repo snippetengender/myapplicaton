@@ -4,17 +4,72 @@ import api from "../../providers/api";
 const initialState = {
   comments: [],
   status: "idle",
+  loadingInitial: false,
+  loadingMore: false,
   postStatus: "idle",
+  page: 1,
+  hasMore: true,
   error: null,
 };
 
 export const getComments = createAsyncThunk(
   "comments/getComments",
-  async (mixId, { rejectWithValue }) => {
+  async ({ mixId, page = 1 }, { rejectWithValue }) => {
     try {
-      const url = `/mixes/${mixId}/comments`;
+      const url = `/mixes/${mixId}/comments?page=${page}`;
       const response = await api.get(url);
-      return { ...response.data, mixId: mixId }; 
+
+      const comments = response.data.data || [];
+      const pagination = response.data.pagination || {
+        total: 0,
+        page: 1,
+        limit: 10,
+      };
+
+      const processedComments = await Promise.all(
+        comments.map(async (comment) => {
+          if (
+            comment.comment_type === "lowkey" &&
+            comment.user_id?.reference_id
+          ) {
+            try {
+              const lowkeyResponse = await api.get(
+                `/lowkey/${comment.user_id.reference_id}`
+              );
+              return {
+                ...comment,
+                user_details: {
+                  user_id: lowkeyResponse.data.user_id,
+                  name: lowkeyResponse.data.name,
+                  profile: lowkeyResponse.data.profile_image,
+                  username: lowkeyResponse.data.username,
+                  education_status: lowkeyResponse.data.education_status,
+                  college_show: lowkeyResponse.data.education_status?.course
+                    ? `@${lowkeyResponse.data.education_status.course}`
+                    : "",
+                },
+              };
+            } catch (error) {
+              console.error(
+                `Failed to fetch lowkey user ${comment.user_id.reference_id}:`,
+                error
+              );
+              return comment;
+            }
+          }
+          return comment;
+        })
+      );
+
+      const totalPages = Math.ceil(pagination.total / pagination.limit);
+      const hasMore = pagination.page < totalPages;
+
+      return {
+        data: processedComments,
+        mixId,
+        page: pagination.page,
+        hasMore,
+      };
     } catch (err) {
       if (!err.response) throw err;
       return rejectWithValue(err.response.data);
@@ -24,18 +79,36 @@ export const getComments = createAsyncThunk(
 
 export const createComment = createAsyncThunk(
   "comments/createComment",
-  async ({ mixId, comment, parentCommentId = null }, { dispatch, rejectWithValue }) => {
+  async (
+    {
+      mixId,
+      comment,
+      parentCommentId = null,
+      imageFile = null,
+      is_lowkey = false,
+    },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
-      const commentData = {
-        mix_id: mixId,
-        comment: comment,
-        parent_comment_id: parentCommentId,
-      };
-      
-      await api.post("mixes/comments/", commentData);
-      dispatch(getComments(mixId));
-      return mixId;
+      const formData = new FormData();
 
+      formData.append("mix_id", mixId);
+      formData.append("comment", comment);
+
+      if (parentCommentId) {
+        formData.append("parent_comment_id", parentCommentId);
+      }
+      if (imageFile) {
+        formData.append("file", imageFile);
+      }
+      if (is_lowkey) {
+        formData.append("is_lowkey", "true");
+      }
+
+      await api.post("/mixes/comments/", formData);
+
+      dispatch(getComments({ mixId, page: 1 }));
+      return mixId;
     } catch (err) {
       if (!err.response) throw err;
       return rejectWithValue(err.response.data);
@@ -46,20 +119,47 @@ export const createComment = createAsyncThunk(
 const commentsSlice = createSlice({
   name: "comments",
   initialState,
-  reducers: {},
+  reducers: {
+    resetComments: (state) => {
+      state.comments = [];
+      state.status = "idle";
+      state.page = 1;
+      state.hasMore = true;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(getComments.pending, (state) => {
-        state.status = "loading";
+      .addCase(getComments.pending, (state, action) => {
+        const requestedPage = action.meta.arg?.page ?? 1;
+        if (requestedPage === 1) {
+          state.loadingInitial = true;
+        } else {
+          state.loadingMore = true;
+        }
       })
       .addCase(getComments.fulfilled, (state, action) => {
+        const { data, page, hasMore } = action.payload;
+
+        if (page === 1) {
+          state.comments = data;
+          state.loadingInitial = false;
+        } else {
+          state.comments.push(...data);
+          state.loadingMore = false;
+        }
+
+        state.page = page;
+        state.hasMore = hasMore;
         state.status = "succeeded";
-        state.comments = action.payload.data;
       })
       .addCase(getComments.rejected, (state, action) => {
+        state.loadingInitial = false;
+        state.loadingMore = false;
         state.status = "failed";
         state.error = action.payload?.detail || action.error.message;
       })
+
       .addCase(createComment.pending, (state) => {
         state.postStatus = "loading";
       })
@@ -72,5 +172,7 @@ const commentsSlice = createSlice({
       });
   },
 });
+
+export const { resetComments } = commentsSlice.actions;
 
 export default commentsSlice.reducer;

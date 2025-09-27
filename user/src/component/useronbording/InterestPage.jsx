@@ -2,14 +2,19 @@ import React, { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../../providers/api";
+import { useDispatch, useSelector } from "react-redux";
+import { updateOnboardingData, updateOnboardingStep } from "../../features/userSlice/onboardingSlice";
 
 export default function InterestPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { interests: selectedInterests = [] } = useSelector(
+    (state) => state.onboarding.profileData
+  );
+
   const [allInterests, setAllInterests] = useState([]);
-  const [selectedInterests, setSelectedInterests] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchInterests = async () => {
@@ -25,58 +30,36 @@ export default function InterestPage() {
     fetchInterests();
   }, []);
 
-  const user_edu = JSON.parse(localStorage.getItem("snippet_user_education"));
-  useEffect(() => {
-    if (!user_edu) {
-      console.warn("Fill the previous page");
-      navigate("/useronboarding/course-year-branch");
-    }
-  }, [navigate, user_edu]);
-
   const toggleInterest = (interest) => {
-    const isSelected = selectedInterests.find(
+    const isSelected = selectedInterests.some(
       (i) => i.reference_id === interest.id
     );
+
+    let newInterests;
+
     if (isSelected) {
-      setSelectedInterests(
-        selectedInterests.filter((i) => i.reference_id !== interest.id)
+      newInterests = selectedInterests.filter(
+        (i) => i.reference_id !== interest.id
       );
     } else if (selectedInterests.length < 3) {
-      setSelectedInterests([
+      newInterests = [
         ...selectedInterests,
         {
           reference_id: interest.id,
           name: interest.name,
         },
-      ]);
-    }
-  };
-
-  const saveToLocalStorage = (interests) => {
-    localStorage.setItem("snippet_user_interests", JSON.stringify(interests));
-  };
-
-  const handleNext = async () => {
-    saveToLocalStorage(selectedInterests);
-
-    const user_id = localStorage.getItem("user_id");
-    if (!user_id || selectedInterests.length === 0) {
-      console.error(" Missing user_id or no interests selected");
+      ];
+    } else {
       return;
     }
-
-    setSaving(true);
-    try {
-      await api.patch(`/user/${user_id}`, { interests: selectedInterests });
-      console.log("Interests updated successfully");
-      navigate("/useronboarding/prompt");
-    } catch (err) {
-      console.error("Error saving interests:", err.message);
-    } finally {
-      setSaving(false);
-    }
+    dispatch(updateOnboardingData({ interests: newInterests }));
   };
 
+   const handleNext = () => {
+    dispatch(updateOnboardingStep({ interests: selectedInterests }));
+    
+    navigate("/useronboarding/prompt");
+  };
   const filteredInterests = allInterests.filter((i) =>
     i.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -135,7 +118,7 @@ export default function InterestPage() {
                   key={interest.id}
                   onClick={() => toggleInterest(interest)}
                   className={`px-3 py-1 rounded-full text-sm border transition ${
-                    selectedInterests.find(
+                    selectedInterests.some(
                       (i) => i.reference_id === interest.id
                     )
                       ? "border-[#F06CB7] text-[#E7E9EA]"
@@ -158,18 +141,14 @@ export default function InterestPage() {
         </p>
         <button
           onClick={handleNext}
-          disabled={saving || selectedInterests.length < 3}
+          disabled={selectedInterests.length < 3}
           className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
-            saving || selectedInterests.length < 3
+            selectedInterests.length < 3
               ? "bg-gray-600 cursor-not-allowed opacity-50"
               : "bg-[#F06CB7] hover:bg-[#e05ca3]"
           }`}
         >
-          {saving ? (
-            <span className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          ) : (
-            <ArrowRight className="text-[#E7E9EA]" size={22} />
-          )}
+          <ArrowRight className="text-[#E7E9EA]" size={22} />
         </button>
       </div>
     </div>

@@ -1,26 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../../providers/api";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  updateOnboardingData,
+  updateOnboardingStep,
+} from "../../features/userSlice/onboardingSlice";
 
 export default function RelationshipStatusPage() {
   const navigate = useNavigate();
-  const [status, setStatus] = useState("");
-  const [saving, setSaving] = useState(false);
+  const dispatch = useDispatch();
 
-  const prompt = JSON.parse(localStorage.getItem("snippet_user_prompt"));
-
-  useEffect(() => {
-    if (!prompt) {
-      console.warn("Please fill the prompt page");
-      navigate("/useronboarding/prompt", { replace: true });
-    }
-
-    const savedStatus = localStorage.getItem("snippet_relationship_status");
-    if (savedStatus) {
-      setStatus(savedStatus);
-    }
-  }, [navigate, prompt]);
+  const { relationship_status } = useSelector(
+    (state) => state.onboarding.profileData
+  );
 
   const options = [
     { label: "Taken", value: "taken" },
@@ -29,42 +22,22 @@ export default function RelationshipStatusPage() {
   ];
 
   const handleStatusChange = (value) => {
-    setStatus(value);
-    localStorage.setItem("snippet_relationship_status", value);
+    dispatch(updateOnboardingData({ relationship_status: value }));
   };
 
-  const handleSaveAndNext = async () => {
-    if (!status) return;
+  const handleSaveAndNext = () => {
+    dispatch(updateOnboardingStep({ relationship_status}));
 
-    const user_id = localStorage.getItem("user_id");
-    if (!user_id) {
-      console.error("User ID missing in localStorage");
-      return;
-    }
-
-    setSaving(true);
-    try {
-      await api.patch(`/user/${user_id}`, {
-        relationship_status: status,
-      });
-      console.log(" Relationship status updated on server");
-      navigate("/useronboarding/user-name");
-    } catch (err) {
-      console.error(" Error saving relationship status:", err.message);
-    } finally {
-      setSaving(false);
-    }
+    navigate("/useronboarding/user-name");
   };
 
   return (
     <div className="min-h-screen bg-black text-[#E7E9EA] px-5 py-6 flex flex-col justify-between">
       <div>
-        {/* Back Arrow */}
         <button className="mb-6" onClick={() => navigate(-1)}>
           <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
-        {/* Headings */}
         <h1 className="text-2xl font-bold leading-tight">
           BRAVO, let’s jump into <br /> Relationship Status
         </h1>
@@ -72,12 +45,11 @@ export default function RelationshipStatusPage() {
           Choose your relationship status.
         </p>
 
-        {/* Radio Options */}
         {options.map((opt) => (
           <label
             key={opt.value}
             className={`flex items-center justify-between py-3 text-3xl font-bold transition-colors ${
-              status === opt.value ? "text-white" : "text-zinc-400"
+              relationship_status === opt.value ? "text-white" : "text-zinc-400"
             }`}
           >
             {opt.label}
@@ -85,7 +57,7 @@ export default function RelationshipStatusPage() {
               type="radio"
               name="relationship"
               value={opt.value}
-              checked={status === opt.value}
+              checked={relationship_status === opt.value}
               onChange={() => handleStatusChange(opt.value)}
               className="w-5 h-5 accent-white"
             />
@@ -93,13 +65,12 @@ export default function RelationshipStatusPage() {
         ))}
       </div>
 
-      {/* Bottom Next Button */}
       <div className="flex justify-end mt-10">
         <button
-          disabled={!status || saving}
+          disabled={!relationship_status}
           onClick={handleSaveAndNext}
           className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors duration-200 ${
-            !status || saving
+            !relationship_status
               ? "bg-zinc-700 cursor-not-allowed"
               : "bg-[#2e2e2e] hover:bg-[#1f1f1f]"
           }`}
@@ -107,11 +78,6 @@ export default function RelationshipStatusPage() {
           <ArrowRight className="text-[#E7E9EA]" size={22} />
         </button>
       </div>
-
-      {/* Saving Indicator */}
-      {saving && (
-        <p className="text-sm text-blue-400 mt-2 text-right">Saving...</p>
-      )}
     </div>
   );
 }

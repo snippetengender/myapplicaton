@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ArrowLeft, Trash2, X, Paperclip } from "lucide-react";
+import { ArrowLeft, Trash2, X, Paperclip, ChevronDown } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUserProfile } from "../../features/userSlice/userSlice";
+import {
+  fetchUserProfile,
+  clearUserProfile,
+} from "../../features/userSlice/userSlice";
 import { createMix, resetMixes } from "../../features/mixes/mixSlice";
 import imageCompression from "browser-image-compression";
+import ProfileSelector from "./ProfileSelector";
 
 const availableTags = [
   "confession",
@@ -94,9 +98,16 @@ const ImageUploadTextArea = ({
 
 export default function MobilePostPage() {
   const { id } = useParams();
+  const dispatch = useDispatch();
+
   const { data: userDetails } = useSelector((state) => state.user.profile);
-  console.log(userDetails);
-  // Component State
+
+  const [useLowkey, setUseLowkey] = useState(false);
+  const hasLowkeyProfile = userDetails && userDetails.lowkey_profile;
+  useEffect(() => {
+    dispatch(clearUserProfile());
+  }, [dispatch]);
+
   const [selectedTag, setSelectedTag] = useState(null);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
@@ -106,8 +117,6 @@ export default function MobilePostPage() {
   const [pollOptions, setPollOptions] = useState(["", ""]);
   const [newOption, setNewOption] = useState("");
 
-  // Redux State
-  const dispatch = useDispatch();
   const { isSubmitting } = useSelector((state) => state.mixes);
   const navigate = useNavigate();
   const {
@@ -116,9 +125,6 @@ export default function MobilePostPage() {
     error,
   } = useSelector((state) => state.user.profile);
 
-  useEffect(() => {
-    console.log("User Profile Data:", userProfile);
-  }, [userProfile]);
   useEffect(() => {
     const storedNetwork = localStorage.getItem("selectedNetwork");
     if (storedNetwork) {
@@ -137,6 +143,12 @@ export default function MobilePostPage() {
       removeImage();
     }
   }, [selectedTag]);
+
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem("selectedNetwork");
+    };
+  }, []);
 
   const handleImageSelect = async (event) => {
     const file = event.target.files[0];
@@ -197,29 +209,23 @@ export default function MobilePostPage() {
     setPollOptions(newOptions);
   };
 
-  // `canPost` logic now matches the UI flow
   let canPost = false;
   if (selectedTag) {
-    // Common condition for all post types: must have text or an image
     let hasContent = text.trim().length > 0 || imageFile !== null;
 
     if (selectedTag === "polls") {
       const hasTwoOptions =
         pollOptions.filter((opt) => opt.trim() !== "").length >= 2;
-      // A poll must have a question (in the 'text' field) AND at least two options.
       canPost = text.trim().length > 0 && hasTwoOptions;
     } else {
-      // For other tags, you just need text or an image.
       canPost = hasContent;
     }
 
-    // Additional requirement if a network is selected: a title is also needed.
     if (selectedNetwork && title.trim().length === 0) {
       canPost = false;
     }
   }
 
-  // FIX: handleSubmit now dispatches the Redux action
   const handleSubmit = () => {
     if (!canPost || isSubmitting) return;
 
@@ -230,9 +236,11 @@ export default function MobilePostPage() {
       selectedNetwork,
       imageFile,
       pollOptions,
+      useLowkey,
     };
 
     dispatch(createMix(mixData)).then((result) => {
+      console.log(mixData);
       if (result.type === "mixes/create/fulfilled") {
         dispatch(resetMixes());
 
@@ -242,7 +250,6 @@ export default function MobilePostPage() {
     });
   };
 
-  // FIX: The renderInputs function is completely refactored for the correct logic
   const renderInputs = () => {
     const maxLength = selectedNetwork ? 1000 : 200;
     if (!selectedTag) {
@@ -420,19 +427,34 @@ export default function MobilePostPage() {
             </button>
           ))}
         </div>
-        {selectedNetwork && selectedTag ? (
+        {selectedNetwork && selectedTag && userDetails ? (
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <img
-                src={selectedNetwork.image}
-                alt={selectedNetwork.name}
-                className="w-10 h-10 rounded-full object-cover"
+            {hasLowkeyProfile ? (
+              <ProfileSelector
+                userDetails={userDetails}
+                useLowkey={useLowkey}
+                setUseLowkey={setUseLowkey}
               />
-              <div className="text-gray-400 text-md">
-                {`<${userDetails.username}>`}
-              </div>
-            </div>
-            <div onClick={() => navigate("/lowkey")}>or use Lowkey profile</div>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <img
+                    src={userDetails.profile}
+                    alt={userDetails.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div className="text-gray-400 text-md">
+                    {`<${userDetails.username}>`}
+                  </div>
+                </div>
+                <div
+                  onClick={() => navigate("/lowkey")}
+                  className="text-sm text-pink-500 cursor-pointer whitespace-nowrap"
+                >
+                  or use Lowkey profile
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <div></div>

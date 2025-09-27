@@ -10,62 +10,323 @@ import {
   fetchMixesByNetwork,
   resetNetworkMixes,
   deleteMix,
+  reactMix,
+  voteInPoll,
 } from "../../../features/mixes/mixSlice";
+import upvoteInactive from "../../assets/Upvote.svg";
+import downvoteInactive from "../../assets/Downvote.svg";
+import upvoteActive from "../../assets/upvoteActive.svg";
+import downvoteActive from "../../assets/downvoteActive.svg";
 
-export const PollComponent = ({ post }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
+// export const PollComponent = ({ post }) => {
+//   const [selectedOption, setSelectedOption] = useState(null);
+//   return (
+//     <div className="mt-3 space-y-2">
+//       {post.options.map((option, index) => (
+//         <div
+//           key={index}
+//           onClick={() => setSelectedOption(index)}
+//           className={`border rounded-lg p-3 flex justify-between items-center cursor-pointer transition-all duration-200 ${
+//             selectedOption === index ? "border-pink-500" : "border-gray-700"
+//           }`}
+//         >
+//           <span className="font-semibold">{option.text}</span>
+//           <span className="text-gray-400">{option.votes}%</span>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
+// const NetworkPostCard = ({ post }) => {
+
+//   const navigate = useNavigate();
+//   const { user = {}, time, label, title, content, imageUrl, stats = {} } = post;
+//   const profileType = user.profileType || "user";
+
+//   return (
+//     <div className="border-b border-gray-700 py-4">
+//       <div className="px-1">
+//         <div className="flex justify-between items-start">
+//           <div className="flex items-center gap-3">
+//             {user.avatar ? (
+//               <img
+//                 src={user.avatar}
+//                 alt={user.name || "Network"}
+//                 className="w-10 h-10 rounded-full object-cover"
+//               />
+//             ) : (
+//               <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white">
+//                 {user.name?.[0]?.toUpperCase() || "?"}
+//               </div>
+//             )}
+//             <div className="text-sm">
+//               <div
+//                 className="flex items-center gap-1.5 text-md font-semibold cursor-pointer"
+//                 onClick={() =>
+//                   navigate(`/useronboarding/user-profile/${user.id}`)
+//                 }
+//               >
+//                 {"<"}
+//                 {user.username}
+//                 {">"}
+//                 <span className="text-[#616161] font-normal">
+//                   {user.degree ? (user.degree === "masters" ? "m" : "b") : ""}
+//                   {user.college} • {time}
+//                 </span>
+//                 <span className="ml-1 text-xs px-2 py-0.5 rounded-full border border-gray-700">
+//                   {label}
+//                 </span>
+//               </div>
+//             </div>
+//           </div>
+//           <button className="text-gray-400">•••</button>
+//         </div>
+//       </div>
+
+//       <div className="px-4 ml-0.5 pl-1 mt-3">
+//         {title && (
+//           <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">{title}</h2>
+//         )}
+//         {content && (
+//           <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+//             {content}
+//           </p>
+//         )}
+
+//         {imageUrl && (
+//           <div className="relative w-full aspect-square mt-2">
+//             <img
+//               src={imageUrl}
+//               alt={title || "Post image"}
+//               className="w-full h-full object-cover"
+//             />
+//           </div>
+//         )}
+
+//         {label === "Poll" && (
+//           <PollComponent post={post} profileType={profileType} />
+//         )}
+
+//         {/* Reactions */}
+//         <div className="flex justify-between items-center mt-3 text-xs">
+//           <span
+//             className="text-pink-500 font-medium cursor-pointer"
+//             onClick={() => navigate(`/comments/${post.id}`)}
+//           >
+//             {stats.thoughts} thoughts
+//           </span>
+//           <div className="flex gap-2">
+
+//             <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
+//               {stats.nah} nah
+//             </button>
+//             <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
+//               {stats.hmm} hmm
+//             </button>
+//             <button className="px-3 py-1 rounded-full border border-gray-700 text-pink-500">
+//               {stats.hellYeah} hell yeah
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+const PollComponent = ({ post }) => {
+  const dispatch = useDispatch();
+
+  const hasVoted = !!post.userVote;
+  const pollTimeInfo = getPollTimeInfo(post.createdAt);
+
+  const isPollEnded = pollTimeInfo.status === "ended";
+
+  const handleVote = (optionId) => {
+    if (isPollEnded) return;
+    if (post.userVote === optionId) return;
+    dispatch(voteInPoll({ mixId: post.id, optionId }));
+  };
+
   return (
-    <div className="mt-3 space-y-2">
-      {post.options.map((option, index) => (
-        <div
-          key={index}
-          onClick={() => setSelectedOption(index)}
-          className={`border rounded-lg p-3 flex justify-between items-center cursor-pointer transition-all duration-200 ${
-            selectedOption === index ? "border-pink-500" : "border-gray-700"
-          }`}
-        >
-          <span className="font-semibold">{option.text}</span>
-          <span className="text-gray-400">{option.votes}%</span>
-        </div>
-      ))}
+    <div className="mt-3 space-y-3">
+      {/* Content */}
+
+      <>
+        <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-3">
+          {post.title}
+        </p>
+        <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-3">
+          {post.content}
+        </p>
+      </>
+
+      {/* Poll Options */}
+      {post.options.map((option) => {
+        const isSelectedOption = post.userVote === option.id;
+
+        return (
+          <div
+            key={option.id}
+            onClick={() => handleVote(option.id)}
+            className={`relative border rounded-xl p-3 flex justify-between items-center transition-all duration-200 overflow-hidden 
+              ${
+                !isPollEnded
+                  ? "cursor-pointer hover:border-pink-500"
+                  : "cursor-default"
+              }
+              ${isPollEnded && !hasVoted ? "opacity-50" : ""}
+              ${isSelectedOption ? "border-pink-500" : "border-gray-700"}`}
+          >
+            {/* Option Fill if Voted */}
+            {hasVoted && (
+              <div
+                className="absolute top-0 left-0 h-full bg-pink-500/20 transition-all duration-500"
+                style={{ width: `${option.votes}%` }}
+              />
+            )}
+
+            {/* Option Text */}
+            <div className="relative flex items-center">
+              {isSelectedOption && (
+                <span className="text-pink-500 mr-2">✓</span>
+              )}
+              <span className="font-semibold">{option.text}</span>
+            </div>
+
+            {/* Vote Count (only if voted) */}
+            {hasVoted && (
+              <div className="relative flex items-center">
+                <span className="text-gray-300 mr-2 font-bold">
+                  {option.votes}%
+                </span>
+                <span className="text-gray-500 text-xs">({option.count})</span>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {/* Footer */}
+      <p className="text-xs text-center text-gray-500 pt-1">
+        {isPollEnded
+          ? pollTimeInfo.displayText
+          : `${post.stats.reactions} ${
+              post.stats.reactions === 1 ? "vote" : "votes"
+            } • ${pollTimeInfo.displayText}`}
+      </p>
     </div>
   );
 };
 
-const NetworkPostCard = ({ post }) => {
+const getPollTimeInfo = (createdAtTimestamp) => {
+  if (!createdAtTimestamp) {
+    return { status: "ended", displayText: "Poll Ended", remainingMs: 0 };
+  }
+
+  let createdAt = Number(createdAtTimestamp);
+  if (createdAt < 1e12) {
+    createdAt *= 1000;
+  }
+
+  const POLL_DURATION_MS = 24 * 60 * 60 * 1000;
+  const endTime = createdAt + POLL_DURATION_MS;
+  const now = Date.now();
+  const remainingMs = endTime - now;
+
+  if (remainingMs <= 0) {
+    return { status: "ended", displayText: "Poll Ended", remainingMs: 0 };
+  }
+  const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+  const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  let displayText = "ends in ";
+  if (hours > 0) {
+    displayText += `${hours}h`;
+    if (minutes > 0) {
+      displayText += ` ${minutes}m`;
+    }
+  } else if (minutes > 0) {
+    displayText += `${minutes}m`;
+  } else {
+    displayText = "ends in <1m";
+  }
+
+  return { status: "active", displayText, remainingMs };
+};
+
+// const getPollTimeStatus = (timestampMs) => {
+//   if (!timestampMs) return "";
+
+//   const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+//   const endTime = timestampMs + twentyFourHoursInMs;
+//   const now = new Date().getTime();
+//   const remainingMs = endTime - now;
+
+//   if (remainingMs <= 0) {
+//     return "ended";
+//   }
+
+//   const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+
+//   return `ends in ${hours}h`;
+// };
+
+export const NetworkPostCard = ({ post }) => {
   const dispatch = useDispatch();
-  console.log(post.id);
+  const user = post.user || {};
+  const {
+    time,
+    label,
+    content,
+    stats = {},
+    tag,
+    title,
+    imageUrl,
+    createdAt,
+  } = post;
+
+  const pollTimeInfo =
+    label.toLowerCase() === "poll" ? getPollTimeInfo(createdAt) : null;
+
+  const navigate = useNavigate();
+
   const handleDelete = () => {
     dispatch(deleteMix(post.id));
     alert("Mix deleted successfully");
     window.location.reload();
   };
 
-  const navigate = useNavigate();
-  const { user = {}, time, label, title, content, imageUrl, stats = {} } = post;
-  const profileType = user.profileType || "user";
+  const handleReaction = (reactionType) => {
+    const newReaction = post.userReaction === reactionType ? "" : reactionType;
+    dispatch(reactMix({ mixId: post.id, reaction: newReaction }));
+  };
+
+  const netScore = stats.upvote - stats.downvote;
 
   return (
     <div className="border-b border-gray-700 py-4">
+      {/* Header */}
       <div className="px-1">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
             {user.avatar ? (
               <img
                 src={user.avatar}
-                alt={user.name || "Network"}
+                alt={user.name || "User"}
                 className="w-10 h-10 rounded-full object-cover"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white">
-                {user.name?.[0]?.toUpperCase() || "?"}
+                {user.username?.[0]?.toUpperCase() || "?"}
               </div>
             )}
+
             <div className="text-sm">
               <div
-                className="flex items-center gap-1.5 text-md font-semibold cursor-pointer"
+                className="flex items-center gap-1.5 text-md font-semibold"
                 onClick={() =>
-                  navigate(`/useronboarding/user-profile/${user.id}`)
+                  navigate(`/user-profile/${user.id}`)
                 }
               >
                 {"<"}
@@ -78,6 +339,12 @@ const NetworkPostCard = ({ post }) => {
                 <span className="ml-1 text-xs px-2 py-0.5 rounded-full border border-gray-700">
                   {label}
                 </span>
+
+                {label.toLowerCase() === "poll" && (
+                  <span className="text-xs text-gray-400 font-normal ml-1">
+                    • {getPollTimeInfo(createdAt).displayText}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -85,28 +352,44 @@ const NetworkPostCard = ({ post }) => {
         </div>
       </div>
 
+      {/* Post content */}
       <div className="px-4 ml-0.5 pl-1 mt-3">
-        {title && (
-          <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">{title}</h2>
-        )}
-        {content && (
-          <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
-            {content}
-          </p>
-        )}
-
-        {imageUrl && (
-          <div className="relative w-full aspect-square mt-2">
-            <img
-              src={imageUrl}
-              alt={title || "Post image"}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-
-        {label === "Poll" && (
-          <PollComponent post={post} profileType={profileType} />
+        {tag !== "poll" ? (
+          <>
+            {/* For image posts */}
+            {imageUrl ? (
+              <>
+                {" "}
+                <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
+                  {title}
+                </h2>
+                {/* {profileType === "user" && content && (
+                  <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+                    {content}
+                  </p>
+                )} */}
+                <div className="relative w-full aspect-square mt-2">
+                  <img
+                    src={imageUrl}
+                    alt={title || "Post image"}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {" "}
+                <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
+                  {title}
+                </h2>
+                <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+                  {content}
+                </p>
+              </>
+            )}
+          </>
+        ) : (
+          <PollComponent post={post} />
         )}
 
         {/* Reactions */}
@@ -118,13 +401,7 @@ const NetworkPostCard = ({ post }) => {
             {stats.thoughts} thoughts
           </span>
           <div className="flex gap-2">
-            <button
-              className="px-3 py-1 rounded-full border border-gray-700 text-gray-400"
-              onClick={handleDelete}
-            >
-              X
-            </button>
-            <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
+            {/* <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
               {stats.nah} nah
             </button>
             <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
@@ -132,7 +409,41 @@ const NetworkPostCard = ({ post }) => {
             </button>
             <button className="px-3 py-1 rounded-full border border-gray-700 text-pink-500">
               {stats.hellYeah} hell yeah
-            </button>
+            </button> */}
+
+            <div className="flex items-center gap-3">
+              <button
+                className="px-3 py-1 rounded-full border border-gray-700 text-gray-400"
+                onClick={handleDelete}
+              >
+                X
+              </button>
+
+              <img
+                src={
+                  post.userReaction === "like" ? upvoteActive : upvoteInactive
+                }
+                alt="upvote reaction"
+                onClick={() => handleReaction("like")}
+                className="w-6 h-6 cursor-pointer"
+              />
+
+              <p className="text-gray-400 text-xl font-semibold w-6 text-center">
+                {netScore}
+              </p>
+
+              {/* 5. Downvote image with conditional source */}
+              <img
+                src={
+                  post.userReaction === "dislike"
+                    ? downvoteActive
+                    : downvoteInactive
+                }
+                alt="downvote reaction"
+                onClick={() => handleReaction("dislike")}
+                className="w-6 h-6 cursor-pointer"
+              />
+            </div>
           </div>
         </div>
       </div>
