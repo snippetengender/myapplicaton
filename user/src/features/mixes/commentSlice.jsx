@@ -14,66 +14,19 @@ const initialState = {
 
 export const getComments = createAsyncThunk(
   "comments/getComments",
-  async ({ mixId, page = 1 }, { rejectWithValue }) => {
-    try {
-      const url = `/mixes/${mixId}/comments?page=${page}`;
-      const response = await api.get(url);
+  async ({ mixId, page = 1, limit = 10 }) => {
+    const response = await api.get(
+      `mixes/${mixId}/comments?page=${page}&limit=${limit}`
+    );
 
-      const comments = response.data.data || [];
-      const pagination = response.data.pagination || {
-        total: 0,
-        page: 1,
-        limit: 10,
-      };
+    const { data, pagination } = response.data;
 
-      const processedComments = await Promise.all(
-        comments.map(async (comment) => {
-          if (
-            comment.comment_type === "lowkey" &&
-            comment.user_id?.reference_id
-          ) {
-            try {
-              const lowkeyResponse = await api.get(
-                `/lowkey/${comment.user_id.reference_id}`
-              );
-              return {
-                ...comment,
-                user_details: {
-                  user_id: lowkeyResponse.data.user_id,
-                  name: lowkeyResponse.data.name,
-                  profile: lowkeyResponse.data.profile_image,
-                  username: lowkeyResponse.data.username,
-                  education_status: lowkeyResponse.data.education_status,
-                  college_show: lowkeyResponse.data.education_status?.course
-                    ? `@${lowkeyResponse.data.education_status.course}`
-                    : "",
-                },
-              };
-            } catch (error) {
-              console.error(
-                `Failed to fetch lowkey user ${comment.user_id.reference_id}:`,
-                error
-              );
-              return comment;
-            }
-          }
-          return comment;
-        })
-      );
-
-      const totalPages = Math.ceil(pagination.total / pagination.limit);
-      const hasMore = pagination.page < totalPages;
-
-      return {
-        data: processedComments,
-        mixId,
-        page: pagination.page,
-        hasMore,
-      };
-    } catch (err) {
-      if (!err.response) throw err;
-      return rejectWithValue(err.response.data);
-    }
+    return {
+      data,
+      page: pagination.page,
+      total: pagination.total,
+      limit: pagination.limit,
+    };
   }
 );
 
@@ -139,7 +92,7 @@ const commentsSlice = createSlice({
         }
       })
       .addCase(getComments.fulfilled, (state, action) => {
-        const { data, page, hasMore } = action.payload;
+        const { data, page, total, limit } = action.payload;
 
         if (page === 1) {
           state.comments = data;
@@ -150,9 +103,10 @@ const commentsSlice = createSlice({
         }
 
         state.page = page;
-        state.hasMore = hasMore;
+        state.hasMore = state.comments.length < total;
         state.status = "succeeded";
       })
+
       .addCase(getComments.rejected, (state, action) => {
         state.loadingInitial = false;
         state.loadingMore = false;

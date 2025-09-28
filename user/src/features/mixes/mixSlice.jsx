@@ -187,6 +187,8 @@ export const fetchParticularMix = createAsyncThunk(
   async (mixId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/mixes/${mixId}`);
+      console.log("after transformation:", response.data);
+
       return response.data;
     } catch (err) {
       console.error("Failed to fetch particular mix:", err);
@@ -440,6 +442,79 @@ export const fetchParticularUserMix = createAsyncThunk(
   }
 );
 
+export const transformParticularMixToPost = (mix) => {
+  const userDetails = mix.user_details;
+  const pollVotes = mix.poll_votes || {};
+  const totalVotes = Object.values(pollVotes).reduce(
+    (sum, count) => sum + count,
+    0
+  );
+
+  if (!userDetails) {
+    console.warn("Mix object is missing user_details:", mix.id);
+    return null;
+  }
+
+  const user = {
+    id: userDetails.user_id || userDetails.firebase_id,
+    avatar: userDetails.profile || userDetails.profile_image,
+    name: userDetails.name,
+    username: userDetails.username,
+    profileType: mix.user_mode === "lowkey" ? "lowkey" : "user",
+    degree: userDetails.education_status?.degree || null,
+    college: userDetails.college_show,
+  };
+
+  const timeAgo = (timestamp) => {
+    if (!timestamp) return "";
+    const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `${days}d`;
+  };
+
+  return {
+    id: mix.id,
+    user,
+    time: timeAgo(mix.sent_at),
+    createdAt: mix.sent_at,
+    label: mix.mix_type,
+    title: mix.title,
+    content: mix.description,
+    imageUrl: mix.image,
+    tag: mix.mix_type?.toLowerCase(),
+    options: mix.poll_options
+      ? mix.poll_options.map((opt) => {
+          const voteCount = pollVotes[opt.reference_id] || 0;
+          const percentage =
+            totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+          return {
+            id: opt.reference_id,
+            text: opt.name,
+            votes: percentage,
+            count: voteCount,
+          };
+        })
+      : [],
+    userVote: mix.poll_vote_for,
+    pollVotes: pollVotes,
+    userMode: mix.user_mode,
+    stats: {
+      thoughts: mix.comments_count || 0,
+      reactions: totalVotes,
+      upvote: mix.likes || 0,
+      downvote: mix.dislikes || 0,
+    },
+    userReaction: mix.user_reaction,
+    network_id: mix.network_id || null,
+    network_members_count: mix.network_members_count || null,
+  };
+};
+
 const transformFullMixToPost = (
   mix,
   { showUserInNetworkPost = false } = {}
@@ -635,7 +710,6 @@ const mixesSlice = createSlice({
       })
       .addCase(createMix.fulfilled, (state, action) => {
         state.isSubmitting = false;
-        // When a new post is created, add it to the top of the main feed.
         const newPost = transformMixToPost(action.payload.data);
         state.posts.unshift(newPost);
       })
@@ -930,7 +1004,8 @@ const mixesSlice = createSlice({
       })
       .addCase(fetchParticularMix.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const mix = transformMixToPost(action.payload.data);
+        const mix = transformParticularMixToPost(action.payload.data);
+        console.log("after transformation:", mix);
         state.selectedMix = mix;
       })
       .addCase(fetchParticularMix.rejected, (state, action) => {

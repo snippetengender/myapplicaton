@@ -213,9 +213,10 @@ export const NetworkPostCard = ({ post }) => {
                   )
                 }
               >
-                {"<"}
-                {user.username}
-                {">"}
+                {post.userMode === "general"
+                  ? `<${user.username}>`
+                  : `{${user.username}}`}
+
                 <span className="text-[#616161] font-normal">
                   {user.degree ? (user.degree === "masters" ? "m" : "b") : ""}
                   {user.college} • {time}

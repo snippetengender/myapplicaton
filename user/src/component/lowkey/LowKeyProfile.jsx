@@ -3,10 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLowkeyProfile } from "../../features/userSlice/userSlice";
-import upvoteInactive from "../assets/Upvote.svg";
-import downvoteInactive from "../assets/Downvote.svg";
-import upvoteActive from "../assets/upvoteActive.svg";
-import downvoteActive from "../assets/downvoteActive.svg";
+
 import {
   fetchParticularUserMix,
   reactMix,
