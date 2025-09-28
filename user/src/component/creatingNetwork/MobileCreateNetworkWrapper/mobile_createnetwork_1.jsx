@@ -43,7 +43,7 @@ export default function MobileCreateNetwork1() {
   };
 
   const handleNext = () => navigate("/mobile_createnetwork_2");
-  const handleBack = () => navigate("/communitypage");
+  const handleBack = () => navigate(-1);
 
   return (
     <div className="bg-black text-[#E7E9EA] min-h-screen flex flex-col p-6 pb-10">
