@@ -8,6 +8,7 @@ import {
   resetForm,
   fetchInterests,
 } from "../../../features/networkCreate/networkSlice";
+import nextArrow from "../../assets/next.svg";
 
 export default function MobileCreateNetwork3() {
   const navigate = useNavigate();
@@ -69,19 +70,19 @@ export default function MobileCreateNetwork3() {
     }
   };
   return (
-    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 pt-6 pb-28">
+    <div className="min-h-screen bg-black text-brand-off-white px-4 pt-6 pb-28">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center justify-between mb-4">
         {/* CORRECTED: Back button now navigates to page 2 */}
         <button onClick={() => navigate('/mobile_createnetwork_2')} className="p-2 -ml-2">
           <ArrowLeft className="w-6 h-6 text-neutral-300" />
         </button>
-        <span className="ml-auto bg-[#2F3336] px-3 py-1 rounded-full text-sm">
+        <div className="bg-brand-charcoal w-[65px] h-[32px] text-[15px] rounded-full px-3 py-1.5 text-black justify-center items-center flex">
           3/3
-        </span>
+        </div>
     </div>
-      <h2 className="text-lg font-semibold">Network interest</h2>
-      <p className="text-gray-400 text-sm mb-4">
+      <h2 className="text-[20px] font-bold">Network interest</h2>
+      <p className="text-brand-off-white text-[12px] mb-4">
         Pick one interest that best describes your network. This helps others
         discover it.
       </p>
@@ -97,8 +98,8 @@ export default function MobileCreateNetwork3() {
               onClick={() => handleSelectInterest(item)}
               className={`px-3 py-1 rounded-full text-sm border transition-colors ${
                 isSelected
-                  ? "border-pink-500 text-pink-500 bg-pink-900/20"
-                  : "border-neutral-700 text-neutral-400"
+                  ? "border-brand-pink text-brand-pink "
+                  : "border-brand-charcoal text-brand-off-white"
               }`}
             >
               {item.name}
@@ -113,7 +114,7 @@ export default function MobileCreateNetwork3() {
         {status !== "loading" && canLoadMore && (
           <button
             onClick={handleLoadMore}
-            className="text-pink-500 hover:underline"
+            className="text-brand-pink hover:underline"
           >
             Load More
           </button>
@@ -129,14 +130,17 @@ export default function MobileCreateNetwork3() {
         </p>
       )}
 
-      <footer className="fixed bottom-0 left-0 right-0 flex items-center justify-between bg-black px-6 py-4">
-        <p className="text-md">Can’t find your Interest?</p>
+      <footer className="fixed bottom-6 right-6 flex items-center justify-between bg-black px-6 py-4">
+        {/* <p className="text-md">Can’t find your Interest?</p> */}
         <button
           onClick={handleSubmit}
           disabled={!selectedInterest || creationStatus === "loading"}
           className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center disabled:opacity-50"
         >
-          <ArrowRight size={22} className="text-[#E7E9EA]" />
+          <img 
+            src={nextArrow} 
+            alt="Next arrow" 
+          />
         </button>
       </footer>
     </div>

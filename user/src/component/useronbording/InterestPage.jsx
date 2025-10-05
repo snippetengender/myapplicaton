@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../../providers/api";
 import { useDispatch, useSelector } from "react-redux";
 import { updateOnboardingData, updateOnboardingStep } from "../../features/userSlice/onboardingSlice";
+import searchImg from "../assets/search.svg";
+import nextArrow from "../assets/next.svg";
 
 export default function InterestPage() {
   const navigate = useNavigate();
@@ -65,30 +67,30 @@ export default function InterestPage() {
   );
 
   return (
-    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-brand-off-white px-4 py-6 flex flex-col justify-between">
       <div>
         {/* Back Arrow */}
-        <button className="mb-6" onClick={() => navigate(-1)}>
-          <ArrowLeft className="text-[#E7E9EA]" size={24} />
+        <button className="mb-4" onClick={() => navigate(-1)}>
+          <ArrowLeft className="text-brand-off-white" size={24} />
         </button>
 
         {/* Headings */}
-        <h1 className="text-2xl font-bold leading-tight">
-          What you're into <br /> Let's start with your Interests
+        <h1 className="text-[20px] font-bold leading-tight">
+          What you're into 
         </h1>
-        <p className="text-sm text-zinc-300 mt-3 mb-4 leading-relaxed">
+        <p className="text-[12px] mt-3 mb-4 leading-relaxed">
           Choose up to 3 interests that describe you best.
         </p>
 
         {/* Search Box */}
-        <div className="flex items-center gap-2 border border-zinc-600 rounded-md px-3 py-2">
-          <Search className="text-zinc-400" size={18} />
+        <div className="flex items-center gap-2 border border-brand-charcoal rounded-md px-3 py-2">
+          <img src={searchImg} alt="Search" className="mr-2" />
           <input
             type="text"
             placeholder="Search for interests"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent outline-none w-full text-sm text-[#E7E9EA] placeholder-zinc-500"
+            className="h-[28px] bg-transparent outline-none w-full text-sm text-brand-off-white placeholder-brand-charcoal"
           />
         </div>
 
@@ -97,7 +99,7 @@ export default function InterestPage() {
           {selectedInterests.map((item) => (
             <span
               key={item.reference_id}
-              className="px-3 py-1 border border-[#F06CB7] rounded-full text-sm text-[#E7E9EA]"
+              className="px-3 py-1 border border-brand-pink rounded-full text-sm text-brand-off-white"
             >
               {item.name}
             </span>
@@ -121,8 +123,8 @@ export default function InterestPage() {
                     selectedInterests.some(
                       (i) => i.reference_id === interest.id
                     )
-                      ? "border-[#F06CB7] text-[#E7E9EA]"
-                      : "border-zinc-500 text-zinc-300"
+                      ? "border-brand-pink text-brand-off-white"
+                      : "border-brand-charcoal text-brand-off-white"
                   }`}
                 >
                   {interest.name}
@@ -134,21 +136,24 @@ export default function InterestPage() {
       </div>
 
       {/* Bottom Section */}
-      <div className="flex items-center justify-between mt-6">
-        <p className="text-sm text-zinc-400">
+      <div className="flex mt-6 items-end justify-end">
+        {/* <p className="text-sm text-zinc-400">
           Can’t find your Interest?{" "}
-          <span className="text-[#F06CB7] cursor-pointer">Add one</span>
-        </p>
+          <span className="text-brand-pink cursor-pointer">Add one</span>
+        </p> */}
         <button
           onClick={handleNext}
           disabled={selectedInterests.length < 3}
           className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
             selectedInterests.length < 3
-              ? "bg-gray-600 cursor-not-allowed opacity-50"
-              : "bg-[#F06CB7] hover:bg-[#e05ca3]"
+              ? "bg-brand-medium-gray cursor-not-allowed opacity-50"
+              : "bg-brand-off-white"
           }`}
         >
-          <ArrowRight className="text-[#E7E9EA]" size={22} />
+          <img 
+            src={nextArrow} 
+            alt="Next arrow" 
+          />
         </button>
       </div>
     </div>

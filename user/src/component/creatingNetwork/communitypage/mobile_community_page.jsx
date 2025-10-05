@@ -18,6 +18,10 @@ import upvoteInactive from "../../assets/Upvote.svg";
 import downvoteInactive from "../../assets/Downvote.svg";
 import upvoteActive from "../../assets/upvoteActive.svg";
 import downvoteActive from "../../assets/downvoteActive.svg";
+import backArrow from "../../assets/BackArrow.svg";
+import reportFlag from "../../assets/flag.svg"
+import Lottie from "lottie-react";
+import loadingAnimation from "../../assets/1 second Loop.json"; // Update this path to your actual JSON file
 
 const PollComponent = ({ post }) => {
   const dispatch = useDispatch();
@@ -34,14 +38,14 @@ const PollComponent = ({ post }) => {
   };
 
   return (
-    <div className="mt-3 space-y-3">
+    <div className="mt-3 space-y-2">
       {/* Content */}
 
       <>
-        <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-3">
+        <p className="text-brand-off-white text-lg font-bold leading-[22px]">
           {post.title}
         </p>
-        <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-3">
+        <p className="text-brand-off-white text-[12px] whitespace-pre-line mb-3">
           {post.content}
         </p>
       </>
@@ -57,16 +61,16 @@ const PollComponent = ({ post }) => {
             className={`relative border rounded-xl p-3 flex justify-between items-center transition-all duration-200 overflow-hidden 
               ${
                 !isPollEnded
-                  ? "cursor-pointer hover:border-pink-500"
+                  ? "cursor-pointer hover:border-brand-pink"
                   : "cursor-default"
               }
               ${isPollEnded && !hasVoted ? "opacity-50" : ""}
-              ${isSelectedOption ? "border-pink-500" : "border-gray-700"}`}
+              ${isSelectedOption ? "border-brand-pink" : "border-gray-700"}`}
           >
             {/* Option Fill if Voted */}
             {hasVoted && (
               <div
-                className="absolute top-0 left-0 h-full bg-pink-500/20 transition-all duration-500"
+                className="absolute top-0 left-0 h-full bg-brand-pinborder-brand-pink/20 transition-all duration-500"
                 style={{ width: `${option.votes}%` }}
               />
             )}
@@ -74,7 +78,7 @@ const PollComponent = ({ post }) => {
             {/* Option Text */}
             <div className="relative flex items-center">
               {isSelectedOption && (
-                <span className="text-pink-500 mr-2">✓</span>
+                <span className="text-brand-pinborder-brand-pink mr-2">✓</span>
               )}
               <span className="font-semibold">{option.text}</span>
             </div>
@@ -92,14 +96,14 @@ const PollComponent = ({ post }) => {
         );
       })}
 
-      {/* Footer */}
-      <p className="text-xs text-center text-gray-500 pt-1">
+      {/* Footer
+      <p className="text-xs text-center text-gray-500 pt-1 border border-yellow-500">
         {isPollEnded
           ? pollTimeInfo.displayText
           : `${post.stats.reactions} ${
               post.stats.reactions === 1 ? "vote" : "votes"
             } • ${pollTimeInfo.displayText}`}
-      </p>
+      </p> */}
     </div>
   );
 };
@@ -185,26 +189,26 @@ export const NetworkPostCard = ({ post }) => {
   const netScore = stats.upvote - stats.downvote;
 
   return (
-    <div className="border-b border-gray-700 py-4">
+    <div className="border-b border-brand-almost-black py-[9px] px-[14px] pb-[15px]">
       {/* Header */}
-      <div className="px-1">
+      <div className="">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
             {user.avatar ? (
               <img
                 src={user.avatar}
                 alt={user.name || "User"}
-                className="w-10 h-10 rounded-full object-cover"
+                className="w-[24px] h-[23px] rounded-full object-cover"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white">
+              <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-brand-off-white">
                 {user.username?.[0]?.toUpperCase() || "?"}
               </div>
             )}
 
-            <div className="text-sm">
+            <div className="text-[10px]">
               <div
-                className="flex items-center gap-1.5 text-md font-semibold"
+                className="flex items-center gap-1.5 text-md font-semibold cursor-pointer"
                 onClick={() =>
                   navigate(
                     post.userMode === "general"
@@ -217,23 +221,25 @@ export const NetworkPostCard = ({ post }) => {
                   ? `<${user.username}>`
                   : `{${user.username}}`}
 
-                <span className="text-[#616161] font-normal">
+                <span className="text-brand-dark-gray font-normal">
                   {user.degree ? (user.degree === "masters" ? "m" : "b") : ""}
                   {user.college} • {time}
                 </span>
-                <span className="ml-1 text-xs px-2 py-0.5 rounded-full border border-gray-700">
+                <span className="ml-1 text-[9px] px-2 py-0.5 rounded-full border border-brand-charcoal">
                   {label}
                 </span>
 
                 {label.toLowerCase() === "poll" && (
-                  <span className="text-xs text-gray-400 font-normal ml-1">
+                  <span className="text-[9px] text-brand-dark-gray font-normal ml-1">
                     • {getPollTimeInfo(createdAt).displayText}
                   </span>
                 )}
               </div>
             </div>
           </div>
-          <button className="text-gray-400">•••</button>
+          <button>
+            <img src={reportFlag} alt="Report Post" />
+          </button>
         </div>
       </div>
 
@@ -245,11 +251,11 @@ export const NetworkPostCard = ({ post }) => {
             {imageUrl ? (
               <>
                 {" "}
-                <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
+                <h2 className="text-brand-off-white text-lg font-semibold mb-2">
                   {title}
                 </h2>
                 {/* {profileType === "user" && content && (
-                  <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+                  <p className="text-brand-off-white text-[14px] whitespace-pre-line mb-2">
                     {content}
                   </p>
                 )} */}
@@ -264,10 +270,10 @@ export const NetworkPostCard = ({ post }) => {
             ) : (
               <>
                 {" "}
-                <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
+                <h2 className="text-brand-off-white text-lg font-semibold mb-2">
                   {title}
                 </h2>
-                <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+                <p className="text-brand-off-white text-[14px] whitespace-pre-line mb-2">
                   {content}
                 </p>
               </>
@@ -278,21 +284,20 @@ export const NetworkPostCard = ({ post }) => {
         )}
 
         {/* Reactions */}
-        <div className="flex justify-between items-center mt-3 text-xs">
+        <div className="flex justify-between items-center mt-3 text-[10px]">
           <span
-            className="text-pink-500 font-medium cursor-pointer"
+            className="text-brand-pink font-semibold cursor-pointer"
             onClick={() => navigate(`/comments/${post.id}`)}
           >
             {stats.thoughts} thoughts
           </span>
-          <div className="flex gap-2">
             {/* <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
               {stats.nah} nah
             </button>
             <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
               {stats.hmm} hmm
             </button>
-            <button className="px-3 py-1 rounded-full border border-gray-700 text-pink-500">
+            <button className="px-3 py-1 rounded-full border border-gray-700 text-brand-pinborder-brand-pink">
               {stats.hellYeah} hell yeah
             </button> */}
 
@@ -306,7 +311,7 @@ export const NetworkPostCard = ({ post }) => {
                 className="w-6 h-6 cursor-pointer"
               />
 
-              <p className="text-gray-400 text-xl font-semibold w-6 text-center">
+              <p className="text-brand-pink text-[18px] font-semibold w-6 text-center">
                 {netScore}
               </p>
 
@@ -322,7 +327,6 @@ export const NetworkPostCard = ({ post }) => {
                 className="w-6 h-6 cursor-pointer"
               />
             </div>
-          </div>
         </div>
       </div>
     </div>
@@ -440,7 +444,7 @@ export default function MobileNetworkPage() {
         onClick: handleLeave,
         disabled: joinLeaveStatus === "loading",
         className:
-          "bg-black border border-[#7E8389] text-[#E7E9EA] text-sm px-3 py-1 rounded-full disabled:opacity-50",
+          "flex h-[30px] w-[61px] bg-black border border-brand-charcoal text-brand-off-white text-[11px]  rounded-full disabled:opacity-50 justify-center items-center",
       };
     }
 
@@ -449,27 +453,28 @@ export default function MobileNetworkPage() {
       onClick: handleJoin,
       disabled: joinLeaveStatus === "loading",
       className:
-        "bg-black border border-[#7E8389] text-[#E7E9EA] text-sm px-3 py-1 rounded-full disabled:opacity-50",
+        "bg-black border border-[#7E8389] text-brand-off-white text-sm px-3 py-1 rounded-full disabled:opacity-50",
     };
   };
 
   const buttonConfig = getButtonConfig();
 
   return (
-    <div className="min-h-screen bg-black text-[#E7E9EA] font-sans">
-      <div className="relative w-full h-25 rounded-lg">
+    <div className="min-h-screen bg-black text-brand-off-white font-inter">
+      <div className="relative w-full h-[95px] rounded-lg">
         <img
           src={networkData.banner || "default_banner_url.jpg"}
           alt="Banner"
           className="w-full h-full object-cover"
         />
 
-        <div className="absolute top-3/4 left-2 -translate-y-1/2">
+        {/* back button */}
+        <div className="absolute bottom-[17px] left-[17px] w-[38px] h-[38px] flex">
           <button
             onClick={() => navigate(-1)}
-            className="bg-black bg-opacity-70 p-2 rounded-full"
+            className="bg-black bg-opacity-70 rounded-full w-full h-full justify-center items-center"
           >
-            <ChevronLeft className="text-[#E7E9EA]" size={20} />
+            <img src={backArrow} alt="Back Button" className="ml-[10px] w-[12px] h-[20px] justify-center items-center"/>
           </button>
         </div>
 
@@ -482,7 +487,7 @@ export default function MobileNetworkPage() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="bg-black bg-opacity-70 p-2 rounded-full"
             >
-              <MoreVertical className="text-[#E7E9EA]" size={20} />
+              <MoreVertical className="text-brand-off-white" size={20} />
             </button>
 
             {isMenuOpen && (
@@ -528,26 +533,26 @@ export default function MobileNetworkPage() {
         )} */}
       </div>
 
-      <div className="p-4 space-y-2 border-b border-gray-700">
+      {/* Profile section */}
+      <div className="py-[7px] px-[17px] pr-[12px] border-b border-brand-almost-black pb-[14px]">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <img
               src={networkData.image}
               alt="Logo"
               className="w-12 h-12 bg-gray-600 rounded-full object-cover"
             />
             <div>
-              <h2 className="text-lg text-[#D8D7DC] font-semibold">
+              <h2 className="text-[15px] text-brand-off-white font-bold">
                 {networkData.name}
               </h2>
 
-              <p className="text-sm text-[#D8D7DC]">
+              <p className="text-[11px] font-bold text-brand-off-white mt-[5px]">
                 {networkData.members_count}{" "}
-                <span className="text-[#616161]">members</span>
-                {/* <span className="text-[#616161]">{networkData}</span> */}
+                <span className="text-brand-dark-gray font-normal">members</span>
                 <span className="mx-2">•</span>
                 {networkData.total_mixes ?? 0}{" "}
-                <span className="text-[#616161]">mixes</span>
+                <span className="text-brand-dark-gray font-normal">mixes</span>
               </p>
             </div>
           </div>
@@ -561,20 +566,26 @@ export default function MobileNetworkPage() {
             </button>
           </div>
         </div>
-        <p className="text-sm text-gray-300 mt-1">{networkData.description}</p>
-        <p className="text-xs text-gray-500 mt-2">Network created by</p>
-        <div className="flex items-center gap-2 text-sm text-gray-400">
+        <p className="text-[10px] text-brand-off-white mt-[9px]">{networkData.description}</p>
+        <p className="text-[11px] text-brand-dark-gray mt-[7px]">Network created by</p>
+        <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-[9px]">
           <img
             src={networkData.created_by.image_url || "default_avatar.png"}
             alt="Creator"
-            className="w-6 h-6 bg-gray-500 rounded-full object-cover"
+            className="w-[23px] h-[22px] bg-gray-500 rounded-full object-cover"
           />
-          <span className="text-[#D8D7DC]">{networkData.created_by.name}</span>
+          <span className="text-brand-off-white">{networkData.created_by.name}</span>
         </div>
       </div>
-      <div className="px-2">
+      <div className="">
         {mixesStatus === "loading" && (
-          <p className="text-gray-400">Loading posts...</p>
+          <div className="flex justify-center items-center py-6">
+            <Lottie 
+              animationData={loadingAnimation} 
+              loop={true}
+              style={{ width: 120, height: 120 }} // Adjust size as needed
+            />
+          </div>
         )}
 
         {networkMixes.length > 0
@@ -595,10 +606,10 @@ export default function MobileNetworkPage() {
       )}
 
       <div className="fixed bottom-1 left-0 right-0 px-2 py-1 z-10">
-        <div className="backdrop-blur-md bg-white/10 border border-[#2F3336] rounded-3xl px-4 py-2 flex justify-between items-center">
-          <span className="text-sm text-[#E7E9EA]">Open up now</span>
+        <div className="backdrop-blur-md bg-white/10 border border-brand-charcoal rounded-3xl px-4 py-2 flex justify-between items-center">
+          <span className="text-sm text-brand-off-white">Open up now</span>
           <button
-            className="bg-white/10 border border-[#2F3336] text-[#E7E9EA] px-4 py-1 rounded-xl hover:bg-white/30"
+            className="bg-white/10 border border-brand-charcoal text-brand-off-white px-4 py-1 rounded-xl hover:bg-white/30"
             onClick={() => navigate(`/selecttag/${userId}`)}
           >
             mix

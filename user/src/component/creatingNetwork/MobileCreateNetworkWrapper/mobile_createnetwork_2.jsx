@@ -7,6 +7,7 @@ import {
   setLogoFile,
 } from "../../../features/networkCreate/networkSlice";
 import imageCompression from "browser-image-compression";
+import nextArrow from "../../assets/next.svg";
 
 export default function MobileCreateNetwork2() {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ export default function MobileCreateNetwork2() {
   const canProceed = logoPreview && bannerPreview;
 
   return (
-    <div className="bg-black text-[#E7E9EA] min-h-screen flex flex-col p-6 pb-28">
+    <div className="bg-black text-brand-off-white min-h-screen flex flex-col p-6 pb-28">
       {/* Hidden file inputs */}
       <input
         type="file"
@@ -89,31 +90,31 @@ export default function MobileCreateNetwork2() {
         style={{ display: "none" }}
       />
 
-      <header className="flex items-center justify-between w-full mb-6">
+      <header className="flex items-center justify-between w-full">
         <button
           onClick={handleBack}
-          className="p-2 -ml-2 text-neutral-300 hover:text-[#E7E9EA] transition-colors"
+          className="p-2 -ml-2 text-brand-off-white transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
-        <div className="bg-neutral-800 text-xs rounded-full px-3 py-1.5">
+        <div className="bg-brand-charcoal w-[65px] h-[32px] text-[15px] rounded-full px-3 py-1.5 text-black justify-center items-center flex">
           2/3
         </div>
       </header>
 
       <main className="w-full">
-        <h1 className="text-2xl font-semibold text-[#E7E9EA] mb-2">
+        <h1 className="text-[20px] font-bold text-brand-off-white mb-2">
           Style your Network
         </h1>
-        <p className="text-xs text-neutral-400 leading-relaxed mb-8">
+        <p className="text-xs text-brand-off-white leading-relaxed mb-[15px]">
           Give your network a unique look with a logo and a banner. This helps
           members recognize your community.
         </p>
 
         {/* Profile Preview Card */}
-        <div className="bg-black border border-neutral-800 rounded-2xl p-4 space-y-4">
+        <div className="bg-black border border-neutral-800 rounded-2xl p-2">
           <div
-            className="h-24 bg-neutral-900 rounded-lg flex items-center justify-center cursor-pointer relative"
+            className="h-24 flex items-start justify-end cursor-pointer relative border-b border-brand-charcoal"
             onClick={() => bannerInputRef.current.click()}
             style={{
               backgroundImage: `url(${bannerPreview})`,
@@ -122,7 +123,7 @@ export default function MobileCreateNetwork2() {
             }}
           >
             {!bannerPreview && (
-              <button className="text-xs border border-neutral-600 rounded-md px-3 py-1.5 pointer-events-none">
+              <button className="text-[10px] border border-brand-charcoal rounded-full px-2  pointer-events-none">
                 add banner
               </button>
             )}
@@ -136,7 +137,7 @@ export default function MobileCreateNetwork2() {
             )}
           </div>
 
-          <div className="flex items-center space-x-3 -mt-10">
+          <div className="flex items-center mt-[10px] px-1">
             {/* FIX: Logo upload is now enabled */}
             <div
               className="w-16 h-16 rounded-full flex-shrink-0 bg-neutral-800 border-4 border-black flex items-center justify-center cursor-pointer relative"
@@ -161,12 +162,12 @@ export default function MobileCreateNetwork2() {
             </div>
 
             <div>
-              <span className="font-semibold text-lg text-[#E7E9EA]">
+              <span className="font-bold text-[16px] text-brand-off-white">
                 {name || "Network Name"}
               </span>
             </div>
           </div>
-          <p className="text-sm text-neutral-400 pt-2">
+          <p className="text-sm text-brand-off-white mt-2">
             {description || "Your network description will appear here."}
           </p>
         </div>
@@ -178,7 +179,10 @@ export default function MobileCreateNetwork2() {
           disabled={!canProceed}
           className="w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ArrowRight size={24} className="text-[#E7E9EA]" />
+          <img 
+            src={nextArrow} 
+            alt="Next arrow" 
+          />
         </button>
       </footer>
     </div>

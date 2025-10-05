@@ -30,7 +30,23 @@ export default function LowkeyProfile() {
   const isAvailable = usernameStatus === "available";
   const isSubmitting = creationStatus === "loading";
 
-  const avatarColors = ["#22c55e", "#ef4444", "#3b82f6", "#f97316"]; // green, red, blue, orange
+  const avatarColors = [
+    "#FEADB9",
+    "#9CCDFF",
+    "#FEB370",
+    "#CBA3FF",
+    "#AA6F73",
+    "#F9E1E0",
+    "#F6E0B5",
+    "#EEA1CD",
+    "#5A96CB",
+    "#ABA1C1",
+    "#FEADB9",
+    "#D8C3E7",
+    "#FF5555",
+    "#C6F8AE",
+    "#FFEF90",
+  ];
   const getRandomColor = () => {
     return avatarColors[Math.floor(Math.random() * avatarColors.length)];
   };
@@ -103,7 +119,7 @@ export default function LowkeyProfile() {
       ctx.fillStyle = avatarColor;
       ctx.fillRect(0, 0, size, size);
 
-      const initials = username ? username.charAt(0).toUpperCase() : "U";
+      const initials = username ? username.charAt(0).toUpperCase() : "u";
       ctx.fillStyle = "#FFFFFF";
       ctx.font = `bold ${size * 0.5}px Arial`;
       ctx.textAlign = "center";
@@ -162,23 +178,23 @@ export default function LowkeyProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col p-6 relative">
-      <button onClick={() => navigate(-1)} className="absolute top-6 left-6">
+    <div className="min-h-screen bg-black text-brand-off-white flex flex-col p-6 relative">
+      <button onClick={() => navigate(-1)} className="top-6 left-6 mb-2">
         <ArrowLeft className="w-6 h-6" />
       </button>
 
-      <div className="flex flex-col flex-1 justify-center max-w-md mx-auto space-y-8">
+      <div className="flex flex-col flex-1 max-w-md mx-auto space-y-8">
         <div>
-          <h1 className="text-lg font-semibold">about</h1>
-          <h2 className="text-2xl font-bold">lowkey profile</h2>
-          <p className="text-gray-400 text-sm mt-2">
+          <h1 className="text-[20px] font-bold">about</h1>
+          <h2 className="text-[20px] font-bold">lowkey profile</h2>
+          <p className="text-sm mt-2">
             Create an anonymous profile to interact without revealing your main
             identity.
           </p>
         </div>
 
         {/* NEW: Updated profile image section */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center">
           <input
             type="file"
             accept="image/*"
@@ -190,7 +206,7 @@ export default function LowkeyProfile() {
             role="button"
             aria-label="Change profile picture"
             onClick={handleProfileClick}
-            className="relative w-24 h-24 rounded-full bg-zinc-800 flex items-center justify-center cursor-pointer overflow-hidden"
+            className="relative w-[100px] h-[100px] rounded-full bg-zinc-800 flex items-center justify-center cursor-pointer overflow-hidden"
           >
             {!useAvatar && imagePreview ? (
               <img
@@ -200,18 +216,18 @@ export default function LowkeyProfile() {
               />
             ) : (
               <Avatar
-                name={username || "U"} // Show "U" if username is empty
+                name={username || "u"} // Show "U" if username is empty
                 size="96"
                 color={avatarColor}
                 round={true}
-                fgColor="#FFFFFF"
+                fgColor="black"
                 textSizeRatio={2}
               />
             )}
           </div>
           <button
             onClick={() => fileInputRef.current.click()}
-            className="w-10 h-10 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-colors flex items-center justify-center"
+            className="ml-5 w-10 h-10 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-colors flex items-center justify-center"
             aria-label="Upload image"
           >
             <Camera size={20} />
@@ -219,8 +235,8 @@ export default function LowkeyProfile() {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-gray-400 text-sm">
-            Give your lowkey profile a username
+          <label className="block text-brand-off-white text-sm">
+            Give your lowkey profile a
           </label>
           <div className="relative">
             <input
@@ -231,7 +247,7 @@ export default function LowkeyProfile() {
                 setUsername(e.target.value.toLowerCase().replace(/\s/g, ""))
               }
               placeholder="{username}"
-              className="w-full bg-transparent border-b border-gray-600 focus:outline-none focus:border-white text-xl placeholder-gray-500 pr-8"
+              className="w-full bg-transparent text-[28px] font-bold placeholder-brand-medium-gray pr-8"
             />
             <div className="absolute right-0 top-1/2 -translate-y-1/2">
               {isChecking && (
@@ -241,7 +257,7 @@ export default function LowkeyProfile() {
               {isTaken && <X size={16} className="text-red-500" />}
             </div>
           </div>
-          <div className="flex justify-between items-center text-gray-500 text-xs">
+          <div className="flex justify-between items-center text-brand-charcoal text-xs">
             <span>{username.length}/15</span>
             {isTaken && (
               <p className="text-red-500">Sorry, username already taken</p>
@@ -260,7 +276,7 @@ export default function LowkeyProfile() {
       <button
         onClick={handleSubmit}
         disabled={!isAvailable || isSubmitting}
-        className="absolute bottom-6 right-6 bg-white text-black rounded-full p-4 hover:bg-zinc-200 transition disabled:bg-zinc-700 disabled:text-zinc-500"
+        className="absolute bottom-6 right-6 bg-brand-off-white text-black rounded-full p-4 hover:bg-zinc-200 transition disabled:bg-zinc-700 disabled:text-zinc-500"
       >
         {isSubmitting ? (
           <Loader2 className="animate-spin" />

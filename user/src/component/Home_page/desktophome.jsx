@@ -35,7 +35,7 @@ const PostCard = ({ post }) => {
                 <div className="flex items-center gap-1 text-[#E7E9EA] font-semibold">
                   {user.name}{" "}
                   <span className="text-gray-400 font-normal">• {time}</span>
-                  <span className="ml-2 text-xs px-2 py-0.5 rounded-full border border-gray-700 bg-gray-900">
+                  <span className="ml-2 text-xs px-2 py-0.5 rounded-full border border-gray-700">
                     {label}
                   </span>
                 </div>

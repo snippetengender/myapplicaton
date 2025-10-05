@@ -25,6 +25,7 @@ import ProtectedRoute from "./component/useronbording/ProtectedRoute";
 
 // Authenticated Pages
 import Home from "./component/Home_page/Home";
+import AboutUs from "./component/Home_page/AboutUs";
 import MyScreenPage from "./component/bouquet/my_scree_page";
 import FindEm from "./component/bouquet/find_em";
 import EmResult from "./component/bouquet/em_result";
@@ -60,7 +61,7 @@ import CreateEventPage from "./component/addClubs/mobileAddEventPage";
 import MobileNetworkAdmin from "./component/creatingNetwork/communitypage/MobileCommunityAdmin.jsx";
 import AlreadyRegisteredPage from "./component/signinPage/AlreadyRegisteredPage.jsx";
 import DomainErrorPage from "./component/signinPage/DomainNotAllowed.jsx";
-import ProfileOwner from "./component/useronbording/userProfileOwner.jsx";
+import ProfileOwner from "./component/useronbording/UserProfileOwner.jsx";
 import LowKeyProfilePage from "./component/lowkey/LowKeyProfile.jsx";
 import ProfileOwnerRoute from "./component/useronbording/ProfileOwnerRoute.jsx";
 
@@ -71,6 +72,8 @@ function App() {
         {/* Public routes */}
         <Route path="/" element={<LandingRouter />} />
         <Route path="/lobby" element={<Lobby />} />
+        {/* About Us route */}
+        <Route path="/about-us" element={<AboutUs/>}/>
         {/* Onboarding */}
         <Route
           path="/useronboarding/google-login"

@@ -97,17 +97,17 @@ export default function NetworkSelectPage() {
   }, [networks, loading, hasMore, currentPage, searchTerm, dispatch]);
 
   return (
-    <div className="fixed inset-0 bg-black text-white z-50 p-4 flex flex-col">
+    <div className="fixed inset-0 bg-black text-brand-off-white z-50 p-4 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1">
           <button onClick={() => navigate(-1)} className="p-1">
             <X size={24} />
           </button>
-          <h1 className="text-2xl font-bold">Post to</h1>
+          <h1 className="text-[18px] font-bold">Post to</h1>
         </div>
         <button
-          className="text-sm border border-zinc-500 px-3 py-1 rounded-full"
+          className="text-sm border border-brand-text-brand-charcoal px-3 py-1 rounded-full"
           onClick={() => navigate("/mobile_createnetwork_1")}
         >
           establish your own network
@@ -117,7 +117,7 @@ export default function NetworkSelectPage() {
       {/* Search */}
       <div className="relative mb-6">
         <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-charcoal"
           size={20}
         />
         <input
@@ -158,7 +158,7 @@ export default function NetworkSelectPage() {
               <p className="font-semibold">{network.name}</p>
               <p className="text-sm text-zinc-400">
                 talks about{" "}
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-brand-off-white">
                   {network.interests?.name}
                 </span>
               </p>
@@ -177,7 +177,7 @@ export default function NetworkSelectPage() {
         {error && <p className="text-center text-red-500 py-4">{error}</p>}
 
         {!loading && networks.length === 0 && (
-          <p className="text-center text-zinc-500 py-4">No networks found.</p>
+          <p className="text-center text-brand-charcoal py-4">No networks found.</p>
         )}
       </div>
     </div>

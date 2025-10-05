@@ -12,6 +12,9 @@ import {
 } from "../../features/mixes/mixSlice";
 import { PollComponent } from "../mix/PollComponent";
 import { PostCard } from "../mix/PostCard";
+import profileBanner from "../assets/banner.png";
+import backArrow from "../assets/BackArrow.svg";
+import wip from "../assets/Snippy_with_Sign.png";
 
 const ProfileSkeleton = () => (
   <>
@@ -138,7 +141,7 @@ export const MixCardSkeleton = () => (
 //                   </span>
 
 //                   {label.toLowerCase() === "poll" && (
-//                     <span className="text-xs text-gray-400 font-normal ml-1">
+//                     <span className="text-xs text-brand-dark-gray font-normal ml-1">
 //                       • {getPollTimeInfo(createdAt).displayText}
 //                     </span>
 //                   )}
@@ -149,13 +152,13 @@ export const MixCardSkeleton = () => (
 //                   onClick={() => navigate(`/communitypage/${user.id}`)}
 //                 >
 //                   {user.name}
-//                   <span className="text-gray-400 font-normal">• {time}</span>
+//                   <span className="text-brand-dark-gray font-normal">• {time}</span>
 //                   <span className="ml-1 text-xs px-2 py-0.5 rounded-full bg-gray-900 border border-gray-700">
 //                     {label}
 //                   </span>
 
 //                   {label.toLowerCase() === "poll" && (
-//                     <span className="text-xs text-gray-400 font-normal ml-1">
+//                     <span className="text-xs text-brand-dark-gray font-normal ml-1">
 //                       • {getPollTimeInfo(createdAt).displayText}
 //                     </span>
 //                   )}
@@ -163,7 +166,7 @@ export const MixCardSkeleton = () => (
 //               )}
 //             </div>
 //           </div>
-//           <button className="text-gray-400">•••</button>
+//           <button className="text-brand-dark-gray">•••</button>
 //         </div>
 //       </div>
 
@@ -219,13 +222,13 @@ export const MixCardSkeleton = () => (
 //             className="text-pink-500 font-medium cursor-pointer"
 //             onClick={() => navigate(`/comments/${post.id}`)}
 //           >
-//             {stats.thoughts} thoughts
+//             {stats.stuffs} stuffs
 //           </span>
 //           <div className="flex gap-2">
-//             {/* <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
+//             {/* <button className="px-3 py-1 rounded-full border border-gray-700 text-brand-dark-gray">
 //               {stats.nah} nah
 //             </button>
-//             <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
+//             <button className="px-3 py-1 rounded-full border border-gray-700 text-brand-dark-gray">
 //               {stats.hmm} hmm
 //             </button>
 //             <button className="px-3 py-1 rounded-full border border-gray-700 text-pink-500">
@@ -242,7 +245,7 @@ export const MixCardSkeleton = () => (
 //                 className="w-6 h-6 cursor-pointer"
 //               />
 
-//               <p className="text-gray-400 text-xl font-semibold w-6 text-center">
+//               <p className="text-brand-dark-gray text-xl font-semibold w-6 text-center">
 //                 {netScore}
 //               </p>
 
@@ -337,7 +340,7 @@ export const MixCardSkeleton = () => (
 //                 <span className="text-gray-300 mr-2 font-bold">
 //                   {option.votes}%
 //                 </span>
-//                 <span className="text-gray-500 text-xs">({option.count})</span>
+//                 <span className="text-brand-dark-gray text-xs">({option.count})</span>
 //               </div>
 //             )}
 //           </div>
@@ -345,7 +348,7 @@ export const MixCardSkeleton = () => (
 //       })}
 
 //       {/* Footer */}
-//       <p className="text-xs text-center text-gray-500 pt-1">
+//       <p className="text-xs text-center text-brand-dark-gray pt-1">
 //         {isPollEnded
 //           ? pollTimeInfo.displayText
 //           : `${post.stats.reactions} ${
@@ -360,6 +363,7 @@ const LowKeyProfilePage = () => {
   const [activeTab, setActiveTab] = useState("mixes");
   const { userId } = useParams();
   const dispatch = useDispatch();
+    const navigate = useNavigate();
 
   const { user: profileUser, status: profileStatus } = useSelector(
     (state) => state.user
@@ -439,55 +443,64 @@ const LowKeyProfilePage = () => {
     return (
       <div className="min-h-screen bg-black text-white">
         {/* Profile Banner */}
-        <div className="relative h-48 bg-gray-800"></div>
-
-        {/* Profile Info & Avatar */}
-        <div className="relative px-4 -mt-12 z-10">
-          <div className="w-24 h-24 rounded-full border-4 border-black bg-gray-600 flex items-center justify-center text-3xl font-bold overflow-hidden">
-            {profileUser.profile_image ? (
-              <img
-                src={profileUser.profile_image}
-                alt={profileUser.name}
-                className="w-full h-full object-cover"
+        {/* <div className="relative h-48 bg-gray-800"></div> */}
+        <div className="relative">
+          <img 
+            src={profileBanner} 
+            alt="Profile banner" 
+            className="w-full h-full"
+          />
+          <div className="absolute bottom-[17px] left-[16px] flex items-center justify-center bg-white/30 rounded-full w-[39px] h-[38px] ">
+            <button onClick={() => navigate(-1)} className="-left-1">
+              <img 
+                src={backArrow} 
+                alt="Back to Home page"   
               />
-            ) : (
-              profileUser.username[0].toUpperCase()
-            )}
+            </button>
           </div>
-          <h1 className="text-2xl font-bold mt-4">{profileUser.username}</h1>
-          <p className="text-gray-400 mb-2">
+        </div>
+        {/* Profile Info & Avatar */}
+        <div className="relative px-4">
+          <h1 className="text-[20px] font-bold mt-4">{"{"}{profileUser.username}{"}"}</h1>
+          <p className="text-brand-dark-gray mb-2">
             {formatUserTag(
               profileUser.education_status,
               profileUser.college_show
             )}
           </p>
-          <div className="flex items-center text-lg font-bold mb-4">
-            <span className="mr-1">--</span>
-            <span className="text-gray-500">Clout</span>
+          <div className="flex items-center text-[14px] font-bold mb-4">
+            <span className="mr-1">0</span>
+            <span className="text-brand-dark-gray">Clout</span>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-700 mx-4">
+        <div className="flex border-b border-gray-700">
           <button
-            className={`flex-1 py-3 text-center text-lg font-semibold ${
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
               activeTab === "mixes"
-                ? "text-pink-500 border-b-2 border-pink-500"
-                : "text-gray-500"
+                ? "text-brand-off-white"
+                : "text-brand-dark-gray"
             }`}
             onClick={() => setActiveTab("mixes")}
           >
             mixes
+            {activeTab === "mixes" && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
+            )}
           </button>
           <button
-            className={`flex-1 py-3 text-center text-lg font-semibold ${
-              activeTab === "thoughts"
-                ? "text-pink-500 border-b-2 border-pink-500"
-                : "text-gray-500"
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
+              activeTab === "stuffs"
+                ? "text-brand-off-white"
+                : "text-brand-dark-gray"
             }`}
-            onClick={() => setActiveTab("thoughts")}
+            onClick={() => setActiveTab("stuffs")}
           >
-            thoughts
+            stuffs
+            {activeTab === "stuffs" && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
+            )}
           </button>
         </div>
 
@@ -514,17 +527,21 @@ const LowKeyProfilePage = () => {
               )}
 
               {!hasMore && posts.length > 0 && (
-                <p className="text-center text-gray-500 py-4">
+                <p className="text-center text-brand-dark-gray py-4">
                   You've reached the end!
                 </p>
               )}
             </>
           )}
 
-          {activeTab === "thoughts" && (
-            <p className="text-center text-gray-500">
-              Thoughts will be shown here.
-            </p>
+          {activeTab === "stuffs" && (
+            <div className="flex w-full h-full justify-center items-center p-5">
+              <img 
+                src={wip} 
+                alt="Work in progress" 
+                className="w-[117px]"
+              />
+            </div>
           )}
         </div>
       </div>

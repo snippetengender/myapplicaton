@@ -13,9 +13,12 @@ import {
 } from "../../features/mixes/mixSlice";
 import { PostCard } from "../mix/PostCard";
 import { MixCardSkeleton } from "../lowkey/LowKeyProfile";
+import profileBanner from "../assets/banner.png";
+import backArrow from "../assets/BackArrow.svg";
+import wip from "../assets/Snippy_with_Sign.png";
 
 const ProfileSkeleton = () => (
-  <div className="min-h-screen bg-black text-white p-4 animate-pulse">
+  <div className="min-h-screen bg-black text-brand-off-white p-4 animate-pulse">
     {/* Header */}
     <div className="flex items-center justify-between px-4 py-6">
       <ArrowLeft className="text-gray-700" size={24} />
@@ -144,110 +147,125 @@ export default function ProfilePage() {
   }
   if (status === "failed" || !profile) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-black text-brand-off-white flex items-center justify-center">
         Error: Could not load profile.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-[#E7E9EA]">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-6">
-        <button onClick={() => navigate(-1)}>
-          <ArrowLeft className="text-white" size={24} />
-        </button>
-        <button>
-          <MoreVertical className="text-[#E7E9EA]" size={24} />
-        </button>
+    <div className="min-h-screen bg-black text-brand-off-white font-inter">
+      {/* Profile banner */}
+      <div className="relative">
+        <img 
+          src={profileBanner} 
+          alt="Profile banner" 
+          className="w-full h-full"
+        />
+        <div className="absolute bottom-[17px] left-[16px] flex items-center justify-center bg-white/30 rounded-full w-[39px] h-[38px] ">
+          <button onClick={() => navigate(-1)} className="-left-1">
+            <img 
+              src={backArrow} 
+              alt="Back to Home page"   
+            />
+          </button>
+        </div>
       </div>
 
-      {/* Profile Section */}
-      <div className="px-4">
-        <div className="flex items-center justify-between mb-4">
-          {/* Profile Image */}
-          <div className="w-20 h-20 rounded-full overflow-hidden">
-            <img
-              src={profile.profile || "..."}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
+      <div className="">
+        {/* Profile Section */}
+        <div className="py-[14px] px-[16px]">
+          <div className="flex items-center justify-between mb-3">
+            {/* Profile Image */}
+            <div className="w-[85px] h-[85px] rounded-full overflow-hidden">
+              <img
+                src={profile.profile || "..."}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-          {/* <button
-            onClick={() => navigate("/managenetwork")}
-            className="px-4 py-1 bg-transparent border border-zinc-600 rounded-full text-sm font-semibold hover:bg-zinc-800"
-          >
-            Manage Network
-          </button> */}
-        </div>
-        <div className="mb-6 space-y-2 text-sm">
-          <h1 className="text-2xl font-bold capitalize">{profile.name}</h1>
-          <p className="text-zinc-400">
-            &lt;{profile.username}&gt; •{" "}
-            {formatCollegeTag(
-              profile.education_status?.degree,
-              profile.college_show
-            )}
-          </p>
-          <p className="text-zinc-300">
-            Into {profile.interests?.map((i) => i.name).join(", ")}
-          </p>
-          <p className="text-zinc-300 capitalize">
-            {formatYear(profile.education_status?.year)} Year •{" "}
-            {profile.education_status?.course} • {profile.relationship_status}
-          </p>
-          <p className="text-zinc-400">
-            Cake me on{" "}
-            {formatBirthday(profile.birthday?.day, profile.birthday?.month)}
-          </p>
-          <div className="flex items-center gap-2 pt-1">
-            <span className="text-lg font-semibold">
-              {profile.clout || "0"}K
-            </span>
-            <span className="text-zinc-400">Snips</span>
-            <Info size={14} className="text-zinc-500" />
+            {/* <button
+              onClick={() => navigate("/managenetwork")}
+              className="px-4 py-1 bg-transparent border border-zinc-600 rounded-full text-sm font-semibold hover:bg-zinc-800"
+            >
+              Manage Network
+            </button> */}
           </div>
-          {profile.clubs?.length > 0 && (
-            <p className="text-zinc-300">
-              member of{" "}
-              <span className="text-[#F06CB7]">
-                {profile.clubs.map((c) => c.name).join(", ")}
-              </span>
+          <div className="space-y-1 text-sm">
+            <h1 className="text-[20px] font-bold capitalize">{profile.name}</h1>
+            <p className="text-brand-dark-gray">
+              &lt;{profile.username}&gt; •{" "}
+              {formatCollegeTag(
+                profile.education_status?.degree,
+                profile.college_show
+              )}
             </p>
-          )}
-          <div className="pt-2">
-            <p className="text-zinc-400 text-sm">I want</p>
-            <p className="text-2xl font-bold">{profile.prompt?.name}</p>
+            <p className="text-zinc-300">
+              Into {profile.interests?.map((i) => i.name).join(", ")}
+            </p>
+            <p className="text-zinc-300 capitalize">
+              {formatYear(profile.education_status?.year)} Year •{" "}
+              {profile.education_status?.course} • {profile.relationship_status}
+            </p>
+            <p className="text-brand-dark-gray">
+              Cake me on{" "}
+              {formatBirthday(profile.birthday?.day, profile.birthday?.month)}
+            </p>
+            <div className="flex items-center gap-1 pt-1">
+              <span className="text-[14px] font-bold">
+                {profile.clout || "0"}
+              </span>
+              <span className="text-brand-dark-gray">Clout</span>
+              <Info size={14} className="text-brand-dark-gray" />
+            </div>
+            {profile.clubs?.length > 0 && (
+              <p className="text-zinc-300">
+                member of{" "}
+                <span className="text-brand-pink">
+                  {profile.clubs.map((c) => c.name).join(", ")}
+                </span>
+              </p>
+            )}
+            <div className="flex gap-1">
+              {/* <p className="text-brand-dark-gray text-sm">I want</p> */}
+              <p className="text-sm font-normal">{profile.prompt?.name}</p>
+            </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-700 mx-4">
+        <div className="flex border-b border-gray-700">
           <button
-            className={`flex-1 py-3 text-center text-lg font-semibold ${
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
               activeTab === "mixes"
-                ? "text-pink-500 border-b-2 border-pink-500"
-                : "text-gray-500"
+                ? "text-brand-off-white"
+                : "text-brand-dark-gray"
             }`}
             onClick={() => setActiveTab("mixes")}
           >
             mixes
+            {activeTab === "mixes" && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
+            )}
           </button>
           <button
-            className={`flex-1 py-3 text-center text-lg font-semibold ${
-              activeTab === "thoughts"
-                ? "text-pink-500 border-b-2 border-pink-500"
-                : "text-gray-500"
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
+              activeTab === "stuffs"
+                ? "text-brand-off-white"
+                : "text-brand-dark-gray"
             }`}
-            onClick={() => setActiveTab("thoughts")}
+            onClick={() => setActiveTab("stuffs")}
           >
-            thoughts
+            stuffs
+            {activeTab === "stuffs" && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
+            )}
           </button>
         </div>
 
         {/* Content Area */}
-        <div className="p-4">
+        <div className="">
           {activeTab === "mixes" && (
             <>
               {isInitialLoad && <MixCardSkeleton />}
@@ -269,17 +287,21 @@ export default function ProfilePage() {
               )}
 
               {!hasMore && posts.length > 0 && (
-                <p className="text-center text-gray-500 py-4">
+                <p className="text-center text-brand-dark-gray py-4">
                   You've reached the end!
                 </p>
               )}
             </>
           )}
 
-          {activeTab === "thoughts" && (
-            <p className="text-center text-gray-500">
-              Thoughts will be shown here.
-            </p>
+          {activeTab === "stuffs" && (
+            <div className="flex w-full h-full justify-center items-center p-5">
+              <img 
+                src={wip} 
+                alt="Work in progress" 
+                className="w-[117px]"
+              />
+            </div>
           )}
         </div>
       </div>

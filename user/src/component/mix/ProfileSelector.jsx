@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { ChevronDown } from "lucide-react";
-
+import dropDownArrow from "../assets/drop-down.svg";
 const ProfileSelector = ({ userDetails, useLowkey, setUseLowkey }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -25,7 +25,7 @@ const ProfileSelector = ({ userDetails, useLowkey, setUseLowkey }) => {
     <div className="relative w-full">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full p-2 rounded-lg hover:bg-zinc-800"
+        className="flex items-center w-full py-2 rounded-lg hover:bg-zinc-800 px-1"
       >
         <div className="flex items-center gap-2">
           <img
@@ -34,22 +34,23 @@ const ProfileSelector = ({ userDetails, useLowkey, setUseLowkey }) => {
               "https://placehold.co/40x40/222/fff?text=P"
             }
             alt={selectedProfile.name}
-            className="w-10 h-10 rounded-full object-cover"
+            className="w-5 h-5 rounded-full object-cover"
           />
-          <div className="text-gray-400 text-md">
+          <div className="text-brand-off-white text-[12px]">
             {useLowkey
               ? `{${selectedProfile.name}}`
               : `<${selectedProfile.name}>`}
           </div>
         </div>
-        <ChevronDown
-          size={20}
-          className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+        <img
+          src={dropDownArrow}
+          alt="dropdown arrow"
+          className={`ml-4 w-2 h-2 transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-2 w-full bg-[#2e2e2e] border border-zinc-700 rounded-lg z-10">
+        <div className="absolute top-full  mt-2 bg-[#2e2e2e] border border-zinc-700 rounded-lg z-10 w-max whitespace-nowrap">
           <div
             onClick={() => handleSelect(false)}
             className="flex items-center gap-2 p-2 hover:bg-zinc-700 cursor-pointer"
@@ -57,9 +58,9 @@ const ProfileSelector = ({ userDetails, useLowkey, setUseLowkey }) => {
             <img
               src={mainProfile.image}
               alt={mainProfile.name}
-              className="w-10 h-10 rounded-full object-cover"
+              className="w-5 h-5 rounded-full object-cover"
             />
-            <div className="text-gray-300 text-md">{`<${mainProfile.name}>`}</div>
+            <div className="text-gray-300 text-[12px]">{`<${mainProfile.name}>`}</div>
           </div>
           <div
             onClick={() => handleSelect(true)}
@@ -71,9 +72,9 @@ const ProfileSelector = ({ userDetails, useLowkey, setUseLowkey }) => {
                 "https://placehold.co/40x40/222/fff?text=L"
               }
               alt={lowkeyProfile.name}
-              className="w-10 h-10 rounded-full object-cover"
+              className="w-5 h-5 rounded-full object-cover"
             />
-            <div className="text-gray-300 text-md">{`{${lowkeyProfile.name}}`}</div>
+            <div className="text-gray-300 text-[12px]">{`{${lowkeyProfile.name}}`}</div>
           </div>
         </div>
       )}

@@ -11,6 +11,7 @@ import {
   updateOnboardingStep,
   uploadOnboardingProfileImage,
 } from "../../features/userSlice/onboardingSlice";
+import nextArrow from "../assets/next.svg";
 
 export default function UsernamePage() {
   const navigate = useNavigate();
@@ -236,19 +237,19 @@ export default function UsernamePage() {
   }, [profileImagePreview]);
 
   return (
-    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-brand-off-white px-4 py-6 flex flex-col justify-between">
       <div>
         {/* Back Button */}
         <button
           aria-label="Go back"
-          className="mb-6"
+          className="mb-3"
           onClick={() => navigate(-1)}
         >
-          <ArrowLeft className="text-[#E7E9EA]" size={24} />
+          <ArrowLeft className="text-brand-off-white" size={24} />
         </button>
 
         {/* Heading */}
-        <h1 className="text-2xl font-bold leading-tight mb-6">
+        <h1 className="text-[20px] font-bold leading-tight mb-4">
           Profile and Username <br /> Setup
         </h1>
 
@@ -261,7 +262,7 @@ export default function UsernamePage() {
                 ? "Change avatar color or upload image"
                 : "Reset to avatar or upload new image"
             }
-            className="relative w-24 h-24 rounded-full overflow-hidden cursor-pointer border-2 border-white hover:border-zinc-400 transition-colors"
+            className="relative w-24 h-24 rounded-full overflow-hidden cursor-pointer transition-colors"
             onClick={handleProfileClick}
           >
             {useReactAvatar ? (
@@ -316,7 +317,7 @@ export default function UsernamePage() {
         )}
 
         {/* Username Prompt */}
-        <p className="text-sm text-zinc-400 mb-6">Choose a username</p>
+        <p className="text-sm text-brand-off-white mb-2">give it a try for username</p>
 
         {/* Username Input */}
         <div className="w-full mb-3">
@@ -326,12 +327,12 @@ export default function UsernamePage() {
             maxLength={15}
             value={username || ""}
             onChange={handleUsernameChange}
-            className="bg-transparent text-xl font-bold outline-none w-full placeholder:text-zinc-600"
+            className="bg-transparent text-[28px] font-bold outline-none w-full placeholder:text-brand-medium-gray"
           />
         </div>
 
         {/* Character Count */}
-        <p className="text-xs text-zinc-500 mb-2">{username.length}/15</p>
+        <p className="text-xs text-brand-charcoal mb-2">{username.length}/15</p>
 
         {/* Username Availability */}
         {checking && (
@@ -363,14 +364,17 @@ export default function UsernamePage() {
           }
           className={`w-12 h-12 rounded-full flex items-center justify-center ${
             checking || !username || (!profileImageFile && !useReactAvatar)
-              ? "bg-zinc-600 cursor-not-allowed"
-              : "bg-[#2e2e2e] hover:bg-[#3e3e3e]"
+              ? "bg-brand-charcoal cursor-not-allowed opacity-50"
+              : "bg-brand-off-white"
           }`}
         >
           {submissionStatus === "submitting" ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
-            <ArrowRight className="text-[#E7E9EA]" size={22} />
+            <img 
+              src={nextArrow} 
+              alt="Next arrow" 
+            />
           )}
         </button>
         {submissionStatus === "failed" && (

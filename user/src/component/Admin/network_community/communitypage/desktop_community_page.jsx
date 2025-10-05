@@ -60,7 +60,7 @@ const PostCard = ({ post }) => {
       </p>
 
       <div className="flex justify-between items-center mt-4 text-xs ml-1">
-        <span className="text-pink-500 font-medium cursor-pointer">
+        <span className="text-brand-pink font-medium cursor-pointer">
           {stats.thoughts} thoughts
         </span>
         <div className="flex gap-2 items-center">
@@ -88,7 +88,7 @@ const PostCard = ({ post }) => {
   <div className="h-4 w-px bg-gray-700" />
 
   {/* "hell yeah" section */}
-  <span className="px-3 py-1 font-semibold text-pink-500">
+  <span className="px-3 py-1 font-semibold text-brand-pink">
     {stats.hellYeah} hell yeah
   </span>
 </div>

@@ -1,33 +1,28 @@
-import React from "react";
-import { ArrowLeft, ArrowRight, Pencil } from "lucide-react";
+import React, { useState } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateOnboardingData,
   updateOnboardingStep,
 } from "../../features/userSlice/onboardingSlice";
+import nextArrow from "../assets/next.svg";
 
-const prompts = [
-  { id: "prompt_1", text: "I’m known for" },
-  { id: "prompt_2", text: "My simple pleasures are" },
-  { id: "prompt_3", text: "I’m happiest when" },
-  { id: "prompt_4", text: "I wanna be a" },
-  { id: "prompt_5", text: "Stolen" },
+
+const bioOptions = [
+  "Just another person trying to figure things out",
+  "Living my life, taking it one day at a time",
+  "Regular human doing regular things",
+  "Here, there, everywhere",
+  "Making my way through life",
 ];
 
 export default function PromptEditor() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showBioOptions, setShowBioOptions] = useState(false);
 
   const { prompt } = useSelector((state) => state.onboarding.profileData);
-
-  const handlePromptClick = (promptId) => {
-    dispatch(
-      updateOnboardingData({
-        prompt: { reference_id: promptId, name: "" },
-      })
-    );
-  };
 
   const handleInputChange = (value) => {
     dispatch(
@@ -37,67 +32,56 @@ export default function PromptEditor() {
     );
   };
 
+  const handleAutoFill = () => {
+    const randomBio = bioOptions[Math.floor(Math.random() * bioOptions.length)];
+    dispatch(
+      updateOnboardingData({
+        prompt: { ...prompt, name: randomBio },
+      })
+    );
+  };
+
   const handleSaveAndNext = () => {
+    dispatch(updateOnboardingStep({ prompt }));
+    navigate("/useronboarding/relationship-status");
+  };
 
-  dispatch(updateOnboardingStep({ prompt }));
-
-  navigate("/useronboarding/relationship-status");
-};
   return (
-    <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-black text-brand-off-white px-4 py-6 flex flex-col justify-between">
       {/* Top Navigation */}
-      <div>
-        <button className="mb-5" onClick={() => navigate(-1)}>
-          <ArrowLeft className="text-[#E7E9EA]" size={24} />
+      <div className="flex-1">
+        <button className="mb-3" onClick={() => navigate(-1)}>
+          <ArrowLeft className="text-brand-off-white" size={24} />
         </button>
 
         {/* Heading */}
-        <h1 className="text-2xl font-bold leading-snug">
-          Give a <br />
-          <span className="font-bold">try with prompts</span>
-        </h1>
-        <p className="text-sm text-zinc-400 mt-3 mb-5 leading-relaxed">
-          You can only save one prompt. Switching will overwrite the previous
-          one.
+        <h1 className="text-2xl font-bold mb-2">something about you</h1>
+        <p className="text-[12px] text-brand-off-white mb-6">
+          Write your bio. Try to sound cool but not trying-too-hard cool. Good
+          luck with that balance.
         </p>
 
-        {/* Prompt Sections */}
-        <div>
-          {prompts.map((p) => (
-            <div
-              key={p.id}
-              className="border-b border-zinc-800 py-4 transition-opacity duration-300"
+        {/* Bio Input Area */}
+        <div className="relative">
+          <textarea
+            rows={6}
+            maxLength={250}
+            placeholder="draft something about you or use the button below"
+            value={prompt?.name || ""}
+            onChange={(e) => handleInputChange(e.target.value)}
+            className="h-[150px] w-full bg-transparent border border-brand-charcoal rounded-lg p-4 text-brand-off-white placeholder-brand-charcoal text-[12px] outline-none resize-none"
+          />
+          <div className="flex justify-between mt-2">
+            <span className="text-xs text-brand-charcoal">
+              {(prompt?.name?.length || 0)}/250
+            </span>
+            <button
+              onClick={handleAutoFill}
+              className="text-xs  text-brand-off-white"
             >
-              {prompt?.reference_id === p.id ? (
-                <div className="transition-all duration-150 transform scale-95">
-                  <div className="border border-zinc-600 p-3 rounded-lg">
-                    <label className="block text-[#E7E9EA] mb-2 text-sm">
-                      {p.text}
-                    </label>
-                    <textarea
-                      rows={5}
-                      maxLength={150}
-                      placeholder="Open up now"
-                      value={prompt.name || ""}
-                      onChange={(e) => handleInputChange(e.target.value)}
-                      className="w-full bg-transparent rounded-lg p-3 text-[#E7E9EA] placeholder-zinc-500 text-xl font-bold outline-none"
-                    />
-                    <div className="text-xs text-zinc-500 mt-1">
-                      {prompt.name?.length || 0}/150
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div
-                  className="flex justify-between items-center px-2 py-1 rounded transition duration-200 hover:bg-zinc-800 cursor-pointer"
-                  onClick={() => handlePromptClick(p.id)}
-                >
-                  <p className="text-[#E7E9EA] text-sm">{p.text}</p>
-                  <Pencil size={18} className="text-zinc-400" />
-                </div>
-              )}
-            </div>
-          ))}
+              <span className="w-full h-full border border-brand-charcoal px-4 py-1 rounded-lg font-medium text-[14px]">auto fill</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -107,11 +91,14 @@ export default function PromptEditor() {
           onClick={handleSaveAndNext}
           className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300 ${
             !prompt?.name?.trim()
-              ? "bg-gray-600 cursor-not-allowed opacity-50"
-              : "bg-[#2e2e2e] hover:bg-[#1f1f1f]"
+              ? "bg-brand-charcoal cursor-not-allowed opacity-50"
+              : "bg-brand-off-white"
           }`}
         >
-          <ArrowRight className="text-[#E7E9EA]" size={22} />
+          <img 
+            src={nextArrow} 
+            alt="Next arrow" 
+          />
         </button>
       </div>
     </div>

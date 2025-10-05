@@ -43,7 +43,7 @@
 //         placeholder={placeholder}
 //         maxLength={1000}
 //         rows={3}
-//         className="w-full bg-transparent text-[#E7E9EA] text-sm resize-none outline-none"
+//         className="w-full bg-transparent text-brand-off-white text-sm resize-none outline-none"
 //         autoFocus
 //       />
 //       <div className="flex justify-between items-center mt-2">
@@ -131,7 +131,7 @@
 //         </div>
 //         <div className="flex-grow min-w-0">
 //           <div className="flex items-center text-sm min-w-0 pr-10 gap-1 flex-wrap">
-//             <span className="font-semibold text-[#E7E9EA] truncate">
+//             <span className="font-semibold text-brand-off-white truncate">
 //               {user_details.name}
 //             </span>
 //             <span className="text-gray-400 truncate text-xs flex-shrink-0">
@@ -140,10 +140,10 @@
 //             <span className="text-gray-400 text-xs flex-shrink-0">
 //               • {new Date(created_at).toLocaleDateString()}
 //             </span>
-//             <FaRegFlag className="ml-2 h-4 w-3 text-gray-500 hover:text-[#E7E9EA] cursor-pointer flex-shrink-0" />
+//             <FaRegFlag className="ml-2 h-4 w-3 text-gray-500 hover:text-brand-off-white cursor-pointer flex-shrink-0" />
 //           </div>
 
-//           <p className="text-[#E7E9EA] text-sm mt-1 break-words pr-10">
+//           <p className="text-brand-off-white text-sm mt-1 break-words pr-10">
 //             {content}
 //           </p>
 
@@ -165,7 +165,7 @@
 //                 onChange={(e) => setReplyText(e.target.value)}
 //                 maxLength={1000}
 //                 rows={3}
-//                 className="w-full bg-transparent text-[#E7E9EA] border-none resize-none outline-none"
+//                 className="w-full bg-transparent text-brand-off-white border-none resize-none outline-none"
 //                 placeholder="Write a reply..."
 //                 autoFocus
 //               />
@@ -208,7 +208,7 @@
 //         <div className="absolute right-0 top-0 flex flex-col items-center flex-shrink-0 z-10">
 //           {/* FIXED a typo here: hover:text- not hover-text- */}
 //           <FiChevronUp
-//             className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]"
+//             className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white"
 //             onClick={handleUpvote}
 //           />
 //           <span className="text-pink-500 text-base font-semibold">
@@ -216,7 +216,7 @@
 //           </span>
 //           {/* FIXED a typo here: hover:text- not hover-text- */}
 //           <FiChevronDown
-//             className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]"
+//             className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white"
 //             onClick={handleDownvote}
 //           />
 //         </div>
@@ -261,10 +261,10 @@
 //   };
 
 //   return (
-//     <div className="min-h-screen bg-black text-[#E7E9EA] p-4 flex flex-col w-full max-w-2xl mx-auto overflow-hidden">
+//     <div className="min-h-screen bg-black text-brand-off-white p-4 flex flex-col w-full max-w-2xl mx-auto overflow-hidden">
 //       <div className="flex items-center mb-6 w-full flex-shrink-0">
 //         <RxCross2
-//           className="h-6 w-6 text-[#E7E9EA] cursor-pointer mr-4"
+//           className="h-6 w-6 text-brand-off-white cursor-pointer mr-4"
 //           onClick={() => navigate(-1)}
 //         />
 //         <h1 className="text-xl font-bold">Comments</h1>
@@ -471,7 +471,7 @@
 //         placeholder={placeholder}
 //         maxLength={1000}
 //         rows={2}
-//         className="w-full bg-transparent text-[#E7E9EA] text-sm resize-none outline-none"
+//         className="w-full bg-transparent text-brand-off-white text-sm resize-none outline-none"
 //       />
 //       <div className="flex justify-between items-center mt-2">
 //         <input
@@ -614,7 +614,7 @@
 //               />
 //             )}
 //             {content && (
-//               <p className="text-[#E7E9EA] text-sm mt-1 break-words">
+//               <p className="text-brand-off-white text-sm mt-1 break-words">
 //                 {content}
 //               </p>
 //             )}
@@ -650,9 +650,9 @@
 //             </div>
 //           </div>
 //           <div className="absolute right-0 top-4 flex flex-col items-center">
-//             <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
+//             <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
 //             <span className="text-pink-500 font-semibold">{currentVotes}</span>
-//             <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
+//             <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
 //           </div>
 //         </div>
 //       </div>
@@ -696,7 +696,7 @@
 //         <div className="flex-grow min-w-0">
 //           <div className="flex items-center text-sm gap-1 flex-wrap">
 //             <span
-//               className="font-semibold text-[#E7E9EA]"
+//               className="font-semibold text-brand-off-white"
 //               onClick={handleClickProfile}
 //             >
 //               {isLowkeyComment
@@ -719,7 +719,7 @@
 //             />
 //           )}
 //           {content && (
-//             <p className="text-[#E7E9EA] text-sm mt-1 break-words">{content}</p>
+//             <p className="text-brand-off-white text-sm mt-1 break-words">{content}</p>
 //           )}
 //           <div className="flex items-center text-xs mt-2">
 //             {canReply && (
@@ -753,9 +753,9 @@
 //           </div>
 //         </div>
 //         <div className="absolute right-0 top-4 flex flex-col items-center">
-//           <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
+//           <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
 //           <span className="text-pink-500 font-semibold">{currentVotes}</span>
-//           <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
+//           <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
 //         </div>
 //       </div>
 //     </div>
@@ -837,7 +837,7 @@
 //   };
 
 //   return (
-//     <div className="min-h-screen bg-black text-[#E7E9EA] p-4 flex flex-col w-full max-w-2xl mx-auto">
+//     <div className="min-h-screen bg-black text-brand-off-white p-4 flex flex-col w-full max-w-2xl mx-auto">
 //       {/* Page Header */}
 //       <div className="flex items-center mb-6">
 //         <RxCross2
@@ -917,6 +917,9 @@ import { fetchParticularMix } from "../../features/mixes/mixSlice";
 import CommentsPageSkeleton from "./CommentsPageSkeleton ";
 import { PostCard } from "./PostCard";
 import CommentSkeleton from "./CommentsSkeleton";
+import reportFlag from "../assets/flag.svg";
+import addImages from "../assets/gallery-add.svg"
+
 
 const formatTimeAgo = (timestampMs) => {
   if (!timestampMs) return "";
@@ -1034,7 +1037,7 @@ const NewCommentInput = ({
   };
 
   return (
-    <div className="w-full border border-gray-700 rounded-lg p-3 bg-[#1A1A1A]">
+    <div className="w-full border border-brand-almost-black rounded-lg pt-[11px] pl-[15px]">
       {imagePreview && (
         <div className="relative mb-2 w-24 h-24">
           <img
@@ -1056,9 +1059,9 @@ const NewCommentInput = ({
         placeholder={placeholder}
         maxLength={1000}
         rows={2}
-        className="w-full bg-transparent text-[#E7E9EA] text-sm resize-none outline-none"
+        className="w-full bg-transparent text-brand-off-white font-medium font-inter text-[14px] resize-none outline-none placeholder:text-brand-dark-gray"
       />
-      <div className="flex justify-between items-center mt-2">
+      <div className="flex mt-2 justify-between mr-[10px] mb-[3px]">
         <input
           type="file"
           accept="image/*"
@@ -1066,14 +1069,8 @@ const NewCommentInput = ({
           onChange={handleFileChange}
           className="hidden"
         />
-        <button
-          onClick={() => fileInputRef.current.click()}
-          className="text-gray-400 hover:text-white"
-          disabled={!!imageFile}
-        >
-          <FiImage size={20} />
-        </button>
 
+        {/* User and lowkey dropdown */}
         <div className="flex items-center gap-4">
           {hasLowkeyProfile ? (
             <ProfileSelector
@@ -1085,25 +1082,35 @@ const NewCommentInput = ({
             <>
               <div
                 onClick={() => navigate("/lowkey")}
-                className="text-sm text-pink-500 cursor-pointer whitespace-nowrap"
+                className="text-[12px] text-brand-pink cursor-pointer whitespace-nowrap"
               >
                 Create lowkey profile
               </div>
             </>
           )}
         </div>
+        
+        {/* Posting options */}
+        <div className="flex gap-[15px] items-center">
+          <button
+            onClick={() => fileInputRef.current.click()}
+            disabled={!!imageFile}
+          >
+            <img src={addImages} alt="Add images" />
+          </button>
 
-        <button
-          className={`text-sm font-semibold px-4 py-1 rounded-full ${
-            (!text.trim() && !imageFile) || isSubmitting
-              ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-              : "bg-white text-black"
-          }`}
-          disabled={(!text.trim() && !imageFile) || isSubmitting}
-          onClick={handleSubmit}
-        >
-          {isSubmitting ? "Posting..." : "Post"}
-        </button>
+          <button
+            className={`text-sm font-medium px-3 pt-1 pb-[6px] rounded-[10px] leading-[17px] ${
+              (!text.trim() && !imageFile) || isSubmitting
+                ? "text-brand-off-white cursor-not-allowed border border-brand-almost-black"
+                : "bg-brand-off-white text-brand-almost-black"
+            }`}
+            disabled={(!text.trim() && !imageFile) || isSubmitting}
+            onClick={handleSubmit}
+          >
+            {isSubmitting ? "adding..." : "add"}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1180,55 +1187,60 @@ const Comment = (props) => {
                 {isLowkeyComment ? `{${user_id.name}}` : `<${user_id.name}>`} •{" "}
               </span>
               <span>{formatTimeAgo(created_at)}</span>
+              <button>
+                <img src={reportFlag} alt="Report comment" className="ml-2 w-3 h-3" />
+              </button>
             </div>
-            {image && (
-              <img
-                src={image}
-                alt="Comment attachment"
-                className="mt-2 rounded-lg max-w-full h-auto"
-              />
-            )}
-            {content && (
-              <p className="text-[#E7E9EA] text-sm mt-1 break-words">
-                {content}
-              </p>
-            )}
-            <div className="flex items-center text-xs mt-2">
-              {canReply && (
-                <span
-                  className="text-pink-500 font-medium cursor-pointer"
-                  onClick={() => onToggleReply(comment.id)}
-                >
-                  Reply
-                </span>
+            <div className="flex-grow min-w-0 mt-[10px]"> 
+              {image && (
+                <img
+                  src={image}
+                  alt="Comment attachment"
+                  className="mt-[10px] rounded-lg max-w-full h-auto"
+                />
               )}
-            </div>
-            {isReplyBoxOpen && (
-              <div className="mt-2">
-                <NewCommentInput
-                  placeholder="Write a reply..."
-                  onSubmit={handleAddReply}
-                  isSubmitting={postStatus === "loading"}
-                  userId={loggedInUserId}
-                />
+              {content && (
+                <p className="text-brand-off-white text-[10px] break-words">
+                  {content}
+                </p>
+              )}
+              <div className="flex items-center text-xs mt-[9px]">
+                {canReply && (
+                  <span
+                    className="text-brand-off-white font-bold cursor-pointer"
+                    onClick={() => onToggleReply(comment.id)}
+                  >
+                    Reply
+                  </span>
+                )}
               </div>
-            )}
-            <div className="w-full">
-              {replies.map((reply) => (
-                <Comment
-                  key={reply.id}
-                  {...props}
-                  comment={reply}
-                  indentLevel={indentLevel + 1}
-                />
-              ))}
+              {isReplyBoxOpen && (
+                <div className="mt-2">
+                  <NewCommentInput
+                    placeholder="Write a reply..."
+                    onSubmit={handleAddReply}
+                    isSubmitting={postStatus === "loading"}
+                    userId={loggedInUserId}
+                  />
+                </div>
+              )}
+              <div className="w-full">
+                {replies.map((reply) => (
+                  <Comment
+                    key={reply.id}
+                    {...props}
+                    comment={reply}
+                    indentLevel={indentLevel + 1}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-          <div className="absolute right-0 top-4 flex flex-col items-center">
-            <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
+          {/* <div className="absolute right-0 top-4 flex flex-col items-center">
+            <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
             <span className="text-pink-500 font-semibold">{currentVotes}</span>
-            <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
-          </div>
+            <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
+          </div> */}
         </div>
       </div>
     );
@@ -1244,41 +1256,44 @@ const Comment = (props) => {
   };
   return (
     <div
-      className="relative w-full"
-      style={{ marginLeft: `${indentLevel * 14}px` }}
+      className={`relative w-full font-inter ${
+        indentLevel > 0 ? "border-l border-brand-almost-black pl-2" : ""
+      }`}
+      style={{ marginLeft: `${indentLevel > 0 ? (indentLevel - 1) * 14 + 2 : 0}px` }}
     >
-      {indentLevel > 0 && (
+      {/* {indentLevel > 0 && (
         <div
           className="absolute top-0 w-px bg-gray-700 h-full"
           style={{ left: "-7px" }}
         ></div>
-      )}
-      <div className="flex items-start mt-4">
-        {comment_type === "lowkey" ? (
-          <img
-            src={user_details.profile_image}
-            alt={user_details.name}
-            className="flex-shrink-0 w-8 h-8 mr-3 rounded-full object-cover"
-          />
-        ) : (
-          <img
-            src={user_details.profile}
-            alt={user_details.name}
-            className="flex-shrink-0 w-8 h-8 mr-3 rounded-full object-cover"
-          />
-        )}
+      )} */}
+      <div className="flex-col items-start mt-2">
+        {/* Header */}
+        <div className=" flex text-[10px]">
+          {comment_type === "lowkey" ? (
+            <img
+              src={user_details.profile_image}
+              alt={user_details.name}
+              className="flex-shrink-0 w-6 h-6 mr-[5px] rounded-full object-cover"
+            />
+          ) : (
+            <img
+              src={user_details.profile}
+              alt={user_details.name}
+              className="flex-shrink-0 w-6 h-6 mr-[5px] rounded-full object-cover"
+            />
+          )}
 
-        <div className="flex-grow min-w-0">
-          <div className="flex items-center text-sm gap-1 flex-wrap">
+          <div className="flex items-center gap-1 flex-wrap text-brand-dark-gray">
             <span
-              className="font-semibold text-[#E7E9EA]"
+              className="font-bold text-brand-off-white"
               onClick={handleClickProfile}
             >
               {isLowkeyComment
                 ? `{${user_details.username}}`
                 : `<${user_details.username}>`}{" "}
-              •
             </span>
+            <span>•</span>
             <span>
               {user_details.education_status?.degree?.charAt(0)}
               {user_details.college_show}
@@ -1286,6 +1301,11 @@ const Comment = (props) => {
             <span className="mx-1">•</span>
             <span>{formatTimeAgo(created_at)}</span>
           </div>
+        </div>
+
+
+        {/* Contents */}
+        <div className="flex-grow min-w-0 text-[10px]">
           {image && (
             <img
               src={image}
@@ -1294,12 +1314,12 @@ const Comment = (props) => {
             />
           )}
           {content && (
-            <p className="text-[#E7E9EA] text-sm mt-1 break-words">{content}</p>
+            <p className="text-brand-off-white mt-1 break-words">{content}</p>
           )}
-          <div className="flex items-center text-xs mt-2">
+          <div className="flex items-center mt-2">
             {canReply && (
               <span
-                className="text-pink-500 font-medium cursor-pointer"
+                className="text-brand-off-white font-bold cursor-pointer"
                 onClick={() => onToggleReply(comment.id)}
               >
                 Reply
@@ -1327,11 +1347,11 @@ const Comment = (props) => {
             ))}
           </div>
         </div>
-        <div className="absolute right-0 top-4 flex flex-col items-center">
-          <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
+        {/* <div className="absolute right-0 top-4 flex flex-col items-center">
+          <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
           <span className="text-pink-500 font-semibold">{currentVotes}</span>
-          <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-[#E7E9EA]" />
-        </div>
+          <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
+        </div> */}
       </div>
     </div>
   );
@@ -1422,46 +1442,51 @@ const CommentsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-[#E7E9EA] p-4 flex flex-col w-full max-w-2xl mx-auto">
+    <div className="min-h-screen bg-black text-brand-off-white flex flex-col w-full mx-auto">
       {/* Page Header */}
-      <div className="flex items-center mb-6">
+      <div className="flex items-center py-5 border-b border-brand-almost-black">
         {/* Cross Button */}
         <RxCross2
-          className="h-6 w-6 cursor-pointer mr-4"
+          className="h-6 w-6 cursor-pointer mr-[12px] ml-[15px]"
           onClick={() => navigate(-1)}
         />
 
         {selectedMix.network_id === null ? (
-          <h1 className="text-xl font-bold">Snippet slays right</h1>
+          <h1 className="text-[12px] font-bold">Snippet slays right</h1>
         ) : (
           <div className="flex items-center">
             {/* Profile Image */}
             <img
               src={selectedMix.network_id.image_url}
               alt={selectedMix.network_id.name}
-              className="h-10 w-10 rounded-full object-cover mr-3"
+              className="h-6 w-6 rounded-full object-cover mr-3"
             />
 
             {/* Name + Members */}
             <div>
-              <h1 className="text-xl font-bold">
+              <h1 className="text-[10px] font-bold">
                 {selectedMix.network_id.name}
               </h1>
-              <p className="text-sm text-gray-500">
-                {selectedMix.network_members_count} members
+              <p className="text-[8px] text-brand-off-white font-bold">
+                {selectedMix.network_members_count} 
+                <span className="text-brand-dark-gray ml-1 font-normal">members</span>
               </p>
+
             </div>
           </div>
         )}
       </div>
 
       {/* Main Post */}
-      <div className="border-b border-gray-700 pb-4">
+      <div className="">
         <PostCard post={selectedMix} isPartial={true} isCommentPage={true} />
       </div>
-
+      
+      <div className="px-[16px] py-[10px] font-bold text-[16px] border-b border-brand-almost-black">
+        <h1>thoughts</h1>
+      </div>
       {/* Comments Section */}
-      <div className="flex-grow overflow-y-auto pt-4 pb-24">
+      <div className="flex-grow overflow-y-auto pb-24 pt-[13px] pl-[14px] pr-[19px]">
         <div className="mb-6">
           <NewCommentInput
             placeholder="Join the conversation..."

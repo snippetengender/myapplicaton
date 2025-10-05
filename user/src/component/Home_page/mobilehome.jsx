@@ -7,6 +7,7 @@ import LogoIcon from "../snippetIcon/Vector.svg";
 import SearchIcon from "../snippetIcon/search-status.svg";
 import BellIcon from "../snippetIcon/notification.svg";
 import { FiSearch, FiSend, FiUser } from "react-icons/fi";
+import Sidebar from "./Sidebar";
 import PostCardSkeleton from "./postSkeleton";
 import { useSelector, useDispatch } from "react-redux";
 import { clearUser } from "../../features/userSlice/userSlice";
@@ -21,6 +22,8 @@ import upvoteActive from "../assets/upvoteActive.svg";
 import downvoteActive from "../assets/downvoteActive.svg";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { PostCard } from "../mix/PostCard";
+import reportFlag from "../assets/flag.svg";
+import locationTag from "../assets/location.svg";
 
 const yourHoodEvents = [
   {
@@ -98,33 +101,38 @@ const otherHoodEvents = [
 ];
 
 const EventCard = ({ event }) => (
-  <div className="bg-[#161616] border border-[#2F3336] rounded-xl p-4 flex gap-4">
-    <div className="flex-grow">
-      <p className="text-xs text-gray-400 mb-1">{event.time}</p>
-      <h3 className="text-[#E7E9EA] font-bold text-md mb-2">{event.title}</h3>
-      <div className="flex items-center text-xs text-gray-400 mb-1">
-        <span className="text-pink-500 mr-2 text-md leading-none">●</span>
-        By {event.organizer}
+  <div className="border border-brand-charcoal rounded-xl p-[10px] flex-col gap-4">
+    <div className="flex">
+      <div className="flex-grow min-w-0 max-w-[200px] mr-2">
+        <p className="text-[10px] font-medium text-brand-dark-gray mb-1">{event.time}</p>
+        <h3 className="text-brand-off-white font-semibold text-[15px] mb-2 truncate">{event.title}</h3>
+        <div className="flex items-center text-xs text-brand-dark-gray mb-1">
+          <span className="text-pink-500 w-3 h-3 bg-white rounded-full text-md leading-none mr-[6px]"></span>
+          <span className="flex-1 truncate">By {event.organizer}</span>
+        </div>
+        <div className="flex items-center text-xs text-brand-dark-gray mb-2 min-w-0">
+          <img src={locationTag} alt="Location svg" className="h-3 w-[10px] shrink-0" />
+          <span className="ml-1 flex-1 truncate">{event.location}</span>
+        </div>
       </div>
-      <div className="flex items-center text-xs text-gray-400 mb-2">
-        <LocationOnIcon sx={{ fontSize: 16 }} />
-        <span className="ml-1">{event.location}</span>
+      <div className="flex-shrink-0 h-[80px]">
+        {event.imageUrl ? (
+          <img
+            src={event.imageUrl}
+            alt={event.title}
+            className="w-[78px] h-[78px] object-cover rounded-lg"
+          />
+        ) : (
+          <div className="w-[78px] h-[78px] bg-[#3E2723] rounded-lg"></div>
+        )}
       </div>
-      {event.details && (
-        <p className="text-sm text-gray-500">and {event.details}</p>
-      )}
     </div>
-    <div className="flex-shrink-0">
-      {event.imageUrl ? (
-        <img
-          src={event.imageUrl}
-          alt={event.title}
-          className="w-24 h-40 object-cover rounded-lg"
-        />
-      ) : (
-        <div className="w-24 h-full bg-[#3E2723] rounded-lg"></div>
-      )}
-    </div>
+    {event.details && (
+      <div className="text-[12px] flex min-w-0">
+        <span className="text-brand-medium-gray shrink-0">and</span>
+        <span className="text-brand-off-white ml-1 flex-1 truncate">{event.details}</span>
+      </div>
+    )}
   </div>
 );
 
@@ -146,54 +154,149 @@ const EventsView = () => {
 
   return (
     <>
-      <div className="flex-grow overflow-y-auto px-4">
-        <img
-          src="https://img.freepik.com/free-vector/technology-banner-background-with-hexagonal-shapes-text-space_1017-22589.jpg"
-          alt="Just Snippet"
-          className="w-full rounded-lg mb-4"
-        />
-
-        {Object.entries(groupedEvents).map(([dayKey, events]) => (
-          <div key={dayKey} className="relative pl-6">
-            <div className="absolute left-1 top-2 h-full border-l-2 border-dashed border-gray-700"></div>
-            <div className="absolute left-[-2px] top-2 w-4 h-4 rounded-full bg-gray-700 border-4 border-black"></div>
-            <p className="font-semibold text-gray-300 mb-3">
-              {dayKey.split(" ")[0]}{" "}
-              <span className="text-gray-500">{dayKey.split(" ")[1]}</span>
-            </p>
-            <div className="space-y-3 mb-6">
-              {events.map((event, index) => (
-                <EventCard key={`${event.id}-${index}`} event={event} />
-              ))}
+      {activeHood === "snippet maps" ? (
+        <SnippetMaps />
+      ) : (
+        <>
+          {/* Future update line */}
+          <div className="bg-brand-pink w-full h-7 overflow-hidden flex items-center">
+            <div className="snips-marquee-track text-[12px]">
+              <span className="snips-marquee-item">We are working on these feature. Join Waitlist!</span>
+              <span className="snips-marquee-item" aria-hidden="true">We are working on these feature. Join Waitlist!</span>
             </div>
           </div>
-        ))}
-      </div>
+          <div className="flex-grow overflow-y-auto px-4">
+            <div className="flex items-center justify-center pt-[19px] pb-[21px]"> 
+              <img
+                src="https://img.freepik.com/free-vector/technology-banner-background-with-hexagonal-shapes-text-space_1017-22589.jpg"
+                alt="Just Snippet"
+                className="w-[327px] h-[76px] rounded-lg"
+              />
+            </div>
 
-      <div className="fixed bottom-0 left-0 right-0 flex justify-around items-center bg-black py-2 border-t border-gray-700 z-10">
+            {Object.entries(groupedEvents).map(([dayKey, events], idx) => (
+              <div key={dayKey} className="relative pl-6">
+                {idx < Object.entries(groupedEvents).length -1 && (
+                  <div className="absolute left-[5px] top-2 h-full border-l-2 border-dashed border-brand-almost-black"></div>
+                )}
+                <div className="absolute left-[-2px] top-1 w-4 h-4 rounded-full bg-brand-off-white border-4 border-black"></div>
+                <p className="font-semibold text-gray-300 mb-3">
+                  {dayKey.split(" ")[0]}{" "}
+                  <span className="text-gray-500">{dayKey.split(" ")[1]}</span>
+                </p>
+                <div className="space-y-3 mb-3">
+                  {events.map((event, index) => (
+                    <EventCard key={`${event.id}-${index}`} event={event} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <div className="fixed bottom-0 left-0 right-0 flex justify-around items-center bg-black border-t border-brand-charcoal z-10">
         <button
           onClick={() => setActiveHood("your hood")}
-          className={`font-semibold py-2 w-1/2 text-center ${
+          className={`font-semibold py-2 w-1/2 text-[14px] text-center ${
             activeHood === "your hood"
-              ? "text-[#E7E9EA] border-b-2 border-white"
-              : "text-gray-500"
+              ? "text-brand-off-white border-t-2 border-white"
+              : "text-brand-medium-gray"
           }`}
         >
           your hood
         </button>
         <button
           onClick={() => setActiveHood("other hoods")}
-          className={`font-semibold py-2 w-1/2 text-center relative ${
+          className={`font-semibold py-2 w-1/2 text-[14px] text-center relative ${
             activeHood === "other hoods"
-              ? "text-[#E7E9EA] border-b-2 border-white"
-              : "text-gray-500"
+              ? "text-brand-off-white border-t-2 border-white"
+              : "text-brand-medium-gray"
           }`}
         >
           other hoods
-          <span className="absolute top-2 right-[25%] block h-1.5 w-1.5 rounded-full bg-pink-500"></span>
+          {/* <span className="absolute top-2 right-[25%] block h-1.5 w-1.5 rounded-full bg-pink-500"></span> */}
+        </button>
+        <button
+          onClick={() => setActiveHood("snippet maps")}
+          className={`font-semibold py-2 w-1/2 text-[14px] text-center relative ${
+            activeHood === "snippet maps"
+              ? "text-brand-off-white border-t-2 border-white"
+              : "text-brand-medium-gray"
+          }`}
+        >
+          snippet maps
+          {/* <span className="absolute top-2 right-[25%] block h-1.5 w-1.5 rounded-full bg-pink-500"></span> */}
         </button>
       </div>
     </>
+  );
+};
+
+
+const SnippetMaps = () => {
+  const [selectedCard, setSelectedCard] = useState(null);
+  const handleSelect = (id) => setSelectedCard((prev) => (prev === id ? null : id));
+
+  return (
+    <div className="flex flex-col">
+      {/* City header */}
+      <div className="h-9 items-center ml-5 flex">
+        <h2 className="text-brand-off-white font-semibold text-[14px]">Coimbatore</h2>
+      </div>
+
+      {/* Future update line */}
+      <div className="bg-brand-pink w-full h-7 overflow-hidden flex items-center">
+        <div className="snips-marquee-track text-[12px]">
+          <span className="snips-marquee-item">We are working on these feature. Join Waitlist!</span>
+          <span className="snips-marquee-item" aria-hidden="true">We are working on these feature. Join Waitlist!</span>
+        </div>
+      </div>
+      
+      {/* Map placeholder (design block) */}
+      <div className="bg-brand-off-white w-full flex-1 min-h-[330px] flex items-center justify-center">
+        <span className="text-black/60 text-[12px]">map preview</span>
+      </div>
+
+      {/* Event cards */}
+      <div className="">
+        <div className="px-[6px] py-[10px]">
+          <h3 className="font-semibold text-[14px] mb-[13px]">Aug 2 / <span className="font-medium">Saturday</span></h3>
+          <div
+            onClick={() => handleSelect('card-1')}
+            className={`flex items-center px-[8px] py-[8px] rounded-xl cursor-pointer ${selectedCard === 'card-1' ? 'border border-pink-500' : ''}`}
+          >
+            <div className="bg-brand-off-white min-h-[69px] w-[69px] rounded-md"></div>
+            <div className="font-semibold text-[12px] ml-[15px]">
+              <h3>Manad Blitz Bangalore</h3>
+              <div className="font-medium flex items-center mt-1">
+                <div className="bg-brand-off-white h-[13px] w-[13px] rounded-full mr-1"></div>
+                <p>By NSRCEL, IIM Bangalore</p>
+              </div>
+              <p className="text-[13px] mt-1 font-medium">9:00 PM</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-[6px] py-[10px]">
+          <h3 className="font-semibold text-[14px] mb-[13px]">Aug 2 / <span className="font-medium">Saturday</span></h3>
+          <div
+            onClick={() => handleSelect('card-2')}
+            className={`flex items-center px-[8px] py-[8px] rounded-xl cursor-pointer ${selectedCard === 'card-2' ? 'border border-pink-500' : ''}`}
+          >
+            <div className="bg-brand-off-white min-h-[69px] w-[69px] rounded-md"></div>
+            <div className="font-semibold text-[12px] ml-[15px]">
+              <h3>Manad Blitz Bangalore</h3>
+              <div className="font-medium flex items-center mt-1">
+                <div className="bg-brand-off-white h-[13px] w-[13px] rounded-full mr-1"></div>
+                <p>By NSRCEL, IIM Bangalore</p>
+              </div>
+              <p className="text-[13px] mt-1 font-medium">9:00 PM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -546,6 +649,7 @@ const Home = () => {
   const userId = useSelector((state) => state.user.userId);
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const profileMenuRef = useRef(null);
 
   const [activeTab, setActiveTab] = useState("mixes");
@@ -628,97 +732,111 @@ const Home = () => {
   const isLoading = status === "loading";
   const isInitialLoad = isLoading && posts.length === 0;
   return (
-    <div className="min-h-screen bg-black text-[#E7E9EA] flex flex-col pt-20">
+    <div className="font-inter min-h-screen bg-black text-brand-off-white flex flex-col pt-[60px]">
       {" "}
-      <nav className="fixed top-0 left-0 right-0 flex justify-between items-center w-full p-4 bg-black border-b border-gray-700 z-20">
+      {/* Header banner */}
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      
+      <nav className="fixed top-0 left-0 right-0 flex justify-between items-center w-full h-15 p-3 bg-black border-b border-brand-almost-black z-20">
         {/* Left Side: Menu and Logo */}
-        <div className="flex items-center space-x-4">
-          <div className="cursor-pointer">
+        <div className="flex items-center space-x-2">
+          <div className="cursor-pointer" onClick={() => setIsSidebarOpen(true)}>
             <img src={HamburgerIcon} alt="menu" className="w-6 h-6" />
           </div>
           <div className="cursor-pointer">
-            <img src={LogoIcon} alt="logo" className="w-6 h-6" />
+            <img src={LogoIcon} alt="logo" className="w-[35px] h-[35px]" />
           </div>
         </div>
 
         {/* Right Side: Actions and Profile */}
-        <div className="flex items-center space-x-6">
-          <div className="cursor-pointer">
-            <img
-              onClick={() => navigate("/search-network")}
-              src={SearchIcon}
-              alt="search"
-              className="w-6 h-6"
-            />
-          </div>
-          <div className="relative cursor-pointer">
-            <img src={BellIcon} alt="notifications" className="w-6 h-6" />
-            {hasNotification && (
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-[#F06CB7]"></span>
-            )}
-          </div>
+        {/* Actions and profile in mixes page only */}
+        {activeTab==="mixes" && (
+          <div className="flex items-center space-x-6">
+            <div className="cursor-pointer">
+              <img src={SearchIcon} alt="search" className="w-6 h-6" />
+            </div>
+            <div className="relative cursor-pointer">
+              <img src={BellIcon} alt="notifications" className="w-6 h-6" />
+              {hasNotification && (
+                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-brand-pink"></span>
+              )}
+            </div>
 
-          {/* FIX: The correct profile menu is now integrated here */}
-          <div ref={profileMenuRef} className="relative">
-            <FiUser
-              className="h-6 w-6 cursor-pointer"
-              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-            />
-            {isProfileMenuOpen && (
-              <div className="absolute top-full right-0 mt-2 w-48 bg-neutral-800 border border-neutral-700 rounded-md shadow-lg z-20">
-                <ul className="py-1 text-white">
-                  <li>
-                    <button
-                      onClick={() => {
-                        if (userId) navigate(`/user-profile-owner/${userId}`);
-                        setIsProfileMenuOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-700"
-                    >
-                      Profile
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-neutral-700"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            )}
+            {/* FIX: The correct profile menu is now integrated here */}
+            <div ref={profileMenuRef} className="relative">
+              <FiUser
+                className="h-6 w-6 cursor-pointer"
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              />
+              {isProfileMenuOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-neutral-800 border border-neutral-700 rounded-md shadow-lg z-20">
+                  <ul className="py-1 text-brand-off-white">
+                    <li>
+                      <button
+                        onClick={() => {
+                          if (userId)
+                            navigate(`/user-profile-owner/${userId}`);
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-700"
+                      >
+                        Profile
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-neutral-700"
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
+        {/* Events page for the "own event" button */}
+        {activeTab==="events" && (
+          <div className="flex items-center space-x-6">
+            <div className="cursor-pointer">
+              <img src={SearchIcon} alt="search" className="w-6 h-6" />
+            </div>
+            <button className="flex border border-brand-charcoal rounded-[25px] px-3 py-1 text-[12px]">
+              <span className="text-brand-off-white">publish you own</span>
+              <span className="text-brand-pink ml-1">event</span>
+            </button>
+          </div>
+        )}
       </nav>
       {/* Tabs */}
-      <div className="flex justify-around border-b border-gray-700 mb-2">
+      <div className="flex justify-around border-b border-brand-almost-black">
         <button
           onClick={() => setActiveTab("mixes")}
-          className={`relative w-full py-2 font-semibold text-center ${
-            activeTab === "mixes" ? "text-[#E7E9EA]" : "text-gray-400"
+          className={`relative w-full py-3 font-semibold text-center ${
+            activeTab === "mixes" ? "text-brand-off-white" : "text-brand-medium-gray"
           }`}
         >
           mixes
           {activeTab === "mixes" && (
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-white rounded"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
           )}
         </button>
         <button
           onClick={() => setActiveTab("events")}
-          className={`relative w-full py-2 font-semibold text-center ${
-            activeTab === "events" ? "text-[#E7E9EA]" : "text-gray-400"
+          className={`relative w-full py-3 font-semibold text-center ${
+            activeTab === "events" ? "text-brand-off-white" : "text-brand-medium-gray"
           }`}
         >
           events
           {activeTab === "events" && (
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-white rounded"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-brand-off-white rounded"></span>
           )}
         </button>
       </div>
       {/* FIX: A single, non-duplicated content area */}
-      <div className="flex-grow overflow-y-auto px-4 pb-20">
+      <div className="flex-grow overflow-y-auto pb-20">
         {activeTab === "mixes" ? (
           <>
             {/* Skeletons for the very first load */}
@@ -755,14 +873,13 @@ const Home = () => {
       {/* FIX: A single "Open up now" bar that only shows on the "mixes" tab */}
       {activeTab === "mixes" && (
         <div className="fixed bottom-0 left-0 right-0 px-2 py-1 z-10">
-          <div className="backdrop-blur-md bg-black/50 border border-[#2F3336] rounded-3xl px-4 py-2 flex justify-between items-center">
-            <span className="text-[#E7E9EA]">Open up now</span>
+          <div className="backdrop-blur-md bg-black/50 border border-brand-charcoal rounded-3xl px-4 py-2 flex justify-between items-center">
+            <span className="text-brand-off-white">Open up now</span>
             <button
+              className="bg-white/10 border border-brand-charcoal text-brand-off-white px-4 py-1 rounded-xl hover:bg-white/20"
+              //style={{ color: 'cyan', fontSize: '18px' }}
               onClick={() => navigate(`/selecttag/${userId}`)}
-              // FIX: Disable the button if userId is not available
-              disabled={!userId}
-              // FIX: Add styling for the disabled state for better UX
-              className="bg-white/10 border border-[#2F3336] text-[#E7E9EA] px-4 py-1 rounded-xl hover:bg-white/20 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              //to="/selecttag"
             >
               mix
             </button>

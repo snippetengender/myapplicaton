@@ -9,6 +9,8 @@ import {
 import { createMix, resetMixes } from "../../features/mixes/mixSlice";
 import imageCompression from "browser-image-compression";
 import ProfileSelector from "./ProfileSelector";
+import peekingImg from "../assets/Snippy_peeking.png";
+import addImages from "../assets/gallery-add.svg";
 
 const availableTags = [
   "confession",
@@ -44,7 +46,7 @@ const ImageUploadTextArea = ({
 
   return (
     <>
-      <div className="w-full bg-transparent border border-zinc-700 rounded-lg p-3 flex flex-col">
+      <div className="w-full bg-transparent border border-brand-charcoal rounded-lg p-3 flex flex-col">
         {imagePreview && (
           <div className="mb-2 relative w-28 h-28">
             <img
@@ -68,7 +70,7 @@ const ImageUploadTextArea = ({
             onChange={(e) => setText(e.target.value)}
             placeholder={placeholder}
             maxLength={maxLength}
-            className="w-full bg-transparent resize-none outline-none text-sm placeholder-zinc-500"
+            className="w-full bg-transparent resize-none outline-none text-[12px] placeholder-brand-medium-gray text-brand-medium-gray"
             rows="2"
           />
           <div className="flex justify-end mt-auto pt-1">
@@ -77,9 +79,9 @@ const ImageUploadTextArea = ({
                 type="button"
                 onClick={() => fileInputRef.current.click()}
                 disabled={imagePreview !== null}
-                className="text-zinc-400 disabled:text-zinc-700"
+                className="text-zinc-400 disabled:text-brand-cborder-brand-charcoal"
               >
-                <Paperclip size={18} />
+                <img src={addImages} alt="Add Images to post" />
               </button>
             )}
           </div>
@@ -254,7 +256,7 @@ export default function MobilePostPage() {
     const maxLength = selectedNetwork ? 1000 : 200;
     if (!selectedTag) {
       return (
-        <p className="text-center text-zinc-500">
+        <p className="text-center text-brand-medium-gray">
           Please select a tag to start.
         </p>
       );
@@ -262,15 +264,18 @@ export default function MobilePostPage() {
 
     const titleInput = selectedNetwork && (
       <div className="relative">
+        <span className="text-[13px] text-brand-off-white mb-1">
+          Give your thought a 
+        </span>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title"
           maxLength={100}
-          className="w-full bg-transparent border-b border-zinc-700 focus:outline-none text-2xl font-bold placeholder-zinc-600 pb-1"
+          className="w-full bg-transparent focus:outline-none text-2xl font-semibold placeholder-zinc-600"
         />
-        <span className="absolute -bottom-5 right-0 text-xs text-zinc-500">
+        <span className="text-xs text-brand-medium-gray">
           {title.length}/100
         </span>
       </div>
@@ -299,12 +304,12 @@ export default function MobilePostPage() {
                   onChange={(e) => updatePollOption(e.target.value, index)}
                   placeholder={`Option ${index + 1}`}
                   maxLength={50}
-                  className="w-full bg-transparent border border-zinc-700 rounded-lg p-3 pr-10"
+                  className="w-full bg-transparent border border-brand-charcoal rounded-lg p-3 pr-10"
                 />
                 <button
                   onClick={() => removePollOption(index)}
                   disabled={pollOptions.length <= 2}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 disabled:text-zinc-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 disabled:text-brand-cborder-brand-charcoal"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -318,12 +323,12 @@ export default function MobilePostPage() {
                   onChange={(e) => setNewOption(e.target.value)}
                   placeholder="Add Option"
                   maxLength={50}
-                  className="w-full bg-transparent border border-zinc-700 rounded-lg p-3 pr-16"
+                  className="w-full bg-transparent border border-brand-charcoal rounded-lg p-3 pr-16"
                 />
                 <button
                   onClick={addPollOption}
                   disabled={!newOption.trim()}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm bg-zinc-700 px-2 py-0.5 rounded disabled:bg-zinc-800"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm bg-brand-cborder-brand-charcoal px-2 py-0.5 rounded disabled:bg-zinc-800"
                 >
                   add
                 </button>
@@ -347,7 +352,7 @@ export default function MobilePostPage() {
           placeholder="Open up here now..."
           onFileSelect={handleImageSelect}
         />
-        <p className="text-xs text-zinc-500 mt-1 pl-1">
+        <p className="text-xs text-brand-medium-gray mt-1 pl-1">
           {text.length}/{maxLength}
         </p>
       </div>
@@ -364,14 +369,14 @@ export default function MobilePostPage() {
           <button
             disabled={!canPost || isSubmitting}
             onClick={handleSubmit}
-            className="px-4 py-1 rounded-full text-sm font-semibold transition disabled:bg-[#2e2e2e] disabled:text-zinc-500 bg-white text-black"
+            className="px-4 py-[7px] rounded-[20px] text-[15px] transition disabled:bg-brand-charcoal disabled:text-black bg-brand-off-white text-black"
           >
             {isSubmitting ? "Posting..." : "Post"}
           </button>
         </div>
 
-        <h1 className="text-2xl font-bold mt-6 mb-2">Select a Tag</h1>
-        <p className="text-sm text-zinc-300 mb-6">
+        <h1 className="text-2xl font-bold mt-[15px] mb-2">Select a Tag</h1>
+        <p className="text-sm text-brand-medium-gray mb-3">
           Select a tag and share what's on your mind.
         </p>
 
@@ -379,9 +384,9 @@ export default function MobilePostPage() {
         {!selectedNetwork ? (
           <div
             onClick={() => navigate("/select-network")}
-            className="bg-[#2e2e2e] text-zinc-400 px-4 py-3 rounded-xl mb-4 flex items-center gap-3 border border-dashed border-zinc-500 cursor-pointer"
+            className="bg-brand-almost-black font-semibold px-4 py-3 rounded-xl mb-4 flex items-center gap-3 text-brand-off-white cursor-pointer"
           >
-            <div className="w-5 h-5 rounded-full border border-dashed border-zinc-400" />
+            <div className="w-5 h-5 rounded-full border border-dashed border-brand-off-white" />
             <span className="text-sm">Select a Network</span>
           </div>
         ) : (
@@ -394,7 +399,7 @@ export default function MobilePostPage() {
                   className="w-7 h-7 rounded-full object-cover border border-dashed border-zinc-400"
                 />
               ) : (
-                <div className="w-5 h-5 rounded-full bg-zinc-300" />
+                <div className="w-5 h-5 rounded-full bg-brand-mtext-brand-medium-gray" />
               )}
               <span className="text-sm font-semibold">
                 {selectedNetwork.name}
@@ -405,7 +410,7 @@ export default function MobilePostPage() {
                 setSelectedNetwork(null);
                 localStorage.removeItem("selectedNetwork");
               }}
-              className="text-xs text-zinc-400 hover:text-white"
+              className="text-xs text-brand-almost-black hover:text-brand-off-white"
             >
               Reset
             </button>
@@ -417,10 +422,10 @@ export default function MobilePostPage() {
             <button
               key={tag}
               onClick={() => setSelectedTag(tag)}
-              className={`px-4 py-1 rounded-full border text-sm transition ${
+              className={`px-4 py-1 rounded-full border text-[13px] transition text-brand-off-white ${
                 selectedTag === tag
-                  ? "border-zinc-300 text-[#E7E9EA]"
-                  : "border-zinc-700 text-zinc-400"
+                  ? "border-brand-pink"
+                  : "border-brand-medium-gray"
               }`}
             >
               {tag}
@@ -428,7 +433,7 @@ export default function MobilePostPage() {
           ))}
         </div>
         {selectedNetwork && selectedTag && userDetails ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 max-w-[50vw]">
             {hasLowkeyProfile ? (
               <ProfileSelector
                 userDetails={userDetails}
@@ -443,13 +448,13 @@ export default function MobilePostPage() {
                     alt={userDetails.name}
                     className="w-10 h-10 rounded-full object-cover"
                   />
-                  <div className="text-gray-400 text-md">
+                  <div className="text-brand-dark-gray text-md">
                     {`<${userDetails.username}>`}
                   </div>
                 </div>
                 <div
                   onClick={() => navigate("/lowkey")}
-                  className="text-sm text-pink-500 cursor-pointer whitespace-nowrap"
+                  className="text-sm text-brand-pink cursor-pointer whitespace-nowrap"
                 >
                   or use Lowkey profile
                 </div>
@@ -465,10 +470,16 @@ export default function MobilePostPage() {
         )}
         {renderInputs()}
       </div>
-      <p className="text-xs text-zinc-500 text-center mt-8 pb-4">
-        Know Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean
-        tristique risus eu vitae felis. Donec lacus acc
-      </p>
+      {/* <div className="flex relative">
+        <img 
+          src={peekingImg} 
+          alt="Peeking you" 
+          className="w-[104px] h-[95px] absolute -left-3 bottom-5"
+        />
+        <p className="absolute left-[80px] bottom-2 text-[8px] text-brand-dark-gray  mt-8 pb-4">
+          Make sure that the content you're posting is appropriate, or read the <span className="text-brand-blue mr-1">terms and conditions</span> before you post
+        </p>
+      </div> */}
     </div>
   );
 }

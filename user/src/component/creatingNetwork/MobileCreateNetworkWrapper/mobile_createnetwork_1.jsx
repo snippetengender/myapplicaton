@@ -6,6 +6,7 @@ import {
   setFormData,
   checkNetworkName,
 } from "../../../features/networkCreate/networkSlice";
+import nextArrow from "../../assets/next.svg";
 
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -46,36 +47,36 @@ export default function MobileCreateNetwork1() {
   const handleBack = () => navigate(-1);
 
   return (
-    <div className="bg-black text-[#E7E9EA] min-h-screen flex flex-col p-6 pb-10">
+    <div className="bg-black text-brand-off-white min-h-screen flex flex-col p-6 pb-10 font-inter">
       {/* Header */}
       <header className="flex items-center justify-between w-full">
         <button 
           onClick={handleBack} 
-          className="p-2 -ml-2 text-neutral-300 hover:text-[#E7E9EA] transition-colors"
+          className="p-2 -ml-2 transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
-        <div className="bg-neutral-800 text-xs rounded-full px-3 py-1.5">
+        <div className="bg-brand-charcoal w-[65px] h-[32px] text-[15px] rounded-full px-3 py-1.5 text-black justify-center items-center flex">
           1/3
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow w-full pt-4">
-        <h1 className="text-2xl font-semibold text-[#E7E9EA] mb-2">
+      <main className="flex-grow w-full pt-[7px]">
+        <h1 className="text-[20px] font-bold text-brand-off-white mb-2">
           About your Network
         </h1>
-        <p className="text-xs text-neutral-400 leading-relaxed mb-6">
+        <p className="text-xs text-brand-off-white leading-relaxed mb-[15px]">
           Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
         </p>
 
         {/* Title Input Section */}
-        <div className="space-y-2">
-          <label className="text-base text-[#E7E9EA]">
+        <div className="">
+          <label className="text-base text-brand-off-white">
             give your network a
           </label>
           <div className="flex justify-between items-baseline mt-1">
-            <div className="flex items-center text-2xl text-[#E7E9EA] flex-grow">
+            <div className="flex items-center text-2xl text-brand-off-white flex-grow">
               <input
                 type="text"
                 name="name" // Added name attribute
@@ -84,27 +85,27 @@ export default function MobileCreateNetwork1() {
                 maxLength={15}
                 placeholder="Title"
                 autoComplete="off"
-                className="w-full bg-transparent font-semibold placeholder:text-[#676767] focus:outline-none focus:bg-transparent"
+                className="w-full bg-transparent font-semibold placeholder:text-brand-medium-gray focus:outline-none focus:bg-transparent"
               />
             </div>
-            <span className="text-xs text-[#E7E9EA] whitespace-nowrap ml-4">
+            {/* <span className="text-xs text-brand-off-white whitespace-nowrap ml-4">
               #15 character only for Title
-            </span>
+            </span> */}
           </div>
         </div>
 
         {/* Description Textarea Section */}
-        <div className="mt-4 space-y-1">
+        <div className="mt-[15px] space-y-1">
           <textarea
             name="description" // Added name attribute
             value={description}
             onChange={handleInputChange}
             maxLength={500}
-            className="w-full h-28 bg-transparent border border-neutral-700 rounded-xl p-4 focus:outline-none"
+            className="w-full h-28 bg-transparent text-[12px] text-brand-dark-gray border border-brand-charcoal rounded-xl p-2 focus:outline-none"
             placeholder="Open up here now..."
           />
           <div className="px-1">
-            <p className="text-left text-sm text-neutral-500">
+            <p className="text-left text-sm text-brand-charcoal">
               {description.length}/500
             </p>
             {/* Dynamic error/status message */}
@@ -133,9 +134,14 @@ export default function MobileCreateNetwork1() {
       <footer className="fixed bottom-6 right-6">
         <button
           onClick={handleNext}
-          className="w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center"
+          disabled={!(nameCheck.status === "succeeded" && nameCheck.isAvailable && description.length > 10 && name.length > 0)}
+          className={`w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          <ArrowRight size={24} className="text-[#E7E9EA]" />
+          <img 
+            src={nextArrow} 
+            alt="Next arrow" 
+            className={nameCheck.status === "succeeded" && nameCheck.isAvailable && description.length > 10 ? "" : "opacity-50"}
+          />
         </button>
       </footer>
     </div>

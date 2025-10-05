@@ -20,7 +20,7 @@ const FormInput = ({ placeholder, type = 'text', value, onChange }) => (
     placeholder={placeholder}
     value={value}
     onChange={onChange}
-    className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-pink-500"
+    className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-brand-pink"
   />
 );
 
@@ -48,7 +48,7 @@ const ImageUploadModal = ({ isOpen, onClose, onImageSelect }) => {
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-500 file:text-[#E7E9EA] hover:file:bg-pink-600"
+          className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-pink file:text-[#E7E9EA] hover:file:bg-pink-600"
         />
       </div>
     </div>
@@ -116,15 +116,15 @@ const AddEventPage = () => {
           <div className="flex items-center gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="hood" value="your hood" checked={hood === 'your hood'} onChange={(e) => setHood(e.target.value)} className="hidden" />
-                <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${hood === 'your hood' ? 'border-pink-500' : 'border-gray-500'}`}>
-                    {hood === 'your hood' && <span className="h-2.5 w-2.5 rounded-full bg-pink-500"></span>}
+                <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${hood === 'your hood' ? 'border-brand-pink' : 'border-gray-500'}`}>
+                    {hood === 'your hood' && <span className="h-2.5 w-2.5 rounded-full bg-brand-pink"></span>}
                 </span>
                 <span>your hood</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="hood" value="other hood" checked={hood === 'other hood'} onChange={(e) => setHood(e.target.value)} className="hidden" />
-                 <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${hood === 'other hood' ? 'border-pink-500' : 'border-gray-500'}`}>
-                    {hood === 'other hood' && <span className="h-2.5 w-2.5 rounded-full bg-pink-500"></span>}
+                 <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${hood === 'other hood' ? 'border-brand-pink' : 'border-gray-500'}`}>
+                    {hood === 'other hood' && <span className="h-2.5 w-2.5 rounded-full bg-brand-pink"></span>}
                 </span>
                 <span>other hood</span>
               </label>
@@ -133,12 +133,12 @@ const AddEventPage = () => {
           {/* Event Name */}
           <div>
             <h2 className="text-xl font-semibold mb-2">Event Name</h2>
-            <textarea placeholder="Event description goes here" value={eventName} onChange={(e) => setEventName(e.target.value)} maxLength="1000" className="w-full h-24 bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-pink-500 resize-none"></textarea>
+            <textarea placeholder="Event description goes here" value={eventName} onChange={(e) => setEventName(e.target.value)} maxLength="1000" className="w-full h-24 bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-brand-pink resize-none"></textarea>
             <p className="text-right text-xs text-gray-500">{eventName.length}/1000</p>
           </div>
 
           {/* Category Dropdown */}
-           <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] appearance-none focus:outline-none focus:border-pink-500">
+           <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] appearance-none focus:outline-none focus:border-brand-pink">
               <option value="" disabled>category</option>
               <option value="Tech">Tech</option>
               <option value="Music">Music</option>
@@ -146,7 +146,7 @@ const AddEventPage = () => {
            </select>
           
           {/* Date and Time Picker */}
-          <input type="datetime-local" value={dateTime} onChange={(e) => setDateTime(e.target.value)} className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-pink-500" />
+          <input type="datetime-local" value={dateTime} onChange={(e) => setDateTime(e.target.value)} className="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-[#E7E9EA] placeholder-gray-500 focus:outline-none focus:border-brand-pink" />
           
           {/* Event Type Radio */}
           <div>
@@ -154,15 +154,15 @@ const AddEventPage = () => {
             <div className="flex items-center gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="eventType" value="free" checked={eventType === 'free'} onChange={(e) => setEventType(e.target.value)} className="hidden" />
-                <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${eventType === 'free' ? 'border-pink-500' : 'border-gray-500'}`}>
-                    {eventType === 'free' && <span className="h-2.5 w-2.5 rounded-full bg-pink-500"></span>}
+                <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${eventType === 'free' ? 'border-brand-pink' : 'border-gray-500'}`}>
+                    {eventType === 'free' && <span className="h-2.5 w-2.5 rounded-full bg-brand-pink"></span>}
                 </span>
                 <span>free</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="eventType" value="paid" checked={eventType === 'paid'} onChange={(e) => setEventType(e.target.value)} className="hidden" />
-                <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${eventType === 'paid' ? 'border-pink-500' : 'border-gray-500'}`}>
-                    {eventType === 'paid' && <span className="h-2.5 w-2.5 rounded-full bg-pink-500"></span>}
+                <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${eventType === 'paid' ? 'border-brand-pink' : 'border-gray-500'}`}>
+                    {eventType === 'paid' && <span className="h-2.5 w-2.5 rounded-full bg-brand-pink"></span>}
                 </span>
                 <span>paid</span>
               </label>
@@ -176,7 +176,7 @@ const AddEventPage = () => {
             <p className="font-semibold mb-2">Perks</p>
             <div className="flex flex-wrap gap-2">
               {perksList.map(perk => (
-                <button key={perk} type="button" onClick={() => togglePerk(perk)} className={`px-3 py-1 text-sm border rounded-full transition-colors ${selectedPerks.includes(perk) ? 'bg-pink-500 border-pink-500 text-[#E7E9EA]' : 'border-gray-600 text-gray-400'}`}>
+                <button key={perk} type="button" onClick={() => togglePerk(perk)} className={`px-3 py-1 text-sm border rounded-full transition-colors ${selectedPerks.includes(perk) ? 'bg-brand-pink border-brand-pink text-[#E7E9EA]' : 'border-gray-600 text-gray-400'}`}>
                   {perk}
                 </button>
               ))}
@@ -188,15 +188,15 @@ const AddEventPage = () => {
             <div className="flex items-center gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="eventMode" value="Online" checked={eventMode === 'Online'} onChange={(e) => setEventMode(e.target.value)} className="hidden" />
-                <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${eventMode === 'Online' ? 'border-pink-500' : 'border-gray-500'}`}>
-                    {eventMode === 'Online' && <span className="h-2.5 w-2.5 rounded-full bg-pink-500"></span>}
+                <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${eventMode === 'Online' ? 'border-brand-pink' : 'border-gray-500'}`}>
+                    {eventMode === 'Online' && <span className="h-2.5 w-2.5 rounded-full bg-brand-pink"></span>}
                 </span>
                 <span>Online</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="eventMode" value="Offline" checked={eventMode === 'Offline'} onChange={(e) => setEventMode(e.target.value)} className="hidden" />
-                 <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${eventMode === 'Offline' ? 'border-pink-500' : 'border-gray-500'}`}>
-                    {eventMode === 'Offline' && <span className="h-2.5 w-2.5 rounded-full bg-pink-500"></span>}
+                 <span className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${eventMode === 'Offline' ? 'border-brand-pink' : 'border-gray-500'}`}>
+                    {eventMode === 'Offline' && <span className="h-2.5 w-2.5 rounded-full bg-brand-pink"></span>}
                 </span>
                 <span>Offline</span>
               </label>

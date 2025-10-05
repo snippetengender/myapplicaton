@@ -8,6 +8,7 @@ import upvoteActive from "../assets/upvoteActive.svg";
 import downvoteActive from "../assets/downvoteActive.svg";
 import { PollComponent } from "./PollComponent";
 import { useEffect } from "react";
+import reportFlag from "../assets/flag.svg";
 
 export const PostCard = ({
   post,
@@ -44,7 +45,7 @@ export const PostCard = ({
   }, [post]);
 
   return (
-    <div className="border-b border-gray-700 py-4">
+    <div className="border-b border-brand-almost-black py-[15px] px-[15px]">
       {/* Header Section */}
       {!isCommentPage ? (
         <>
@@ -57,23 +58,23 @@ export const PostCard = ({
                   <img
                     src={user.avatar}
                     alt={user.name || "User"}
-                    className="w-10 h-10 rounded-full object-cover"
+                    className="w-6 h-6 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white">
+                  <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-brand-off-white">
                     {user.username?.[0]?.toUpperCase() || "?"}
                   </div>
                 )}
-                <div className="text-sm">
+                <div className="flex text-[10px] items-center justify-center">
                   {profileType === "user" ? (
                     <div
-                      className="flex items-center gap-1.5 text-md font-semibold cursor-pointer"
+                      className="flex items-center gap-1.5 text-[10px] font-bold cursor-pointer"
                       onClick={() => navigate(`/user-profile/${user.id}`)}
                     >
                       {"<"}
                       {user.username}
                       {">"}
-                      <span className="text-[#616161] font-normal">
+                      <span className="text-brand-dark-gray font-normal">
                         {user.degree
                           ? user.degree === "masters"
                             ? "m"
@@ -81,37 +82,39 @@ export const PostCard = ({
                           : ""}
                         {user.college} • {time}
                       </span>
-                      <span className="ml-1 text-xs px-2 py-0.5 rounded-full border border-gray-700">
+                      <span className="ml-1 text-[9px] px-2 py-0.5 rounded-full border border-brand-charcoal">
                         {label}
                       </span>
                       {label.toLowerCase() === "poll" && (
-                        <span className="text-xs text-gray-400 font-normal ml-1">
-                          • {getPollTimeInfo(createdAt).displayText}
+                        <span className="justify-center items-center ml-[5px] text-brand-dark-gray">
+                          {getPollTimeInfo(createdAt).displayText}
                         </span>
                       )}
                     </div>
                   ) : (
                     <div
-                      className="flex items-center gap-1.5 text-[#E7E9EA] font-semibold cursor-pointer"
+                      className="flex items-center gap-1.5 text-brand-off-white font-semibold cursor-pointer"
                       onClick={() => navigate(`/communitypage/${user.id}`)}
                     >
                       {user.name}
-                      <span className="text-gray-400 font-normal">
+                      <span className="text-brand-dark-gray font-normal">
                         • {time}
                       </span>
-                      <span className="ml-1 text-xs px-2 py-0.5 rounded-full bg-gray-900 border border-gray-700">
+                      <span className="ml-1 text-[9px] px-2 py-0.5 rounded-full border border-brand-charcoal">
                         {label}
                       </span>
                       {label.toLowerCase() === "poll" && (
-                        <span className="text-xs text-gray-400 font-normal ml-1">
-                          • {getPollTimeInfo(createdAt).displayText}
+                        <span className="justify-center items-center ml-[5px] text-brand-dark-gray">
+                          {getPollTimeInfo(createdAt).displayText}
                         </span>
                       )}
                     </div>
                   )}
                 </div>
               </div>
-              <button className="text-gray-400">•••</button>
+              <button className="">
+                <img src={reportFlag} alt="Report post" />
+              </button>
             </div>
           </div>
           <div className="px-4 ml-0.5 pl-1 mt-3">
@@ -120,12 +123,12 @@ export const PostCard = ({
                 {imageUrl ? (
                   <>
                     {profileType === "network" && title && (
-                      <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
+                      <h2 className="text-brand-off-white text-lg font-semibold mb-2">
                         {title}
                       </h2>
                     )}
                     {profileType === "user" && content && (
-                      <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+                      <p className="text-brand-off-white text-[14px] whitespace-pre-line mb-2">
                         {content}
                       </p>
                     )}
@@ -140,13 +143,13 @@ export const PostCard = ({
                 ) : (
                   <>
                     {profileType === "network" && title && (
-                      <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
+                      <h2 className="text-brand-off-white text-lg font-semibold mb-2">
                         {title}
                       </h2>
                     )}
                     {(profileType === "user" || profileType === "network") &&
                       content && (
-                        <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+                        <p className="text-brand-off-white text-[14px] whitespace-pre-line mb-2">
                           {content}
                         </p>
                       )}
@@ -163,7 +166,7 @@ export const PostCard = ({
                 <span></span>
               ) : (
                 <span
-                  className="text-pink-500 font-medium cursor-pointer"
+                  className="text-brand-pink font-medium cursor-pointer"
                   onClick={() => navigate(`/comments/${post.id}`)}
                 >
                   {stats.thoughts} thoughts
@@ -182,7 +185,7 @@ export const PostCard = ({
                     onClick={() => handleReaction("like")}
                     className="w-6 h-6 cursor-pointer"
                   />
-                  <p className="text-gray-400 text-xl font-semibold w-6 text-center">
+                  <p className="text-brand-pink text-xl font-semibold w-6 text-center">
                     {netScore}
                   </p>
                   <img
@@ -202,20 +205,21 @@ export const PostCard = ({
         </>
       ) : (
         <>
-          <div className="px-1">
+          {/* Header */}
+          <div className="px-1 text-[10px]">
             <div className="flex justify-between items-start">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <div>by</div>
-                <div className="text-sm">
+                <div className="">
                   {userMode === "lowkey" ? (
                     <div
-                      className="flex items-center gap-1.5 text-md font-semibold cursor-pointer"
+                      className="flex items-center gap-1.5 font-semibold cursor-pointer"
                       onClick={() => navigate(`/user-profile/${user.id}`)}
                     >
                       {"{"}
                       {user.username}
                       {"}"}
-                      <span className="text-[#616161] font-normal">
+                      <span className="text-brand-dark-gray font-normal">
                         {user.degree
                           ? user.degree === "masters"
                             ? "m"
@@ -223,24 +227,24 @@ export const PostCard = ({
                           : ""}
                         {user.college} • {time}
                       </span>
-                      <span className="ml-1 text-xs px-2 py-0.5 rounded-full border border-gray-700">
+                      <span className="ml-1 text-[9px] px-2 py-0.5 rounded-full border border-gray-700">
                         {label}
                       </span>
                       {label.toLowerCase() === "poll" && (
-                        <span className="text-xs text-gray-400 font-normal ml-1">
+                        <span className=" text-gray-400 font-normal ml-1">
                           • {getPollTimeInfo(createdAt).displayText}
                         </span>
                       )}
                     </div>
                   ) : (
                     <div
-                      className="flex items-center gap-1.5 text-md font-semibold cursor-pointer"
+                      className="flex items-center gap-1.5 font-semibold cursor-pointer"
                       onClick={() => navigate(`/user-profile/${user.id}`)}
                     >
                       {"<"}
                       {user.username}
                       {">"}
-                      <span className="text-[#616161] font-normal">
+                      <span className="text-brand-dark-gray font-normal">
                         {user.degree
                           ? user.degree === "masters"
                             ? "m"
@@ -248,11 +252,11 @@ export const PostCard = ({
                           : ""}
                         {user.college} • {time}
                       </span>
-                      <span className="ml-1 text-xs px-2 py-0.5 rounded-full border border-gray-700">
+                      <span className="ml-1 text-[9px] px-2 py-0.5 rounded-full border border-brand-charcoal">
                         {label}
                       </span>
                       {label.toLowerCase() === "poll" && (
-                        <span className="text-xs text-gray-400 font-normal ml-1">
+                        <span className="text-brand-dark-gray font-normal ml-1">
                           • {getPollTimeInfo(createdAt).displayText}
                         </span>
                       )}
@@ -260,21 +264,23 @@ export const PostCard = ({
                   )}
                 </div>
               </div>
-              <button className="text-gray-400">•••</button>
+              {/* <button className="text-gray-400">•••</button> */}
             </div>
           </div>
+
+          {/* Content */}
           <div className="px-4 ml-0.5 pl-1 mt-3">
             {tag !== "poll" ? (
               <>
                 {imageUrl ? (
                   <>
                     {network_id !== null && title && (
-                      <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
+                      <h2 className="text-brand-off-white text-[18px] font-semibold mb-2">
                         {title}
                       </h2>
                     )}
                     {content && (
-                      <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+                      <p className="text-brand-off-white text-[12px] whitespace-pre-line mb-2">
                         {content}
                       </p>
                     )}
@@ -289,12 +295,12 @@ export const PostCard = ({
                 ) : (
                   <>
                     { network_id !== null && title && (
-                      <h2 className="text-[#E7E9EA] text-lg font-semibold mb-2">
+                      <h2 className="text-brand-off-white text-[18px] font-semibold mb-2">
                         {title}
                       </h2>
                     )}
                     {content && (
-                      <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+                      <p className="text-brand-off-white text-[12px] whitespace-pre-line mb-2">
                         {content}
                       </p>
                     )}
@@ -306,12 +312,16 @@ export const PostCard = ({
             )}
 
             {/* Reactions */}
-            <div className="flex justify-between items-center mt-3 text-xs">
+            <div className="flex justify-between items-center mt-3 text-[10px]">
               {isCommentPage ? (
-                <span></span>
+                <span
+                  className="text-brand-dark-gray font-medium cursor-pointer"
+                >
+                  {stats.thoughts} thoughts
+                </span>
               ) : (
                 <span
-                  className="text-pink-500 font-medium cursor-pointer"
+                  className="text-brand-pink font-medium cursor-pointer"
                   onClick={() => navigate(`/comments/${post.id}`)}
                 >
                   {stats.thoughts} thoughts
@@ -330,7 +340,7 @@ export const PostCard = ({
                     onClick={() => handleReaction("like")}
                     className="w-6 h-6 cursor-pointer"
                   />
-                  <p className="text-gray-400 text-xl font-semibold w-6 text-center">
+                  <p className="text-brand-pink text-[18px] font-semibold w-6 text-center">
                     {netScore}
                   </p>
                   <img
