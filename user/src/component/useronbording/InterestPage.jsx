@@ -107,7 +107,7 @@ export default function InterestPage() {
         </div>
 
         {/* Suggestion Heading */}
-        <p className="text-sm font-semibold mt-6 mb-2">Pick any 3 from here</p>
+        <p className="text-sm font-semibold mt-6 mb-2">Pick any 3 from here (sorry Beta version)</p>
 
         {/* Tag Suggestions */}
         <div className="border border-dashed border-zinc-700 p-3 rounded-md">

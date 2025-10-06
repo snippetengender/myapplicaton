@@ -29,6 +29,9 @@ export default function UserInfoPage() {
   ];
 
   const handleChange = (field, value) => {
+    // if (field === "gender") {
+    //   value = value === "Non Binary" ? "others" : value;
+    // }
     dispatch(updateOnboardingData({ [field]: value }));
   };
 
@@ -152,7 +155,7 @@ export default function UserInfoPage() {
         {/* Gender Selection - Now reads from and updates Redux */}
         <p className="text-sm mt-8 mb-4">and your gender</p>
         <div className="flex flex-col gap-3">
-          {["Male", "Female", "Non Binary"].map((g) => (
+          {["Male", "Female"].map((g) => (
             <label
               key={g}
               className={`flex items-center justify-between text-2xl font-bold ${

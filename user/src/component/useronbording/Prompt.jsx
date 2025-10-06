@@ -27,7 +27,7 @@ export default function PromptEditor() {
   const handleInputChange = (value) => {
     dispatch(
       updateOnboardingData({
-        prompt: { ...prompt, name: value },
+        prompt: { ...prompt, name: value, reference_id: "I want" },
       })
     );
   };
@@ -36,15 +36,22 @@ export default function PromptEditor() {
     const randomBio = bioOptions[Math.floor(Math.random() * bioOptions.length)];
     dispatch(
       updateOnboardingData({
-        prompt: { ...prompt, name: randomBio },
+        prompt: { ...prompt, name: randomBio, reference_id: "I want"},
       })
     );
   };
 
   const handleSaveAndNext = () => {
-    dispatch(updateOnboardingStep({ prompt }));
-    navigate("/useronboarding/relationship-status");
+  const payload = {
+    prompt: {
+      name: prompt?.name,
+      reference_id: "I want",  
+    },
   };
+
+  dispatch(updateOnboardingStep(payload));
+  navigate("/useronboarding/relationship-status");
+};
 
   return (
     <div className="min-h-screen bg-black text-brand-off-white px-4 py-6 flex flex-col justify-between">

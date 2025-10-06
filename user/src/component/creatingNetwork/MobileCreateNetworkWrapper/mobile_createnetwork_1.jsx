@@ -50,10 +50,7 @@ export default function MobileCreateNetwork1() {
     <div className="bg-black text-brand-off-white min-h-screen flex flex-col p-6 pb-10 font-inter">
       {/* Header */}
       <header className="flex items-center justify-between w-full">
-        <button 
-          onClick={handleBack} 
-          className="p-2 -ml-2 transition-colors"
-        >
+        <button onClick={handleBack} className="p-2 -ml-2 transition-colors">
           <ArrowLeft size={24} />
         </button>
         <div className="bg-brand-charcoal w-[65px] h-[32px] text-[15px] rounded-full px-3 py-1.5 text-black justify-center items-center flex">
@@ -67,7 +64,8 @@ export default function MobileCreateNetwork1() {
           About your Network
         </h1>
         <p className="text-xs text-brand-off-white leading-relaxed mb-[15px]">
-          Lorem ipsum dolor sit amet consectetur. Pulvinar risus donec aenean tristique risus eu vitae felis. Donec lacus accumsan ultricies metus.
+          Create your community. Name it something that sounds way more
+          exclusive than it actually is.
         </p>
 
         {/* Title Input Section */}
@@ -134,13 +132,36 @@ export default function MobileCreateNetwork1() {
       <footer className="fixed bottom-6 right-6">
         <button
           onClick={handleNext}
-          disabled={!(nameCheck.status === "succeeded" && nameCheck.isAvailable && description.length > 10 && name.length > 0)}
-          className={`w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center transition-opacity disabled:opacity-50 disabled:cursor-not-allowed`}
+          disabled={
+            !(
+              nameCheck.status === "succeeded" &&
+              nameCheck.isAvailable &&
+              description.length > 10 &&
+              name.length > 0
+            )
+          }
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition-opacity duration-300
+    ${
+      nameCheck.status === "succeeded" &&
+      nameCheck.isAvailable &&
+      description.length > 10 &&
+      name.length > 0
+        ? "bg-[#E7E9EA]" // ✅ Enabled color
+        : "bg-neutral-800 opacity-50 cursor-not-allowed" // Disabled state
+    }
+  `}
         >
-          <img 
-            src={nextArrow} 
-            alt="Next arrow" 
-            className={nameCheck.status === "succeeded" && nameCheck.isAvailable && description.length > 10 ? "" : "opacity-50"}
+          <img
+            src={nextArrow}
+            alt="Next arrow"
+            className={
+              nameCheck.status === "succeeded" &&
+              nameCheck.isAvailable &&
+              description.length > 10 &&
+              name.length > 0
+                ? ""
+                : "opacity-50"
+            }
           />
         </button>
       </footer>

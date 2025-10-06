@@ -56,8 +56,6 @@ export default function MobileCreateNetwork3() {
     if (createNetwork.fulfilled.match(resultAction)) {
       // Get the networkId from the action's payload
       const networkId = resultAction.payload.networkId;
-
-      alert("Network created successfully!");
       dispatch(resetForm());
 
       // Use the ID to navigate to the new page
@@ -74,13 +72,16 @@ export default function MobileCreateNetwork3() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         {/* CORRECTED: Back button now navigates to page 2 */}
-        <button onClick={() => navigate('/mobile_createnetwork_2')} className="p-2 -ml-2">
+        <button
+          onClick={() => navigate("/mobile_createnetwork_2")}
+          className="p-2 -ml-2"
+        >
           <ArrowLeft className="w-6 h-6 text-neutral-300" />
         </button>
         <div className="bg-brand-charcoal w-[65px] h-[32px] text-[15px] rounded-full px-3 py-1.5 text-black justify-center items-center flex">
           3/3
         </div>
-    </div>
+      </div>
       <h2 className="text-[20px] font-bold">Network interest</h2>
       <p className="text-brand-off-white text-[12px] mb-4">
         Pick one interest that best describes your network. This helps others
@@ -135,11 +136,21 @@ export default function MobileCreateNetwork3() {
         <button
           onClick={handleSubmit}
           disabled={!selectedInterest || creationStatus === "loading"}
-          className="w-12 h-12 rounded-full bg-[#2e2e2e] flex items-center justify-center disabled:opacity-50"
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300
+    ${
+      !selectedInterest || creationStatus === "loading"
+        ? "bg-[#2e2e2e] opacity-50 cursor-not-allowed" // 🔒 Disabled
+        : "bg-[#E7E9EA] hover:bg-[#dfe1e2]" // ✅ Enabled + hover
+    }`}
         >
-          <img 
-            src={nextArrow} 
-            alt="Next arrow" 
+          <img
+            src={nextArrow}
+            alt="Next arrow"
+            className={`${
+              !selectedInterest || creationStatus === "loading"
+                ? "opacity-50"
+                : ""
+            }`}
           />
         </button>
       </footer>

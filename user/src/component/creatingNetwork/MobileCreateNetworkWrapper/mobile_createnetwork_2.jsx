@@ -177,11 +177,17 @@ export default function MobileCreateNetwork2() {
         <button
           onClick={handleNext}
           disabled={!canProceed}
-          className="w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300
+    ${
+      canProceed
+        ? "bg-[#E7E9EA] hover:bg-[#dfe1e2]" // ✅ Enabled color + hover effect
+        : "bg-neutral-800 opacity-50 cursor-not-allowed" // Disabled color
+    }`}
         >
-          <img 
-            src={nextArrow} 
-            alt="Next arrow" 
+          <img
+            src={nextArrow}
+            alt="Next arrow"
+            className={`${!canProceed ? "opacity-50" : ""}`}
           />
         </button>
       </footer>
