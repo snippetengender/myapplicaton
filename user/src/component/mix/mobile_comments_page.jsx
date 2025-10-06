@@ -1414,8 +1414,8 @@ const CommentsPage = () => {
   const isLoading = mixStatus === "loading" || mixStatus === "idle";
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-brand-off-white">Loading...</div>
       </div>
     );
   }

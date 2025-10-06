@@ -31,7 +31,7 @@ const LandingRouter = () => {
 
   // While checking, you can show a loading spinner
   if (authStatus === "checking") {
-    return <div className="bg-black text-brand-off-white">Loading...</div>; // Or a proper spinner component
+    return <div className="bg-black text-brand-off-white min-h-screen">Loading...</div>; // Or a proper spinner component
   }
 
   // If logged in, render the Navigate component to redirect to /home
