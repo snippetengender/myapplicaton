@@ -15,7 +15,11 @@ export default function ProtectedRoute() {
   }, []);
 
   if (loading) {
-    return <div className="text-center text-[#E7E9EA]">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen w-screen bg-black text-[#E7E9EA]">
+        Loading...
+      </div>
+    );
   }
 
   return isAuthenticated ? (

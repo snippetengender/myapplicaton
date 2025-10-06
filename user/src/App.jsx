@@ -64,16 +64,18 @@ import DomainErrorPage from "./component/signinPage/DomainNotAllowed.jsx";
 import ProfileOwner from "./component/useronbording/UserProfileOwner.jsx";
 import LowKeyProfilePage from "./component/lowkey/LowKeyProfile.jsx";
 import ProfileOwnerRoute from "./component/useronbording/ProfileOwnerRoute.jsx";
-
+import AboutUsWrapper from "./component/Home_page/AboutUsWrapper.jsx";
+import LobbyWrapper from "./component/signinPage/LobbyWrapper.jsx";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<LandingRouter />} />
-        <Route path="/lobby" element={<Lobby />} />
+        <Route path="/lobby" element={<LobbyWrapper />} />
         {/* About Us route */}
-        <Route path="/about-us" element={<AboutUs/>}/>
+        {/* <Route path="/about-us" element={<AboutUs/>}/> */}
+        <Route path="/about-us" element={<AboutUsWrapper />} />
         {/* Onboarding */}
         <Route
           path="/useronboarding/google-login"

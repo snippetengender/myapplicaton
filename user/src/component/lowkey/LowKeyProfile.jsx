@@ -118,7 +118,7 @@ export const MixCardSkeleton = () => (
 //                 className="w-10 h-10 rounded-full object-cover"
 //               />
 //             ) : (
-//               <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white">
+//               <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-brand-off-white">
 //                 {user.username?.[0]?.toUpperCase() || "?"}
 //               </div>
 //             )}
@@ -183,7 +183,7 @@ export const MixCardSkeleton = () => (
 //                   </h2>
 //                 )}
 //                 {profileType === "user" && content && (
-//                   <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+//                   <p className="text-[#E7E9EA] text-[14px] brand-off-whitetext-brand-off-whitespace-pre-line mb-2">
 //                     {content}
 //                   </p>
 //                 )}
@@ -205,7 +205,7 @@ export const MixCardSkeleton = () => (
 
 //                 {(profileType === "user" || profileType === "network") &&
 //                   content && (
-//                     <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-2">
+//                     <p className="text-[#E7E9EA] text-[14px] brand-off-whitetext-brand-off-whitespace-pre-line mb-2">
 //                       {content}
 //                     </p>
 //                   )}
@@ -286,16 +286,16 @@ export const MixCardSkeleton = () => (
 //     <div className="mt-3 space-y-3">
 //       {/* Content */}
 //       {profileType === "user" && post.content && (
-//         <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-3">
+//         <p className="text-[#E7E9EA] text-[14px] brand-off-whitetext-brand-off-whitespace-pre-line mb-3">
 //           {post.content}
 //         </p>
 //       )}
 //       {profileType === "network" && post.content && (
 //         <>
-//           <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-3">
+//           <p className="text-[#E7E9EA] text-[14px] brand-off-whitetext-brand-off-whitespace-pre-line mb-3">
 //             {post.title}
 //           </p>
-//           <p className="text-[#E7E9EA] text-[14px] whitespace-pre-line mb-3">
+//           <p className="text-[#E7E9EA] text-[14px] brand-off-whitetext-brand-off-whitespace-pre-line mb-3">
 //             {post.content}
 //           </p>
 //         </>
@@ -422,7 +422,7 @@ const LowKeyProfilePage = () => {
   const isInitialLoad = mixesStatus === "loading" && posts.length === 0;
   if (profileStatus === "loading") {
     return (
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-black text-brand-off-white">
         <ProfileSkeleton />
         <div className="p-4">
           <MixCardSkeleton />
@@ -433,7 +433,7 @@ const LowKeyProfilePage = () => {
 
   if (profileStatus === "failed") {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-black text-brand-off-white flex items-center justify-center">
         Failed to load user profile.
       </div>
     );
@@ -441,7 +441,7 @@ const LowKeyProfilePage = () => {
 
   if (profileStatus === "succeeded" && profileUser) {
     return (
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-black text-brand-off-white">
         {/* Profile Banner */}
         {/* <div className="relative h-48 bg-gray-800"></div> */}
         <div className="relative">
@@ -450,7 +450,7 @@ const LowKeyProfilePage = () => {
             alt="Profile banner" 
             className="w-full h-full"
           />
-          <div className="absolute bottom-[17px] left-[16px] flex items-center justify-center bg-white/30 rounded-full w-[39px] h-[38px] ">
+          <div className="absolute bottom-[17px] left-[16px] flex items-center justify-center bg-brand-off-whitetext-brand-off-white/30 rounded-full w-[39px] h-[38px] ">
             <button onClick={() => navigate(-1)} className="-left-1">
               <img 
                 src={backArrow} 
@@ -479,33 +479,33 @@ const LowKeyProfilePage = () => {
           <button
             className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
               activeTab === "mixes"
-                ? "text-brand-off-white"
+                ? "text-brand-off-brand-off-whitetext-brand-off-white"
                 : "text-brand-dark-gray"
             }`}
             onClick={() => setActiveTab("mixes")}
           >
             mixes
             {activeTab === "mixes" && (
-              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-brand-off-whitetext-brand-off-white rounded"></span>
             )}
           </button>
           <button
             className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
               activeTab === "stuffs"
-                ? "text-brand-off-white"
+                ? "text-brand-off-brand-off-whitetext-brand-off-white"
                 : "text-brand-dark-gray"
             }`}
             onClick={() => setActiveTab("stuffs")}
           >
             stuffs
             {activeTab === "stuffs" && (
-              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-brand-off-whitetext-brand-off-white rounded"></span>
             )}
           </button>
         </div>
 
         {/* Content Area */}
-        <div className="p-4">
+        <div className="">
           {activeTab === "mixes" && (
             <>
               {isInitialLoad && <MixCardSkeleton />}
