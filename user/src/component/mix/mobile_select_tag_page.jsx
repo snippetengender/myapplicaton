@@ -256,7 +256,7 @@ export default function MobilePostPage() {
     const maxLength = selectedNetwork ? 1000 : 200;
     if (!selectedTag) {
       return (
-        <p className="text-center text-brand-medium-gray">
+        <p className="text-center text-[12px] text-brand-medium-gray">
           Please select a tag to start.
         </p>
       );
@@ -360,126 +360,128 @@ export default function MobilePostPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-[#E7E9EA] p-4 flex flex-col justify-between">
-      <div>
-        <div className="flex items-center justify-between">
-          <button onClick={() => navigate("/home")}>
-            <ArrowLeft size={24} />
-          </button>
-          <button
-            disabled={!canPost || isSubmitting}
-            onClick={handleSubmit}
-            className="px-4 py-[7px] rounded-[20px] text-[15px] transition disabled:bg-brand-charcoal disabled:text-black bg-brand-off-white text-black"
-          >
-            {isSubmitting ? "Posting..." : "Post"}
-          </button>
-        </div>
-
-        <h1 className="text-2xl font-bold mt-[15px] mb-2">Select a Tag</h1>
-        <p className="text-sm text-brand-medium-gray mb-3">
-          Select a tag and share what's on your mind.
-        </p>
-
-        {/* FIX: The "Select a Network" div now navigates instead of opening a modal */}
-        {!selectedNetwork ? (
-          <div
-            onClick={() => navigate("/select-network")}
-            className="bg-brand-almost-black font-semibold px-4 py-3 rounded-xl mb-4 flex items-center gap-3 text-brand-off-white cursor-pointer"
-          >
-            <div className="w-5 h-5 rounded-full border border-dashed border-brand-off-white" />
-            <span className="text-sm">Select a Network</span>
+    <div className="flex flex-col justify-between min-h-screen bg-black">
+      <div className=" text-[#E7E9EA] p-4 flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between">
+            <button onClick={() => navigate("/home")}>
+              <ArrowLeft size={24} />
+            </button>
+            <button
+              disabled={!canPost || isSubmitting}
+              onClick={handleSubmit}
+              className="px-4 py-[7px] rounded-[20px] text-[15px] transition disabled:bg-brand-charcoal disabled:text-black bg-brand-off-white text-black"
+            >
+              {isSubmitting ? "Posting..." : "Post"}
+            </button>
           </div>
-        ) : (
-          <div className="bg-[#2e2e2e] px-4 py-3 rounded-xl mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {selectedNetwork.image ? (
-                <img
-                  src={selectedNetwork.image}
-                  alt={selectedNetwork.name}
-                  className="w-7 h-7 rounded-full object-cover border border-dashed border-zinc-400"
+
+          <h1 className="text-2xl font-bold mt-[8px] mb-2">Select a Tag</h1>
+          <p className="text-sm text-brand-medium-gray mb-3">
+            Select a tag and share what's on your mind.
+          </p>
+
+          {/* FIX: The "Select a Network" div now navigates instead of opening a modal */}
+          {!selectedNetwork ? (
+            <div
+              onClick={() => navigate("/select-network")}
+              className="bg-brand-almost-black font-semibold px-4 py-3 rounded-xl mb-3 flex items-center gap-3 text-brand-off-white cursor-pointer"
+            >
+              <div className="w-5 h-5 rounded-full border border-dashed border-brand-off-white" />
+              <span className="text-sm">Select a Network</span>
+            </div>
+          ) : (
+            <div className="bg-[#2e2e2e] px-4 py-3 rounded-xl mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {selectedNetwork.image ? (
+                  <img
+                    src={selectedNetwork.image}
+                    alt={selectedNetwork.name}
+                    className="w-7 h-7 rounded-full object-cover border border-dashed border-zinc-400"
+                  />
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-brand-mtext-brand-medium-gray" />
+                )}
+                <span className="text-sm font-semibold">
+                  {selectedNetwork.name}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedNetwork(null);
+                  localStorage.removeItem("selectedNetwork");
+                }}
+                className="text-xs text-brand-off-white hover:text-brand-off-white"
+              >
+                Reset
+              </button>
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-2 mb-2">
+            {availableTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setSelectedTag(tag)}
+                className={`px-4 py-1 rounded-full border text-[13px] transition text-brand-off-white ${
+                  selectedTag === tag
+                    ? "border-brand-pink"
+                    : "border-brand-medium-gray"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+          {selectedNetwork && selectedTag && userDetails ? (
+            <div className="flex items-center gap-4 max-w-[50vw]">
+              {hasLowkeyProfile ? (
+                <ProfileSelector
+                  userDetails={userDetails}
+                  useLowkey={useLowkey}
+                  setUseLowkey={setUseLowkey}
                 />
               ) : (
-                <div className="w-5 h-5 rounded-full bg-brand-mtext-brand-medium-gray" />
-              )}
-              <span className="text-sm font-semibold">
-                {selectedNetwork.name}
-              </span>
-            </div>
-            <button
-              onClick={() => {
-                setSelectedNetwork(null);
-                localStorage.removeItem("selectedNetwork");
-              }}
-              className="text-xs text-brand-almost-black hover:text-brand-off-white"
-            >
-              Reset
-            </button>
-          </div>
-        )}
-
-        <div className="flex flex-wrap gap-2 mb-6">
-          {availableTags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setSelectedTag(tag)}
-              className={`px-4 py-1 rounded-full border text-[13px] transition text-brand-off-white ${
-                selectedTag === tag
-                  ? "border-brand-pink"
-                  : "border-brand-medium-gray"
-              }`}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-        {selectedNetwork && selectedTag && userDetails ? (
-          <div className="flex items-center gap-4 max-w-[50vw]">
-            {hasLowkeyProfile ? (
-              <ProfileSelector
-                userDetails={userDetails}
-                useLowkey={useLowkey}
-                setUseLowkey={setUseLowkey}
-              />
-            ) : (
-              <>
-                <div className="flex items-center gap-2">
-                  <img
-                    src={userDetails.profile}
-                    alt={userDetails.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div className="text-brand-dark-gray text-md">
-                    {`<${userDetails.username}>`}
+                <>
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={userDetails.profile}
+                      alt={userDetails.name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div className="text-brand-dark-gray text-md">
+                      {`<${userDetails.username}>`}
+                    </div>
                   </div>
-                </div>
-                <div
-                  onClick={() => navigate("/lowkey")}
-                  className="text-sm text-brand-pink cursor-pointer whitespace-nowrap"
-                >
-                  or use Lowkey profile
-                </div>
-              </>
-            )}
-          </div>
-        ) : (
-          <div></div>
-        )}
+                  <div
+                    onClick={() => navigate("/lowkey")}
+                    className="text-sm text-brand-pink cursor-pointer whitespace-nowrap"
+                  >
+                    or use Lowkey profile
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <div></div>
+          )}
 
-        {error && (
-          <p className="text-red-500 text-center my-2 text-sm">{error}</p>
-        )}
-        {renderInputs()}
+          {error && (
+            <p className="text-red-500 text-center my-2 text-sm">{error}</p>
+          )}
+          {renderInputs()}
+        </div>
       </div>
-      {/* <div className="flex relative">
+      <div className="flex relative">
         <img 
           src={peekingImg} 
           alt="Peeking you" 
-          className="w-[104px] h-[95px] absolute -left-3 bottom-5"
+          className="w-[104px] h-[95px] -left-3 bottom-5"
         />
-        <p className="absolute left-[80px] bottom-2 text-[8px] text-brand-dark-gray  mt-8 pb-4">
+        <p className="left-[80px] bottom-2 text-[8px] text-brand-dark-gray  mt-8 pb-4">
           Make sure that the content you're posting is appropriate, or read the <span className="text-brand-blue mr-1">terms and conditions</span> before you post
         </p>
-      </div> */}
+      </div>
     </div>
   );
 }

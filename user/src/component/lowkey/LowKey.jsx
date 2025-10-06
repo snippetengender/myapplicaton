@@ -10,6 +10,7 @@ import {
 import imageCompression from "browser-image-compression";
 import Avatar from "react-avatar";
 import { resetProfileStatus } from "../../features/userSlice/userSlice";
+import snippyPeek from "../assets/Snippy_peeking.png";
 
 export default function LowkeyProfile() {
   const navigate = useNavigate();
@@ -183,7 +184,7 @@ export default function LowkeyProfile() {
         <ArrowLeft className="w-6 h-6" />
       </button>
 
-      <div className="flex flex-col flex-1 max-w-md mx-auto space-y-8">
+      <div className="flex flex-col max-w-md mx-auto space-y-8">
         <div>
           <h1 className="text-[20px] font-bold">about</h1>
           <h2 className="text-[20px] font-bold">lowkey profile</h2>
@@ -267,6 +268,15 @@ export default function LowkeyProfile() {
             )}
           </div>
         </div>
+      </div>
+      
+      <div className="w-full flex mt-24 justify-center items-center">
+        <img 
+          src={snippyPeek} 
+          alt="Snippy Peeking"
+          className="w-20 h-auto absolute -left-2"
+        />
+        <p className="text-[8px] font-medium text-brand-dark-gray">Read the <span className="text-brand-blue">terms and conditions</span> before you start</p>
       </div>
 
       {creationError && (

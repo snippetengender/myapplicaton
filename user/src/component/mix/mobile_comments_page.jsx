@@ -1310,7 +1310,7 @@ const Comment = (props) => {
             <img
               src={image}
               alt="Comment attachment"
-              className="mt-2 rounded-lg max-w-full h-auto"
+              className="mt-2 rounded-lg max-w-44 h-auto"
             />
           )}
           {content && (

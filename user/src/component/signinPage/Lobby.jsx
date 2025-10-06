@@ -30,41 +30,50 @@ export default function Lobby() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-black p-6">
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <img 
-          src={snippyBaller} 
-          alt="Snippy mascot" 
-          className="absolute w-64 mb-6 top-0 right-0"
-        />
+      {/* Create a separate container for the entire content area */}
+      <div className="w-full flex-1 flex flex-col">
+        {/* Top section with image aligned to right */}
+        <div className="w-full flex justify-end mb-6">
+          <img 
+            src={snippyBaller} 
+            alt="Snippy mascot" 
+            className="w-64"
+          />
+        </div>
         
-        <h1 className="text-brand-off-white text-3xl font-bold mb-1 pt-[240px] text-left">Hlo,</h1>
-        <h2 className="text-brand-off-white text-2xl font-bold mb-3 text-left">This is Snippet</h2>
-        
-        <p className="text-brand-off-white text-left mb-8 max-w-xs text-[15px] font-bold">
-          With Snippet you will be able to know about the occurences and events
-        </p>
-        
-        <div className="w-full max-w-xs space-y-3">
-          <button
-            onClick={handleGetStarted}
-            className="w-full py-3 bg-brand-off-white text-black rounded-2xl font-medium hover:bg-gray-200 transition"
-          >
-            Sign Up with your College Mail ID
-          </button>
+        {/* Rest of your content */}
+        <div className="flex-1 flex flex-col">
+          <div className="w-full h-auto">
+            <h1 className="text-brand-off-white text-3xl font-bold mb-1 text-left">Hlo,</h1>
+            <h2 className="text-brand-off-white text-2xl font-bold mb-3 text-left">This is Snippet</h2>
+          </div>
           
-          <button
-            onClick={handleLogin}
-            className="w-full py-3 bg-brand-off-white text-black rounded-2xl font-medium hover:bg-gray-200 transition"
-          >
-            Log In if youre returning
-          </button>
+          <p className="text-brand-off-white text-left mb-8 max-w-xs text-[15px] font-bold">
+            With Snippet you will be able to know about the occurences and events
+          </p>
           
-          <button
-            onClick={handleAboutUs}
-            className="w-full py-3 bg-brand-off-white text-black rounded-2xl font-medium hover:bg-gray-200 transition"
-          >
-            Get to know us whos behind this
-          </button>
+          <div className="w-full max-w-xs space-y-3">
+            <button
+              onClick={handleGetStarted}
+              className="w-full py-3 bg-brand-off-white text-black rounded-2xl font-medium hover:bg-gray-200 transition"
+            >
+              Sign Up with your College Mail ID
+            </button>
+            
+            <button
+              onClick={handleLogin}
+              className="w-full py-3 bg-brand-off-white text-black rounded-2xl font-medium hover:bg-gray-200 transition"
+            >
+              Log In if youre returning
+            </button>
+            
+            <button
+              onClick={handleAboutUs}
+              className="w-full py-3 bg-brand-off-white text-black rounded-2xl font-medium hover:bg-gray-200 transition"
+            >
+              Get to know us whos behind this
+            </button>
+          </div>
         </div>
       </div>
       

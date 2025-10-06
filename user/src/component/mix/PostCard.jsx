@@ -132,11 +132,11 @@ export const PostCard = ({
                         {content}
                       </p>
                     )}
-                    <div className="relative w-full aspect-square mt-2">
+                    <div className="relative mt-2">
                       <img
                         src={imageUrl}
                         alt={title || "Post image"}
-                        className="w-full h-full object-cover"
+                        className="h-auto rounded-lg object-cover"
                       />
                     </div>
                   </>
@@ -284,11 +284,11 @@ export const PostCard = ({
                         {content}
                       </p>
                     )}
-                    <div className="relative w-full aspect-square mt-2">
+                    <div className="relative w-full mt-2 justify-center items-center">
                       <img
                         src={imageUrl}
                         alt={title || "Post image"}
-                        className="w-full h-full object-cover"
+                        className="h-auto object-cover  rounded-lg"
                       />
                     </div>
                   </>

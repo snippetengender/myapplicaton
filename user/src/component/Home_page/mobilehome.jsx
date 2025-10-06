@@ -752,15 +752,15 @@ const Home = () => {
         {/* Actions and profile in mixes page only */}
         {activeTab==="mixes" && (
           <div className="flex items-center space-x-6">
-            <div className="cursor-pointer">
+            <div className="cursor-pointer" onClick={() => navigate('/select-network', { state: { fromHomePage: true } })}>
               <img src={SearchIcon} alt="search" className="w-6 h-6" />
             </div>
-            <div className="relative cursor-pointer">
+            {/* <div className="relative cursor-pointer">
               <img src={BellIcon} alt="notifications" className="w-6 h-6" />
               {hasNotification && (
                 <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-brand-pink"></span>
               )}
-            </div>
+            </div> */}
 
             {/* FIX: The correct profile menu is now integrated here */}
             <div ref={profileMenuRef} className="relative">

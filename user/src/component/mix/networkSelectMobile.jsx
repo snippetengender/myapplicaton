@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { X, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Add useLocation
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchAllNetworks,
   setSearchTerm,
   resetAllNetworks,
-} from "../../features/networkCreate/networkSlice"; // Adjust path
+} from "../../features/networkCreate/networkSlice";
 
 function NetworkSkeleton() {
   return (
@@ -22,7 +22,11 @@ function NetworkSkeleton() {
 
 export default function NetworkSelectPage() {
   const navigate = useNavigate();
+  const location = useLocation(); // Get location to check where we came from
   const dispatch = useDispatch();
+
+  // Check if we came from the home page
+  const isFromHomePage = location.state?.fromHomePage === true;
 
   // 1. Get all state from the Redux store
   const {
@@ -70,8 +74,17 @@ export default function NetworkSelectPage() {
   );
 
   const handleSelectNetwork = (network) => {
+    // Store the selected network in localStorage (keeping existing functionality)
     localStorage.setItem("selectedNetwork", JSON.stringify(network));
-    navigate(-1);
+
+    // Check if we came from home page
+    if (isFromHomePage) {
+      // Navigate to the community page for this network
+      navigate(`/communitypage/${network.id}`);
+    } else {
+      // Original behavior - just navigate back
+      navigate(-1);
+    }
   };
 
   useEffect(() => {
@@ -98,21 +111,32 @@ export default function NetworkSelectPage() {
 
   return (
     <div className="fixed inset-0 bg-black text-brand-off-white z-50 p-4 flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-1">
-          <button onClick={() => navigate(-1)} className="p-1">
-            <X size={24} />
-          </button>
-          <h1 className="text-[18px] font-bold">Post to</h1>
+      {/* Conditional Header */}
+      {isFromHomePage ? (
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-1">
+            <button onClick={() => navigate(-1)} className="p-1">
+              <X size={24} />
+            </button>
+            <h1 className="text-[18px] font-bold">Search Networks</h1>
+          </div>
         </div>
-        <button
-          className="text-sm border border-brand-text-brand-charcoal px-3 py-1 rounded-full"
-          onClick={() => navigate("/mobile_createnetwork_1")}
-        >
-          establish your own network
-        </button>
-      </div>
+      ) : (
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-1">
+            <button onClick={() => navigate(-1)} className="p-1">
+              <X size={24} />
+            </button>
+            <h1 className="text-[18px] font-bold">Post to</h1>
+          </div>
+          <button
+            className="text-sm border border-brand-charcoal px-3 py-1 rounded-full"
+            onClick={() => navigate("/mobile_createnetwork_1")}
+          >
+            establish your own network
+          </button>
+        </div>
+      )}
 
       {/* Search */}
       <div className="relative mb-6">
