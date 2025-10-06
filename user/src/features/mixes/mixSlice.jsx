@@ -187,8 +187,6 @@ export const fetchParticularMix = createAsyncThunk(
   async (mixId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/mixes/${mixId}`);
-      console.log("after transformation:", response.data);
-
       return response.data;
     } catch (err) {
       console.error("Failed to fetch particular mix:", err);
@@ -339,7 +337,6 @@ export const createMix = createAsyncThunk(
     if (useLowkey) {
       formData.append("is_lowkey", "true");
     }
-    console.log(formData);
 
     try {
       const response = await api.post("/mixes/", formData, {
@@ -1005,7 +1002,6 @@ const mixesSlice = createSlice({
       .addCase(fetchParticularMix.fulfilled, (state, action) => {
         state.status = "succeeded";
         const mix = transformParticularMixToPost(action.payload.data);
-        console.log("after transformation:", mix);
         state.selectedMix = mix;
       })
       .addCase(fetchParticularMix.rejected, (state, action) => {

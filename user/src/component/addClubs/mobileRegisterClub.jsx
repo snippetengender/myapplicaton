@@ -30,7 +30,6 @@ const RegisterClubPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent default form submission
     const clubData = { clubName, clubEmail, clubPhone, clubInstagram, college };
-    console.log("Club Registration Data:", clubData);
 
     // Navigate to the club login page after submission
     navigate('/addclubs');

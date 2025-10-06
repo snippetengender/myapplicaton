@@ -15,7 +15,6 @@ export default function App() {
       setErrorMessage("Please enter a referral code.");
       return;
     }
-    console.log("Referral Code submitted:", refCode);
     // setErrorMessage("Invalid Code or reused code"); // Example error message
     navigate("/regrets"); // Uncomment and replace with actual navigation
   };

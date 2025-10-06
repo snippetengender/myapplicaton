@@ -214,7 +214,7 @@ export default function ProfilePage() {
             </p>
             <div className="flex items-center gap-1 pt-1">
               <span className="text-[14px] font-bold">
-                {profile.clout || "0"}
+                {profile.clouts || "0"}
               </span>
               <span className="text-brand-dark-gray">Clout</span>
               <Info size={14} className="text-brand-dark-gray" />

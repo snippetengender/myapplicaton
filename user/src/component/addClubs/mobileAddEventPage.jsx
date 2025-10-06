@@ -82,7 +82,6 @@ const AddEventPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const eventData = { bannerImage, hood, eventName, category, dateTime, eventType, eventLink, selectedPerks, eventMode, meetingLink, mapLocation, contacts };
-    console.log("Event Created:", eventData);
     navigate('/club-admin');
   };
 

@@ -23,16 +23,9 @@ export default function RegionSelect() {
       setError("");
 
       try {
-        console.log("Fetching regions for query:", query);
-        console.log("API base URL:", api.defaults.baseURL);
-
         const res = await api.get(
           `/college/city?name=${encodeURIComponent(query)}`
         );
-        console.log("API Response:", res);
-        console.log("Response data:", res.data);
-        console.log("Regions data:", res.data.data);
-
         setRegions(res.data.data || []);
       } catch (err) {
         console.error("Detailed error information:");

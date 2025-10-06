@@ -6,12 +6,9 @@ export const verifyGoogleLogin = createAsyncThunk(
   "auth/verifyGoogleLogin",
   async ({ firebaseToken, mode, navigate }, { dispatch, rejectWithValue }) => {
     try {
-      console.log(firebaseToken);
       const response = await api.post("/auth/google-login", {
         token: firebaseToken,
       });
-      console.log(response.data);
-
       const { user_onboarded, user } = response.data;
 
       if (!user_onboarded && user?.firebase_id) {

@@ -162,16 +162,7 @@ export default function MobilePostPage() {
       useWebWorker: true,
     };
     try {
-      console.log(
-        `Original file size: ${(file.size / 1024 / 1024).toFixed(2)} MB`
-      );
       const compressedFile = await imageCompression(file, options);
-      console.log(
-        `Compressed file size: ${(compressedFile.size / 1024 / 1024).toFixed(
-          2
-        )} MB`
-      );
-
       setImageFile(compressedFile);
       setImagePreview(URL.createObjectURL(compressedFile));
     } catch (err) {
@@ -242,7 +233,6 @@ export default function MobilePostPage() {
     };
 
     dispatch(createMix(mixData)).then((result) => {
-      console.log(mixData);
       if (result.type === "mixes/create/fulfilled") {
         dispatch(resetMixes());
 
@@ -265,7 +255,7 @@ export default function MobilePostPage() {
     const titleInput = selectedNetwork && (
       <div className="relative">
         <span className="text-[13px] text-brand-off-white mb-1">
-          Give your thought a 
+          Give your thought a
         </span>
         <input
           type="text"
@@ -473,13 +463,15 @@ export default function MobilePostPage() {
         </div>
       </div>
       <div className="flex relative">
-        <img 
-          src={peekingImg} 
-          alt="Peeking you" 
+        <img
+          src={peekingImg}
+          alt="Peeking you"
           className="w-[104px] h-[95px] -left-3 bottom-5"
         />
         <p className="left-[80px] bottom-2 text-[8px] text-brand-dark-gray  mt-8 pb-4">
-          Make sure that the content you're posting is appropriate, or read the <span className="text-brand-blue mr-1">terms and conditions</span> before you post
+          Make sure that the content you're posting is appropriate, or read the{" "}
+          <span className="text-brand-blue mr-1">terms and conditions</span>{" "}
+          before you post
         </p>
       </div>
     </div>

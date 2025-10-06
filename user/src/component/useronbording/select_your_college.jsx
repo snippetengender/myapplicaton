@@ -32,7 +32,6 @@ export default function CollegeSelect() {
           const res = await api.get(
             `/college?name=${query}&city=${selectedCity}`
           );
-          console.log("Fetched colleges:", res.data.data);
           setColleges(res.data.data);
         } catch (err) {
           console.error("Error fetching colleges:", err);
@@ -52,7 +51,6 @@ export default function CollegeSelect() {
   const handleCollegeSelect = (college) => {
     setSelectedCollege(college);
     localStorage.setItem("selected_college", JSON.stringify(college));
-    console.log("Selected College saved:", college);
   };
 
   const handleNext = () => {

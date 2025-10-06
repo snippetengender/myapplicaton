@@ -23,7 +23,6 @@ export const fetchFormattedMixes = async () => {
   try {
     const res = await api.get("/mixes");
     const mixes = Array.isArray(res.data.data) ? res.data.data : [];
-    console.log(mixes)
     return mixes.reverse().map((mix) => ({
       id: mix.id,
       tag: "mix",

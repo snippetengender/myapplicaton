@@ -40,9 +40,6 @@ export const PostCard = ({
 
   const netScore = stats.upvote - stats.downvote;
 
-  useEffect(() => {
-    console.log("Improted post for part mix", post);
-  }, [post]);
 
   return (
     <div className="border-b border-brand-almost-black py-[15px] px-[15px]">

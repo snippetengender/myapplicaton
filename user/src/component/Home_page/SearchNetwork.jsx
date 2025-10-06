@@ -75,7 +75,6 @@ export default function SearchNetworkPage() {
   };
 
   useEffect(() => {
-    console.log(networks)
     return () => {
       dispatch(resetAllNetworks());
     };

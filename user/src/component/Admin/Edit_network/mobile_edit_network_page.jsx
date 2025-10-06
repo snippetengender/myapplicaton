@@ -62,7 +62,6 @@ export default function EditNetworkPageMobile() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
-  console.log(id);
   const logoInputRef = useRef(null);
   const bannerInputRef = useRef(null);
   const [logoPreview, setLogoPreview] = useState(null);

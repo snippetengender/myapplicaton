@@ -6,13 +6,11 @@ export default function App() {
   const navigate = useNavigate();
 
   const handleGotIt = () => {
-    console.log("Got it button clicked!");
     // You might navigate back to a home screen or another relevant page
     navigate("/myscreen"); // Example navigation
   };
 
   const handleClose = () => {
-    console.log("Close icon clicked!");
     // You might navigate back or close a modal/overlay
     navigate("/home"); // Example navigation
   };
