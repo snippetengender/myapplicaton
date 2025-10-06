@@ -15,7 +15,6 @@ export const fetchUserProfile = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/user/${userId}`);
-      console.log(response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -28,7 +27,6 @@ export const fetchLowkeyProfile = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await api.get(`lowkey/${userId}`);
-      console.log(response.data)
       return response.data;
       
     } catch (error) {

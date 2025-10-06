@@ -75,8 +75,6 @@ export default function UsernamePage() {
     if (!file) return;
 
     try {
-      console.log("Original size:", (file.size / 1024 / 1024).toFixed(2), "MB");
-
       const allowedTypes = [
         "image/jpeg",
         "image/jpg",
@@ -101,12 +99,6 @@ export default function UsernamePage() {
         useWebWorker: true,
         fileType: file.type, // preserve original type
       });
-
-      console.log(
-        "Compressed size:",
-        (compressedBlob.size / 1024 / 1024).toFixed(2),
-        "MB"
-      );
       const finalFile = new File([compressedBlob], file.name, {
         type: compressedBlob.type || file.type,
         lastModified: Date.now(),
@@ -317,7 +309,9 @@ export default function UsernamePage() {
         )}
 
         {/* Username Prompt */}
-        <p className="text-sm text-brand-off-white mb-2">give it a try for username</p>
+        <p className="text-sm text-brand-off-white mb-2">
+          give it a try for username
+        </p>
 
         {/* Username Input */}
         <div className="w-full mb-3">
@@ -371,10 +365,7 @@ export default function UsernamePage() {
           {submissionStatus === "submitting" ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
-            <img 
-              src={nextArrow} 
-              alt="Next arrow" 
-            />
+            <img src={nextArrow} alt="Next arrow" />
           )}
         </button>
         {submissionStatus === "failed" && (

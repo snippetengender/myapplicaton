@@ -13,7 +13,6 @@ export default function VerifyEmailPage() {
   // --- Mock Navigation Function ---
   // In a real application, you would use a hook like `useNavigate` from 'react-router-dom'
   const navigate = (path) => {
-    console.log(`[MOCK NAVIGATION] Navigating to: ${path}`);
     // Here, you could update a state variable to simulate different "pages"
     // For this example, we'll just log the navigation.
     // In a full app, this would change the URL and render a different component.
@@ -39,7 +38,6 @@ export default function VerifyEmailPage() {
 
     // Simulate an API call or validation
     setTimeout(() => {
-      console.log('Frontend verification simulated for email:', email);
       localStorage.setItem('snippet_email', email); 
       navigate('/login-otp-page'); 
       setLoading(false);

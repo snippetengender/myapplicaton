@@ -182,11 +182,6 @@ export const createNetwork = createAsyncThunk(
 export const fetchNetworkById = createAsyncThunk(
   "network/fetchById",
   async ({ networkId, networkMembership, totalMixes }, { rejectWithValue }) => {
-    console.log("Fetching network with params:", {
-      networkId,
-      networkMembership,
-      totalMixes,
-    });
 
     try {
       const requestBody = {

@@ -54,7 +54,6 @@ export const useCreateMix = () => {
       const response = await api.post('/mixes', payload);
 
       if (response.status === 201) {
-        console.log('Mix created successfully!', response.data);
         // On success, navigate the user to the home page.
         navigate('/home');
       }

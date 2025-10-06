@@ -58,10 +58,8 @@ export default function OtpVerificationPage() {
         otp: enteredOtp
       };
 
-      console.log('Verifying OTP with payload:', payload);
 
       const response = await api.post('/auth/verify-otp', payload);
-      console.log('OTP verification success:', response.data);
       localStorage.setItem("snippet_otp_verified", "true");
       navigate('/home');
     } catch (err) {

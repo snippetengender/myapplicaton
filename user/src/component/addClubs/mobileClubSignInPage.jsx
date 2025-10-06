@@ -27,7 +27,6 @@ const ClubSignInPage = () => {
   // Handle form submission
   const handleLogin = (event) => {
     event.preventDefault();
-    console.log("Login attempt with:", { email, password });
     // Navigate to the club admin page on successful login
     navigate('/club-admin');
   };

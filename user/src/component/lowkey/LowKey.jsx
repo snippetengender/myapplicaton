@@ -68,16 +68,7 @@ export default function LowkeyProfile() {
       useWebWorker: true,
     };
     try {
-      console.log(
-        `Original file size: ${(file.size / 1024 / 1024).toFixed(2)} MB`
-      );
       const compressedFile = await imageCompression(file, options);
-      console.log(
-        `Compressed file size: ${(compressedFile.size / 1024 / 1024).toFixed(
-          2
-        )} MB`
-      );
-
       setImageFile(compressedFile);
       setImagePreview(URL.createObjectURL(compressedFile));
       setUseAvatar(false);
@@ -269,14 +260,17 @@ export default function LowkeyProfile() {
           </div>
         </div>
       </div>
-      
+
       <div className="w-full flex mt-24 justify-center items-center">
-        <img 
-          src={snippyPeek} 
+        <img
+          src={snippyPeek}
           alt="Snippy Peeking"
           className="w-20 h-auto absolute -left-2"
         />
-        <p className="text-[8px] font-medium text-brand-dark-gray">Read the <span className="text-brand-blue">terms and conditions</span> before you start</p>
+        <p className="text-[8px] font-medium text-brand-dark-gray">
+          Read the <span className="text-brand-blue">terms and conditions</span>{" "}
+          before you start
+        </p>
       </div>
 
       {creationError && (

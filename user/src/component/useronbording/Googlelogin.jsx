@@ -10,10 +10,8 @@ function GoogleLogin() {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         const uid = user.uid;
-        console.log("User already logged in. UID:", uid);
 
         user.getIdToken(true).then((idToken) => {
-          console.log("🔑 Firebase ID Token:", idToken);
           localStorage.setItem("id_token", idToken);
         }).catch((err) => {
           console.error("Error fetching ID Token:", err);
@@ -22,11 +20,9 @@ function GoogleLogin() {
         localStorage.setItem("user_id", uid);
         navigate("/useronboarding/select-region", { replace: true });
       } else {
-        console.log("🔄 No user logged in. Triggering Google Sign-In...");
 
         googleLogin()
           .then((uid) => {
-            console.log(" Google Sign-In successful. UID:", uid);
             localStorage.setItem("user_id", uid);
             navigate("/useronboarding/select-region", { replace: true });
           })

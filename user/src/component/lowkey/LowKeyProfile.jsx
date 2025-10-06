@@ -469,7 +469,7 @@ const LowKeyProfilePage = () => {
             )}
           </p>
           <div className="flex items-center text-[14px] font-bold mb-4">
-            <span className="mr-1">0</span>
+            <span className="mr-1">{profileUser.clouts || "0"}</span>
             <span className="text-brand-dark-gray">Clout</span>
           </div>
         </div>

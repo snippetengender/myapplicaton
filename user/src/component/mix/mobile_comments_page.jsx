@@ -989,7 +989,6 @@ const NewCommentInput = ({
 
   useEffect(() => {
     if (userDetails) {
-      console.log("User Details from Component:", userDetails);
     }
   }, [userDetails]);
 
@@ -1026,9 +1025,6 @@ const NewCommentInput = ({
   const handleSubmit = () => {
     if (text.trim() || imageFile) {
       const dataToSubmit = { comment: text, imageFile, is_lowkey: useLowkey };
-
-      // ADD THIS LOG:
-      console.log("1. Data being sent from NewCommentInput:", dataToSubmit);
 
       onSubmit(dataToSubmit);
       setText("");
@@ -1137,9 +1133,7 @@ const Comment = (props) => {
     comment_type,
   } = comment;
 
-  useEffect(() => {
-    console.log(comment);
-  }, [comment]);
+
   const [currentVotes, setCurrentVotes] = useState(likes_count);
   const postStatus = useSelector((state) => state.comments.postStatus);
 
@@ -1408,7 +1402,6 @@ const CommentsPage = () => {
     if (mixId) {
       dispatch(resetComments());
       dispatch(fetchParticularMix(mixId));
-      console.log("Imported data:", selectedMix);
       dispatch(getComments({ mixId, page: 1 }));
     }
     return () => {
@@ -1416,9 +1409,7 @@ const CommentsPage = () => {
     };
   }, [dispatch, mixId]);
 
-  useEffect(() => {
-    console.log("Mix selected:", selectedMix);
-  }, [selectedMix]);
+
   // Instead of skeleton UI, show simple loading text
   const isLoading = mixStatus === "loading" || mixStatus === "idle";
   if (isLoading) {

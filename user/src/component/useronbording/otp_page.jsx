@@ -57,11 +57,7 @@ export default function OtpVerificationPage() {
         user_id: userId,
         otp: enteredOtp,
       };
-
-      console.log("Verifying OTP with payload:", payload);
-
       const response = await api.post("/auth/verify-otp", payload);
-      console.log("OTP verification success:", response.data);
       localStorage.setItem("snippet_otp_verified", "true");
       navigate("/useronboarding/name-dob-gender");
     } catch (err) {
@@ -137,7 +133,7 @@ export default function OtpVerificationPage() {
           disabled={loading || otp.some((digit) => digit.trim() === "")}
           className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
             loading || otp.some((digit) => digit.trim() === "")
-              ? "bg-gray-600 cursor-not-allowed opacity-50" 
+              ? "bg-gray-600 cursor-not-allowed opacity-50"
               : "bg-[#F06CB7] hover:bg-[#e05ca3]"
           }`}
         >

@@ -49,12 +49,8 @@ export default function VerifyEmailPage() {
         return;
       }
 
-      console.log("Sending payload:", { user_id, email, college_id });
-
       const payload = { user_id, email, college_id };
       const response = await api.post("/auth/college-verify", payload);
-
-      console.log("Verification API response:", response.data);
 
       localStorage.setItem("snippet_email", email);
 
@@ -110,7 +106,7 @@ export default function VerifyEmailPage() {
           className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
             loading || !email.trim()
               ? "bg-gray-600 cursor-not-allowed opacity-50"
-              : "bg-[#F06CB7] hover:bg-[#e05ca3]" 
+              : "bg-[#F06CB7] hover:bg-[#e05ca3]"
           }`}
         >
           {loading ? (

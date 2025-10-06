@@ -2,7 +2,7 @@ import axios from "axios";
 import { auth } from "../constants/firebaseConfig";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: false,
   timeout: 30000,
 });
@@ -51,7 +51,6 @@ const getToken = async () => {
 };
 api.interceptors.request.use(
   async (config) => {
-    console.log(` API Request: ${config.method?.toUpperCase()} ${config.url}`);
 
     const token = await getToken();
     if (token) {

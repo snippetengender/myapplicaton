@@ -52,7 +52,6 @@ export const updateOnboardingStep = createAsyncThunk(
         throw new Error("User ID not found. Cannot update profile.");
       }
 
-      console.log(`Patching user ${userId} with:`, stepData);
       const response = await api.patch(`/user/${userId}`, stepData);
 
       return response.data;
@@ -75,7 +74,6 @@ export const uploadOnboardingProfileImage = createAsyncThunk(
       const formData = new FormData();
       formData.append("file", profileImageFile);
 
-      console.log(`Uploading profile image for user ${userId}...`);
       await api.post(`/user/${userId}/profile`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });

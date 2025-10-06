@@ -16,7 +16,6 @@ export default function OtpVerificationPage() {
     if(!savedEmail){
         console.warn("No email entered. Redirecting to verify-email (mock action).");
         // In a real frontend, you'd use navigate("/useronboarding/verify-email", { replace: true });
-        console.log("Simulating navigation to /useronboarding/verify-email");
     }
   }, [savedEmail]);
 
@@ -52,9 +51,7 @@ export default function OtpVerificationPage() {
 
     // Simulate a successful OTP verification after a short delay
     setTimeout(() => {
-      console.log('Frontend OTP verification simulated for:', { userId, otp: enteredOtp });
       localStorage.setItem("snippet_otp_verified", "true");
-      console.log("Simulating navigation to /useronboarding/name-dob-gender");
       // In a real frontend, you'd use navigate('/useronboarding/name-dob-gender');
       setLoading(false);
     }, 1500);
@@ -64,7 +61,7 @@ export default function OtpVerificationPage() {
     <div className="min-h-screen bg-black text-[#E7E9EA] px-4 py-6 flex flex-col justify-between font-sans">
       {/* Header */}
       <div>
-        <button className="mb-4" onClick={() => console.log("Simulating back navigation")}>
+        <button className="mb-4">
           <ArrowLeft className="text-[#E7E9EA]" size={24} />
         </button>
 
@@ -82,7 +79,6 @@ export default function OtpVerificationPage() {
           {savedEmail}{' '}
           <span
             className="text-[#F06CB7] underline cursor-pointer"
-            onClick={() => console.log("Simulating navigation to /useronboarding/verify-email")}
           >
             edit
           </span>
