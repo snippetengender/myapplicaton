@@ -1510,7 +1510,7 @@ const CommentsPage = () => {
 
         {/* Infinite Scroll Sentinel and Loader (replaced skeleton) */}
         {loadingInitial && (
-          <div className="text-center text-gray-400 py-4">Loading...</div>
+          <div className="text-center text-gray-400 py-4 bg-black min-h-screen">Loading...</div>
         )}
         <div ref={loadMoreRef}>
           {loadingMore && <span>Loading more...</span>}
