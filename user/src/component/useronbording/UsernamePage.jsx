@@ -304,7 +304,7 @@ export default function UsernamePage() {
         {/* Avatar Instructions */}
         {useReactAvatar && username && (
           <p className="text-xs text-zinc-500 mb-4">
-            Tap the avatar to change color • Tap camera icon to upload photo
+            Tap the avatar to change color
           </p>
         )}
 
