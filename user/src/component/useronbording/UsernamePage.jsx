@@ -284,13 +284,13 @@ export default function UsernamePage() {
           </div>
 
           {/* Camera Icon */}
-          <button
+          {/* <button
             onClick={handleCameraClick}
             className="ml-3 w-10 h-10 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-colors flex items-center justify-center"
             aria-label="Upload image from device"
           >
             <Camera className="text-white w-5 h-5" />
-          </button>
+          </button> */}
 
           <input
             type="file"
