@@ -181,7 +181,7 @@ export default function LowkeyProfile() {
           <h2 className="text-[20px] font-bold">lowkey profile</h2>
           <p className="text-sm mt-2">
             Create an anonymous profile to interact without revealing your main
-            identity.
+            identity. DISCLAIMER : Once crated this can't be changed
           </p>
         </div>
 
