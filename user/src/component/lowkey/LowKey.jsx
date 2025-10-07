@@ -217,13 +217,13 @@ export default function LowkeyProfile() {
               />
             )}
           </div>
-          <button
+          {/* <button
             onClick={() => fileInputRef.current.click()}
             className="ml-5 w-10 h-10 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-colors flex items-center justify-center"
             aria-label="Upload image"
           >
             <Camera size={20} />
-          </button>
+          </button> */}
         </div>
 
         <div className="space-y-2">
