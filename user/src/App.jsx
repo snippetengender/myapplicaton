@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import LandingRouter from "./component/signinPage/LandingRouter";
@@ -67,6 +67,25 @@ import ProfileOwnerRoute from "./component/useronbording/ProfileOwnerRoute.jsx";
 import AboutUsWrapper from "./component/Home_page/AboutUsWrapper.jsx";
 import LobbyWrapper from "./component/signinPage/LobbyWrapper.jsx";
 function App() {
+  // Block desktop: allow only widths <= 768px
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  if (!isMobile) {
+    return (
+      <div className="min-h-screen w-full bg-black text-[#E7E9EA] flex items-center justify-center text-center p-6">
+        <p className="text-lg font-semibold">
+          Use mobile phone to view the application
+        </p>
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -118,12 +137,13 @@ function App() {
         />
         <Route path="/user-profile/:userId" element={<UserProfilePage />} />
         <Route element={<ProtectedRoute />}>
-
-         <Route element={<ProfileOwnerRoute />}>
-            <Route path="/user-profile-owner/:userId" element={<ProfileOwner />} />
+          <Route element={<ProfileOwnerRoute />}>
+            <Route
+              path="/user-profile-owner/:userId"
+              element={<ProfileOwner />}
+            />
           </Route>
 
-        
           <Route path="/useronboarding/user-name" element={<UsernamePage />} />
           <Route
             path="/lowkey-profile/:userId"
