@@ -80,7 +80,7 @@ function App() {
     return (
       <div className="min-h-screen w-full bg-black text-[#E7E9EA] flex items-center justify-center text-center p-6">
         <p className="text-lg font-semibold">
-          Use mobile phone to view the application
+          Use your mobile phone to view the app because while we developers are busy wrestling with the desktop design, all your friends are already ranting on the mobile version.
         </p>
       </div>
     );
