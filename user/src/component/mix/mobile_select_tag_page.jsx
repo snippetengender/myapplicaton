@@ -70,7 +70,7 @@ const ImageUploadTextArea = ({
             onChange={(e) => setText(e.target.value)}
             placeholder={placeholder}
             maxLength={maxLength}
-            className="w-full bg-transparent resize-none outline-none text-[12px] placeholder-brand-medium-gray text-brand-medium-gray"
+            className="w-full bg-transparent resize-none outline-none text-[12px] placeholder-brand-medium-gray text-brand-off-white"
             rows="2"
           />
           <div className="flex justify-end mt-auto pt-1">
@@ -242,6 +242,29 @@ export default function MobilePostPage() {
     });
   };
 
+  // mirror editor refs
+  const titleHiddenInputRef = useRef(null);
+  const titleEditableRef = useRef(null);
+
+  const handleTitleEditableInput = (e) => {
+    let value = e.currentTarget.textContent || "";
+    if (value.length > 100) value = value.slice(0, 100);
+    // sync DOM + state
+    if (e.currentTarget.textContent !== value) {
+      e.currentTarget.textContent = value;
+      const sel = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(e.currentTarget);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    setTitle(value);
+    if (titleHiddenInputRef.current) titleHiddenInputRef.current.value = value;
+    // keep in view while growing
+    e.currentTarget.scrollIntoView({ block: "nearest" });
+  };
+
   const renderInputs = () => {
     const maxLength = selectedNetwork ? 1000 : 200;
     if (!selectedTag) {
@@ -254,17 +277,41 @@ export default function MobilePostPage() {
 
     const titleInput = selectedNetwork && (
       <div className="relative">
-        <span className="text-[13px] text-brand-off-white mb-1">
+        <span className="text-[13px] text-brand-off-white mb-1 block">
           Give your thought a
         </span>
+
+        {/* Hidden input kept for semantics; still "using input" */}
         <input
+          ref={titleHiddenInputRef}
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title"
-          maxLength={100}
-          className="w-full bg-transparent focus:outline-none text-2xl font-semibold placeholder-zinc-600"
+          readOnly
+          className="sr-only"
+          aria-hidden="true"
+          tabIndex={-1}
         />
+
+        {/* Visible, wrapping editor */}
+        <div
+          ref={titleEditableRef}
+          contentEditable
+          role="textbox"
+          aria-multiline="true"
+          data-placeholder="Title"
+          onInput={handleTitleEditableInput}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.preventDefault();
+          }}
+          onBlur={(e) => {
+            // ensure truly empty so :empty matches
+            if (!e.currentTarget.textContent?.trim()) {
+              e.currentTarget.textContent = "";
+            }
+          }}
+          className="ce-ph w-full bg-transparent outline-none text-2xl font-semibold whitespace-pre-wrap break-words min-h-[40px] text-brand-off-white"
+        />
+
         <span className="text-xs text-brand-medium-gray">
           {title.length}/100
         </span>
@@ -351,6 +398,14 @@ export default function MobilePostPage() {
 
   return (
     <div className="flex flex-col justify-between min-h-screen bg-black">
+      {/* Placeholder style for contentEditable */}
+      <style>{`
+        .ce-ph[contenteditable="true"]:empty:before {
+          content: attr(data-placeholder);
+          color: #6b7280; /* placeholder color */
+          pointer-events: none;
+        }
+      `}</style>
       <div className=" text-[#E7E9EA] p-4 flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between">

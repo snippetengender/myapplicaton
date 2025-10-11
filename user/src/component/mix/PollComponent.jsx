@@ -28,7 +28,7 @@ export const PollComponent = ({ post, profileType, isCommentPage }) => {
           )}
           {profileType === "network" && post.content && (
             <>
-              <p className="text-brand-off-white text-[18px] font-bold mb-1 leading-[17px]">
+              <p className="text-brand-off-white text-[18px] font-bold mb-1 leading-[22px]">
                 {post.title}
               </p>
               <p className="text-brand-off-white text-[12px] whitespace-pre-line leading-[15px]">
@@ -104,7 +104,7 @@ export const PollComponent = ({ post, profileType, isCommentPage }) => {
           )}
           {post.network_id !== null &&  post.content && (
             <>
-              <p className="text-brand-off-white text-[18px] font-bold mb-1 leading-[17px]">
+              <p className="text-brand-off-white text-[18px] font-bold mb-1 leading-[22px]">
                 {post.title}
               </p>
               <p className="text-brand-off-white text-[12px] whitespace-pre-line leading-[15px]">

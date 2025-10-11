@@ -7,7 +7,7 @@ import downvoteInactive from "../assets/Downvote.svg";
 import upvoteActive from "../assets/upvoteActive.svg";
 import downvoteActive from "../assets/downvoteActive.svg";
 import { PollComponent } from "./PollComponent";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import reportFlag from "../assets/flag.svg";
 
 export const PostCard = ({
@@ -32,6 +32,30 @@ export const PostCard = ({
   } = post;
 
   const navigate = useNavigate();
+
+    // Truncate helper for "…" continuation
+  const FEED_CLAMP = 160;
+  // const COMMENT_CLAMP = 200;
+  const truncateText = (text, limit) => {
+    if (!text) return "";
+    const s = String(text).trim();
+    if (s.length <= limit) return s;
+    const cut = s.slice(0, limit);
+    const lastSpace = cut.lastIndexOf(" ");
+    const safe = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+    return `${safe}…`;
+  };
+  const contentFeed = truncateText(content, FEED_CLAMP);
+  // const contentComment = truncateText(content, COMMENT_CLAMP);
+
+  // Track whether the post image is portrait (height > width)
+  const [isPortrait, setIsPortrait] = useState(false);
+  const handleImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    if (naturalWidth && naturalHeight) {
+      setIsPortrait(naturalHeight > naturalWidth);
+    }
+  };
 
   const handleReaction = (reactionType) => {
     const newReaction = post.userReaction === reactionType ? "" : reactionType;
@@ -118,39 +142,63 @@ export const PostCard = ({
             {tag !== "poll" ? (
               <>
                 {imageUrl ? (
-                  <>
+                  <div onClick={() => navigate(`/comments/${post.id}`)}>
                     {profileType === "network" && title && (
                       <h2 className="text-brand-off-white text-lg font-semibold mb-2">
                         {title}
                       </h2>
                     )}
                     {profileType === "user" && content && (
-                      <p className="text-brand-off-white text-[14px] whitespace-pre-line mb-2">
+                      <p className="text-brand-off-white text-[18px] whitespace-pre-line mb-2">
                         {content}
                       </p>
                     )}
-                    <div className="relative mt-2">
+                    {isPortrait ? (
+                      <div className="relative mt-2 w-full h-[300px] rounded-lg overflow-hidden flex items-center justify-center">
+                        {/* Blurry background using the same image */}
+                        <div
+                          className="absolute inset-0 bg-center bg-cover filter blur-2xl scale-110"
+                          style={{ backgroundImage: `url(${imageUrl})` }}
+                        />
+                        {/* Optional dark overlay for contrast */}
+                        <div className="absolute inset-0 bg-black/30" />
+                        {/* Foreground image */}
+                        <img
+                          src={imageUrl}
+                          alt={title || "Post image"}
+                          onLoad={handleImageLoad}
+                          className="relative z-10 max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                    ) : (
                       <img
                         src={imageUrl}
                         alt={title || "Post image"}
-                        className="h-auto rounded-lg object-cover"
+                        onLoad={handleImageLoad}
+                        className="mt-2 w-full h-auto rounded-lg object-cover"
                       />
-                    </div>
-                  </>
+                    )}
+                  </div>
                 ) : (
-                  <>
+                  <div onClick={() => navigate(`/comments/${post.id}`)}>
                     {profileType === "network" && title && (
                       <h2 className="text-brand-off-white text-lg font-semibold mb-2">
                         {title}
                       </h2>
                     )}
-                    {(profileType === "user" || profileType === "network") &&
+                    {(profileType === "user") &&
                       content && (
-                        <p className="text-brand-off-white text-[14px] whitespace-pre-line mb-2">
-                          {content}
+                        <p className="text-brand-off-white text-[18px] whitespace-pre-line mb-2">
+                          {contentFeed}
                         </p>
-                      )}
-                  </>
+                    )}
+                    {(profileType === "network") &&
+                      content && (
+                        <p className="text-brand-off-white text-[12px] whitespace-pre-line mb-2">
+                          {contentFeed}
+                        </p>
+                    )}
+                  </div>
                 )}
               </>
             ) : (
@@ -281,13 +329,33 @@ export const PostCard = ({
                         {content}
                       </p>
                     )}
-                    <div className="relative w-full mt-2 justify-center items-center">
-                      <img
-                        src={imageUrl}
-                        alt={title || "Post image"}
-                        className="h-auto object-cover  rounded-lg"
-                      />
-                    </div>
+                    {isPortrait ? (
+                      <div className="relative mt-2 w-full h-[300px] rounded-lg overflow-hidden flex items-center justify-center">
+                        {/* Blurry background using the same image */}
+                        <div
+                          className="absolute inset-0 bg-center bg-cover filter blur-2xl scale-110"
+                          style={{ backgroundImage: `url(${imageUrl})` }}
+                        />
+                        {/* Optional dark overlay for contrast */}
+                        <div className="absolute inset-0 bg-black/30" />
+                        {/* Foreground image */}
+                        <img
+                          src={imageUrl}
+                          alt={title || "Post image"}
+                          onLoad={handleImageLoad}
+                          className="relative z-10 max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="relative w-full mt-2 justify-center items-center">
+                        <img
+                          src={imageUrl}
+                          alt={title || "Post image"}
+                          onLoad={handleImageLoad}
+                          className="w-full h-auto object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>

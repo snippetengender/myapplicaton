@@ -919,7 +919,8 @@ import { PostCard } from "./PostCard";
 import CommentSkeleton from "./CommentsSkeleton";
 import reportFlag from "../assets/flag.svg";
 import addImages from "../assets/gallery-add.svg"
-
+import Lottie from "lottie-react";
+import loadingAnimation from "../assets/1 second Loop.json";
 
 const formatTimeAgo = (timestampMs) => {
   if (!timestampMs) return "";
@@ -1414,8 +1415,12 @@ const CommentsPage = () => {
   const isLoading = mixStatus === "loading" || mixStatus === "idle";
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-brand-off-white">Loading...</div>
+      <div className="flex justify-center items-center py-6 bg-black min-h-screen">
+        <Lottie 
+          animationData={loadingAnimation} 
+          loop={true}
+          style={{ width: 120, height: 120 }} // Adjust size as needed
+        />
       </div>
     );
   }
@@ -1510,7 +1515,13 @@ const CommentsPage = () => {
 
         {/* Infinite Scroll Sentinel and Loader (replaced skeleton) */}
         {loadingInitial && (
-          <div className="text-center text-gray-400 py-4 bg-black min-h-screen">Loading...</div>
+          <div className="flex justify-center items-center py-6 bg-black min-h-screen">
+            <Lottie 
+              animationData={loadingAnimation} 
+              loop={true}
+              style={{ width: 120, height: 120 }} // Adjust size as needed
+            />
+          </div>
         )}
         <div ref={loadMoreRef}>
           {loadingMore && <span>Loading more...</span>}

@@ -5,6 +5,8 @@ import { Navigate } from "react-router-dom"; // <-- Important: Import Navigate
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { setUserId } from "../../features/userSlice/userSlice";
+import Lottie from "lottie-react";
+import loadingAnimation from "../assets/1 second Loop.json";
 
 const LandingRouter = () => {
   const dispatch = useDispatch();
@@ -31,7 +33,13 @@ const LandingRouter = () => {
 
   // While checking, you can show a loading spinner
   if (authStatus === "checking") {
-    return <div className="bg-black text-brand-off-white min-h-screen">Loading...</div>; // Or a proper spinner component
+    return <div className="flex justify-center items-center py-6 bg-black min-h-screen">
+            <Lottie 
+              animationData={loadingAnimation} 
+              loop={true}
+              style={{ width: 120, height: 120 }} // Adjust size as needed
+            />
+          </div>
   }
 
   // If logged in, render the Navigate component to redirect to /home

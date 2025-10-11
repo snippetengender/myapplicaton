@@ -17,6 +17,8 @@ import upvoteInactive from "../../assets/Upvote.svg";
 import downvoteInactive from "../../assets/Downvote.svg";
 import upvoteActive from "../../assets/upvoteActive.svg";
 import downvoteActive from "../../assets/downvoteActive.svg";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../assets/1 second Loop.json";
 
 // export const PollComponent = ({ post }) => {
 //   const [selectedOption, setSelectedOption] = useState(null);
@@ -501,8 +503,12 @@ export default function MobileNetworkAdmin() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        Loading...
+      <div className="flex justify-center items-center py-6 bg-black min-h-screen">
+        <Lottie 
+          animationData={loadingAnimation} 
+          loop={true}
+          style={{ width: 120, height: 120 }} // Adjust size as needed
+        />
       </div>
     );
   }

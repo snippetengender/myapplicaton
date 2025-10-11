@@ -402,8 +402,12 @@ export default function MobileNetworkPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        Loading...
+      <div className="flex justify-center items-center py-6 bg-black min-h-screen">
+        <Lottie 
+          animationData={loadingAnimation} 
+          loop={true}
+          style={{ width: 120, height: 120 }} // Adjust size as needed
+        />
       </div>
     );
   }
