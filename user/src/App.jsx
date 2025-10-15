@@ -66,25 +66,25 @@ import LowKeyProfilePage from "./component/lowkey/LowKeyProfile.jsx";
 import ProfileOwnerRoute from "./component/useronbording/ProfileOwnerRoute.jsx";
 import AboutUsWrapper from "./component/Home_page/AboutUsWrapper.jsx";
 import LobbyWrapper from "./component/signinPage/LobbyWrapper.jsx";
-function App() {
-  Block desktop: allow only widths <= 768px
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+// function App() {
+//   Block desktop: allow only widths <= 768px
+//   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+//   useEffect(() => {
+//     const handleResize = () => setIsMobile(window.innerWidth <= 768);
+//     window.addEventListener("resize", handleResize);
+//     return () => window.removeEventListener("resize", handleResize);
+//   }, []);
 
-  if (!isMobile) {
-    return (
-      <div className="min-h-screen w-full bg-black text-[#E7E9EA] flex items-center justify-center text-center p-6">
-        <p className="text-lg font-semibold">
-          Use your mobile phone to view the app because while we developers are busy wrestling with the desktop design, all your friends are already ranting on the mobile version.
-        </p>
-      </div>
-    );
-  }
+//   if (!isMobile) {
+//     return (
+//       <div className="min-h-screen w-full bg-black text-[#E7E9EA] flex items-center justify-center text-center p-6">
+//         <p className="text-lg font-semibold">
+//           Use your mobile phone to view the app because while we developers are busy wrestling with the desktop design, all your friends are already ranting on the mobile version.
+//         </p>
+//       </div>
+//     );
+//   }
 
   return (
     <BrowserRouter>
