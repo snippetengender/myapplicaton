@@ -11,7 +11,7 @@ import imageCompression from "browser-image-compression";
 import ProfileSelector from "./ProfileSelector";
 import peekingImg from "../assets/Snippy_peeking.png";
 import addImages from "../assets/gallery-add.svg";
-
+import Camera from "../assets/camera.svg";
 const availableTags = [
   "confession",
   "question",
@@ -43,7 +43,7 @@ const ImageUploadTextArea = ({
       textarea.style.height = `${scrollHeight}px`;
     }
   }, [text]);
-
+  
   return (
     <>
       <div className="w-full bg-transparent border border-brand-charcoal rounded-lg p-3 flex flex-col">
@@ -118,6 +118,13 @@ export default function MobilePostPage() {
   const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [pollOptions, setPollOptions] = useState(["", ""]);
   const [newOption, setNewOption] = useState("");
+  const [isPortrait, setIsPortrait] = useState(false);
+  // Persisted network-mode flag; default to true if a selectedNetwork already exists
+  const [enableNetworkPost, setEnableNetworkPost] = useState(() => {
+    const persisted = localStorage.getItem("enableNetworkPost");
+    if (persisted !== null) return persisted === "true";
+    return !!localStorage.getItem("selectedNetwork");
+  });
 
   const { isSubmitting } = useSelector((state) => state.mixes);
   const navigate = useNavigate();
@@ -131,6 +138,8 @@ export default function MobilePostPage() {
     const storedNetwork = localStorage.getItem("selectedNetwork");
     if (storedNetwork) {
       setSelectedNetwork(JSON.parse(storedNetwork));
+      // Ensure we come back in network-post mode after selecting a network
+      setEnableNetworkPost(true);
     }
   }, []);
 
@@ -152,6 +161,22 @@ export default function MobilePostPage() {
     };
   }, []);
 
+  // Keep the flag in storage so it survives navigation
+  useEffect(() => {
+    localStorage.setItem("enableNetworkPost", String(enableNetworkPost));
+  }, [enableNetworkPost]);
+
+  // Focus the textarea when entering
+  useEffect(() => {
+    if (textAreaRef.current) {
+      // For network posts, focus when network is selected
+      // For normal posts, focus immediately
+      if (enableNetworkPost || (enableNetworkPost && selectedNetwork)) {
+        textAreaRef.current.focus();
+      }
+    }
+  }, [enableNetworkPost, selectedNetwork]);
+
   const handleImageSelect = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -164,7 +189,42 @@ export default function MobilePostPage() {
     try {
       const compressedFile = await imageCompression(file, options);
       setImageFile(compressedFile);
-      setImagePreview(URL.createObjectURL(compressedFile));
+      const previewUrl = URL.createObjectURL(compressedFile);
+      setImagePreview(previewUrl);
+      
+      // Check if image is portrait
+      const img = new Image();
+      img.onload = () => {
+        setIsPortrait(img.height > img.width);
+      };
+      img.src = previewUrl;
+    } catch (err) {
+      console.error("Image compression error:", err);
+      alert("Failed to compress image.");
+    }
+  };
+
+  const handleCameraCapture = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      setImageFile(compressedFile);
+      const previewUrl = URL.createObjectURL(compressedFile);
+      setImagePreview(previewUrl);
+      
+      // Check if image is portrait
+      const img = new Image();
+      img.onload = () => {
+        setIsPortrait(img.height > img.width);
+      };
+      img.src = previewUrl;
     } catch (err) {
       console.error("Image compression error:", err);
       alert("Failed to compress image.");
@@ -182,6 +242,20 @@ export default function MobilePostPage() {
   const removeImage = () => {
     setImageFile(null);
     setImagePreview(null);
+    setIsPortrait(false);
+  };
+
+  const toggleNetworkPost = () => {
+    setEnableNetworkPost((prev) => {
+      const next = !prev;
+      if (!next) {
+        // turning OFF network mode clears selected network and title
+        setSelectedNetwork(null);
+        localStorage.removeItem("selectedNetwork");
+        setTitle("");
+      }
+      return next;
+    });
   };
 
   const addPollOption = () => {
@@ -245,6 +319,9 @@ export default function MobilePostPage() {
   // mirror editor refs
   const titleHiddenInputRef = useRef(null);
   const titleEditableRef = useRef(null);
+  const textAreaRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
 
   const handleTitleEditableInput = (e) => {
     let value = e.currentTarget.textContent || "";
@@ -266,22 +343,16 @@ export default function MobilePostPage() {
   };
 
   const renderInputs = () => {
-    const maxLength = selectedNetwork ? 1000 : 200;
-    if (!selectedTag) {
-      return (
-        <p className="text-center text-[12px] text-brand-medium-gray">
-          Please select a tag to start.
-        </p>
-      );
-    }
+    const maxLength = enableNetworkPost && selectedNetwork ? 1000 : 200;
 
-    const titleInput = selectedNetwork && (
-      <div className="relative">
-        <span className="text-[13px] text-brand-off-white mb-1 block">
-          Give your thought a
-        </span>
+    // If network posting is enabled but no network selected, show nothing
+    // if (enableNetworkPost && !selectedNetwork) {
+    //   return null;
+    // }
 
-        {/* Hidden input kept for semantics; still "using input" */}
+    const titleInput = enableNetworkPost &&  (
+      <div className="mb-3">
+        {/* Hidden input kept for semantics */}
         <input
           ref={titleHiddenInputRef}
           type="text"
@@ -298,41 +369,61 @@ export default function MobilePostPage() {
           contentEditable
           role="textbox"
           aria-multiline="true"
-          data-placeholder="Title"
+          data-placeholder="Write a catchy headline"
           onInput={handleTitleEditableInput}
           onKeyDown={(e) => {
             if (e.key === "Enter") e.preventDefault();
           }}
           onBlur={(e) => {
-            // ensure truly empty so :empty matches
             if (!e.currentTarget.textContent?.trim()) {
               e.currentTarget.textContent = "";
             }
           }}
-          className="ce-ph w-full bg-transparent outline-none text-2xl font-semibold whitespace-pre-wrap break-words min-h-[40px] text-brand-off-white"
+          className="ce-ph w-full bg-transparent outline-none text-xl font-semibold whitespace-pre-wrap break-words min-h-[32px] text-brand-off-white"
         />
-
-        <span className="text-xs text-brand-medium-gray">
-          {title.length}/100
-        </span>
+        <span className="text-xs text-brand-dark-gray">{title.length}/100</span>
       </div>
     );
-
+    const textArea = enableNetworkPost ? (
+      <textarea
+            ref={textAreaRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={
+              enableNetworkPost 
+              ? "Add a bit more detail so people can laugh, cry, or actually reply."
+                : ""
+            }
+            maxLength={maxLength}
+            className="w-full bg-transparent resize-none outline-none text-[14px] placeholder-brand-medium-gray text-brand-off-white min-h-[120px]"
+            rows="5"
+          />
+    ) : (
+      <textarea
+            ref={textAreaRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Finally, a place where you can overshare your existential crises, failed crush stories, and random 3 a.m. thoughts"
+            maxLength={maxLength}
+            className="mt-2 w-full bg-transparent resize-none outline-none text-[18px] font-semibold placeholder-brand-medium-gray text-brand-off-white min-h-[120px]"
+            rows="5"
+          />
+    );
     if (selectedTag === "polls") {
       return (
         <div className="space-y-4">
           {titleInput}
-          <ImageUploadTextArea
-            text={text}
-            setText={setText}
-            imagePreview={imagePreview}
-            removeImage={removeImage}
-            maxLength={maxLength}
-            placeholder="What is your poll question..?"
-            onFileSelect={handleImageSelect}
-            allowImageUpload={false}
-          />
-          <div className="space-y-2">
+          <div className="w-full bg-transparent rounded-lg">
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="What is your poll question..?"
+              maxLength={maxLength}
+              className="w-full bg-transparent resize-none outline-none text-[14px] placeholder-brand-medium-gray text-brand-off-white min-h-[60px]"
+              rows="3"
+            />
+          </div>
+          <div className="space-y-2 mt-4">
             {pollOptions.map((option, index) => (
               <div key={index} className="relative">
                 <input
@@ -341,12 +432,12 @@ export default function MobilePostPage() {
                   onChange={(e) => updatePollOption(e.target.value, index)}
                   placeholder={`Option ${index + 1}`}
                   maxLength={50}
-                  className="w-full bg-transparent border border-brand-charcoal rounded-lg p-3 pr-10"
+                  className="w-full bg-transparent border border-brand-charcoal rounded-lg px-3 py-2.5 pr-10 text-sm text-brand-off-white placeholder-brand-medium-gray"
                 />
                 <button
                   onClick={() => removePollOption(index)}
                   disabled={pollOptions.length <= 2}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 disabled:text-brand-cborder-brand-charcoal"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 disabled:text-brand-charcoal"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -360,12 +451,12 @@ export default function MobilePostPage() {
                   onChange={(e) => setNewOption(e.target.value)}
                   placeholder="Add Option"
                   maxLength={50}
-                  className="w-full bg-transparent border border-brand-charcoal rounded-lg p-3 pr-16"
+                  className="w-full bg-transparent border border-brand-charcoal rounded-lg px-3 py-2.5 pr-16 text-sm text-brand-off-white placeholder-brand-medium-gray"
                 />
                 <button
                   onClick={addPollOption}
                   disabled={!newOption.trim()}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm bg-brand-cborder-brand-charcoal px-2 py-0.5 rounded disabled:bg-zinc-800"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs bg-brand-charcoal px-2 py-1 rounded disabled:bg-brand-almost-black disabled:text-brand-dark-gray text-brand-off-white"
                 >
                   add
                 </button>
@@ -378,26 +469,61 @@ export default function MobilePostPage() {
 
     // Default inputs for confession, question, etc.
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         {titleInput}
-        <ImageUploadTextArea
-          text={text}
-          setText={setText}
-          imagePreview={imagePreview}
-          removeImage={removeImage}
-          maxLength={maxLength}
-          placeholder="Open up here now..."
-          onFileSelect={handleImageSelect}
-        />
-        <p className="text-xs text-brand-medium-gray mt-1 pl-1">
-          {text.length}/{maxLength}
-        </p>
+        <div className="w-full">
+          {textArea}
+          {imagePreview && (
+            <div className="mt-3 relative">
+              {isPortrait ? (
+                <div className="relative w-full h-[300px] rounded-lg overflow-hidden flex items-center justify-center">
+                  {/* Blurry background using the same image */}
+                  <div
+                    className="absolute inset-0 bg-center bg-cover filter blur-2xl scale-110"
+                    style={{ backgroundImage: `url(${imagePreview})` }}
+                  />
+                  {/* Optional dark overlay for contrast */}
+                  <div className="absolute inset-0 bg-black/30" />
+                  {/* Foreground image */}
+                  <img
+                    src={imagePreview}
+                    alt="upload preview"
+                    className="relative z-10 max-h-full max-w-full object-contain"
+                  />
+                  {/* Remove button */}
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 z-20 bg-black rounded-full p-1 border border-brand-charcoal"
+                  >
+                    <X size={16} className="text-brand-off-white" />
+                  </button>
+                </div>
+              ) : (
+                <div className="relative inline-block w-full">
+                  <img
+                    src={imagePreview}
+                    className="w-full h-auto object-cover rounded-lg border border-brand-charcoal"
+                    alt="upload preview"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 bg-black rounded-full p-1 border border-brand-charcoal"
+                  >
+                    <X size={16} className="text-brand-off-white" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col justify-between min-h-screen bg-black">
+    <div className="flex flex-col min-h-screen bg-black text-[#E7E9EA]">
       {/* Placeholder style for contentEditable */}
       <style>{`
         .ce-ph[contenteditable="true"]:empty:before {
@@ -405,49 +531,62 @@ export default function MobilePostPage() {
           color: #6b7280; /* placeholder color */
           pointer-events: none;
         }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
       `}</style>
-      <div className=" text-[#E7E9EA] p-4 flex flex-col justify-between">
-        <div>
-          <div className="flex items-center justify-between">
-            <button onClick={() => navigate("/home")}>
-              <ArrowLeft size={24} />
-            </button>
-            <button
-              disabled={!canPost || isSubmitting}
-              onClick={handleSubmit}
-              className="px-4 py-[7px] rounded-[20px] text-[15px] transition disabled:bg-brand-charcoal disabled:text-black bg-brand-off-white text-black"
-            >
-              {isSubmitting ? "Posting..." : "Post"}
-            </button>
-          </div>
 
-          <h1 className="text-2xl font-bold mt-[8px] mb-2">Select a Tag</h1>
-          <p className="text-sm text-brand-medium-gray mb-3">
-            Select a tag and share what's on your mind.
-          </p>
+      {/* Header with X button and network hint */}
+      <div className="flex items-center justify-between p-4 pb-2">
+        <button onClick={() => navigate("/home")} className="text-brand-off-white">
+          <X size={24} />
+        </button>
+        <button
+          onClick={toggleNetworkPost}
+          className="text-xs px-3 py-1.5 rounded-full border border-brand-charcoal text-brand-medium-gray hover:border-brand-pink transition-colors"
+        >
+          {!enableNetworkPost ? (
+            <>
+              try posting with a <span className="text-brand-pink">network</span>
+            </>
+          ) : (
+            <>
+              try posting without a <span className="text-brand-pink">network</span>
+            </>
+          )}
+        </button>
+      </div>
 
-          {/* FIX: The "Select a Network" div now navigates instead of opening a modal */}
+      {/* Network Selector - Only shown when enableNetworkPost is true */}
+      {enableNetworkPost && (
+        <div className="px-4 pb-3 mt-2">
           {!selectedNetwork ? (
             <div
               onClick={() => navigate("/select-network")}
-              className="bg-brand-almost-black font-semibold px-4 py-3 rounded-xl mb-3 flex items-center gap-3 text-brand-off-white cursor-pointer"
+              className="bg-brand-almost-black font-semibold px-4 py-[10px] rounded-xl flex items-center gap-3 text-brand-off-white cursor-pointer border border-dashed border-brand-charcoal"
             >
-              <div className="w-5 h-5 rounded-full border border-dashed border-brand-off-white" />
-              <span className="text-sm">Select a Network</span>
+              <div className="w-6 h-6 rounded-full border border-dashed border-brand-off-white flex items-center justify-center">
+                <span className="text-xs"></span>
+              </div>
+              <span className="text-[14px]">Select a Network and reach more</span>
             </div>
           ) : (
-            <div className="bg-[#2e2e2e] px-4 py-3 rounded-xl mb-3 flex items-center justify-between">
+            <div className="bg-brand-almost-black px-4 py-4 rounded-xl flex items-center justify-between border border-brand-charcoal">
               <div className="flex items-center gap-3">
                 {selectedNetwork.image ? (
                   <img
                     src={selectedNetwork.image}
                     alt={selectedNetwork.name}
-                    className="w-7 h-7 rounded-full object-cover border border-dashed border-zinc-400"
+                    className="w-8 h-8 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-5 h-5 rounded-full bg-brand-mtext-brand-medium-gray" />
+                  <div className="w-8 h-8 rounded-full bg-brand-medium-gray" />
                 )}
-                <span className="text-sm font-semibold">
+                <span className="text-[15px] font-medium text-brand-off-white">
                   {selectedNetwork.name}
                 </span>
               </div>
@@ -456,79 +595,119 @@ export default function MobilePostPage() {
                   setSelectedNetwork(null);
                   localStorage.removeItem("selectedNetwork");
                 }}
-                className="text-xs text-brand-off-white hover:text-brand-off-white"
+                className="text-xs text-brand-medium-gray hover:text-brand-off-white"
               >
-                Reset
+                Change
               </button>
             </div>
           )}
+        </div>
+      )}
 
-          <div className="flex flex-wrap gap-2 mb-2">
-            {availableTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => setSelectedTag(tag)}
-                className={`px-4 py-1 rounded-full border text-[13px] transition text-brand-off-white ${
-                  selectedTag === tag
-                    ? "border-brand-pink"
-                    : "border-brand-medium-gray"
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-          {selectedNetwork && selectedTag && userDetails ? (
-            <div className="flex items-center gap-4 max-w-[50vw]">
-              {hasLowkeyProfile ? (
-                <ProfileSelector
-                  userDetails={userDetails}
-                  useLowkey={useLowkey}
-                  setUseLowkey={setUseLowkey}
-                />
-              ) : (
-                <>
-                  <div className="flex items-center gap-2">
-                    <img
-                      src={userDetails.profile}
-                      alt={userDetails.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div className="text-brand-dark-gray text-md">
-                      {`<${userDetails.username}>`}
-                    </div>
-                  </div>
-                  <div
-                    onClick={() => navigate("/lowkey")}
-                    className="text-sm text-brand-pink cursor-pointer whitespace-nowrap"
-                  >
-                    or use Lowkey profile
-                  </div>
-                </>
-              )}
-            </div>
+      {/* Profile Selector */}
+      {enableNetworkPost  && userDetails && (
+        <div className="px-4 pb-3">
+          {hasLowkeyProfile ? (
+            <ProfileSelector
+              userDetails={userDetails}
+              useLowkey={useLowkey}
+              setUseLowkey={setUseLowkey}
+            />
           ) : (
-            <div></div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-brand-medium-gray">Post as</span>
+                <img
+                  src={userDetails.profile}
+                  alt={userDetails.name}
+                  className="w-6 h-6 rounded-full object-cover"
+                />
+                <div className="text-brand-off-white text-sm font-medium">
+                  {`<${userDetails.username}>`}
+                </div>
+                <ChevronDown size={16} className="text-brand-medium-gray" />
+              </div>
+            </div>
           )}
+        </div>
+      )}
 
-          {error && (
-            <p className="text-red-500 text-center my-2 text-sm">{error}</p>
-          )}
-          {renderInputs()}
+      {/* Main Content Area */}
+      <div className="flex-1 px-4 pb-2">
+        
+
+        {error && (
+          <p className="text-red-500 text-center my-2 text-sm">{error}</p>
+        )}
+        
+        {renderInputs()}
+      </div>
+
+      {/* Bottom Section - Tags and Actions */}
+      <div className=" bg-black">
+        {/* Tags Section */}
+        <div className="pt-3 pb-2">
+          <p className="text-[14px] font-semibold text-brand-off-white mb-2 px-4">Select Tag</p>
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 px-4 pb-1">
+              {availableTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => handleTagSelect(tag)}
+                  className={`px-3 py-1.5 rounded-full border text-[12px] transition whitespace-nowrap flex-shrink-0 ${
+                    selectedTag === tag
+                      ? "border-brand-pink bg-brand-pink/10 text-brand-off-white"
+                      : "border-brand-charcoal text-brand-off-white"
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Action Bar */}
+        <div className="px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => cameraInputRef.current?.click()}
+              disabled={selectedTag === "polls" || imagePreview !== null}
+              className="text-brand-medium-gray w-6 h-6 disabled:opacity-50"
+            >
+              <img src={Camera} alt="Open camera" />
+            </button>
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={selectedTag === "polls" || imagePreview !== null}
+              className="text-brand-medium-gray disabled:opacity-50"
+            >
+              <img src={addImages} alt="Add Images" className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-brand-off-white">
+              {enableNetworkPost ? `${1000-text.length}` : `${100-text.length}`}
+            </span>
+            <button
+              disabled={!canPost || isSubmitting || (enableNetworkPost && !selectedNetwork)}
+              onClick={handleSubmit}
+              className="px-6 py-2 rounded-full text-[14px] font-semibold transition disabled:bg-brand-charcoal disabled:text-black bg-brand-blue text-brand-off-white"
+            >
+              {isSubmitting ? "Posting..." : "Post"}
+            </button>
+          </div>
         </div>
       </div>
-      <div className="flex relative">
-        <img
-          src={peekingImg}
-          alt="Peeking you"
-          className="w-[104px] h-[95px] -left-3 bottom-5"
-        />
-        <p className="left-[80px] bottom-2 text-[8px] text-brand-dark-gray  mt-8 pb-4">
-          Make sure that the content you're posting is appropriate, or read the{" "}
-          <span className="text-brand-blue mr-1">terms and conditions</span>{" "}
-          before you post
-        </p>
-      </div>
+
+      {/* Hidden file input */}
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        onChange={handleImageSelect}
+        className="hidden"
+      />
     </div>
   );
 }

@@ -1309,7 +1309,7 @@ const Comment = (props) => {
             />
           )}
           {content && (
-            <p className="text-brand-off-white mt-1 break-words">{content}</p>
+            <p className="text-brand-off-white text-[14px] mt-1 break-words">{content}</p>
           )}
           <div className="flex items-center mt-2">
             {canReply && (

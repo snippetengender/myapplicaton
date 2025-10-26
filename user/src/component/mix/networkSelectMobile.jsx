@@ -76,7 +76,7 @@ export default function NetworkSelectPage() {
   const handleSelectNetwork = (network) => {
     // Store the selected network in localStorage (keeping existing functionality)
     localStorage.setItem("selectedNetwork", JSON.stringify(network));
-
+    localStorage.setItem("enableNetworkPost", "true"); // ensure network mode on return
     // Check if we came from home page
     if (isFromHomePage) {
       // Navigate to the community page for this network

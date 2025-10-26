@@ -835,6 +835,26 @@ const Home = () => {
           )}
         </button>
       </div>
+
+      {/* Survived Today Banner - Only show in mixes tab */}
+      {activeTab === "mixes" && (
+        <div className="px-4 py-3">
+          <div className="border border-brand-almost-black rounded-lg px-[10px] py-[6px]">
+            <p className="text-brand-off-white text-[18px] font-semibold flex-1">
+              Survived today? Cry, laugh, or rant about it here.
+            </p>
+            <div className="flex items-end justify-end">
+              <button
+                onClick={() => navigate(`/selecttag/${userId}`)}
+                className="bg-brand-blue text-brand-off-white text-[12px] font-medium px-3 py-[3px] rounded-[10px] hover:bg-[#1a8cd8] transition-colors mb-[4px]"
+              >
+                post now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* FIX: A single, non-duplicated content area */}
       <div className="flex-grow overflow-y-auto pb-20">
         {activeTab === "mixes" ? (
