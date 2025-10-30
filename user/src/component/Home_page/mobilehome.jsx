@@ -839,7 +839,7 @@ const Home = () => {
       {/* Survived Today Banner - Only show in mixes tab */}
       {activeTab === "mixes" && (
         <div className="px-4 py-3">
-          <div className="border border-brand-almost-black rounded-lg px-[10px] py-[6px]">
+          <div className="border border-brand-almost-black rounded-lg px-[10px] py-[6px]" onClick={() => navigate(`/selecttag/${userId}`)}>
             <p className="text-brand-off-white text-[18px] font-semibold flex-1">
               Survived today? Cry, laugh, or rant about it here.
             </p>

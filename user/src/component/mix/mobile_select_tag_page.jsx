@@ -171,9 +171,9 @@ export default function MobilePostPage() {
     if (textAreaRef.current) {
       // For network posts, focus when network is selected
       // For normal posts, focus immediately
-      if (enableNetworkPost || (enableNetworkPost && selectedNetwork)) {
+      // if (enableNetworkPost || (enableNetworkPost && selectedNetwork)) {
         textAreaRef.current.focus();
-      }
+      // }
     }
   }, [enableNetworkPost, selectedNetwork]);
 
@@ -322,6 +322,41 @@ export default function MobilePostPage() {
   const textAreaRef = useRef(null);
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
+
+  // Bottom bar + keyboard handling
+  const bottomBarRef = useRef(null);
+  const [bottomBarHeight, setBottomBarHeight] = useState(0);
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+
+  // Measure bottom bar height for padding
+  useEffect(() => {
+    if (!bottomBarRef.current) return;
+    const el = bottomBarRef.current;
+    const measure = () => setBottomBarHeight(el.offsetHeight || 0);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Use VisualViewport to detect keyboard overlap
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const handleViewport = () => {
+      const overlap = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+      setKeyboardOffset(overlap);
+    };
+
+    handleViewport();
+    vv.addEventListener("resize", handleViewport);
+    vv.addEventListener("scroll", handleViewport);
+    return () => {
+      vv.removeEventListener("resize", handleViewport);
+      vv.removeEventListener("scroll", handleViewport);
+    };
+  }, []);
 
   const handleTitleEditableInput = (e) => {
     let value = e.currentTarget.textContent || "";
@@ -523,7 +558,7 @@ export default function MobilePostPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-[#E7E9EA]">
+    <div className="flex flex-col min-h-screen bg-black text-[#E7E9EA]" style={{ minHeight: "100dvh" }}>
       {/* Placeholder style for contentEditable */}
       <style>{`
         .ce-ph[contenteditable="true"]:empty:before {
@@ -633,7 +668,7 @@ export default function MobilePostPage() {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 px-4 pb-2">
+  <div className="flex-1 px-4 pb-2" style={{ paddingBottom: bottomBarHeight + keyboardOffset }}>
         
 
         {error && (
@@ -644,7 +679,17 @@ export default function MobilePostPage() {
       </div>
 
       {/* Bottom Section - Tags and Actions */}
-      <div className=" bg-black">
+      <div
+        ref={bottomBarRef}
+        className="bg-black border-t border-brand-charcoal"
+        style={{
+          position: "fixed",
+          left: 0,
+          right: 0,
+          bottom: `calc(env(safe-area-inset-bottom) + ${keyboardOffset}px)`,
+          zIndex: 50,
+        }}
+      >
         {/* Tags Section */}
         <div className="pt-3 pb-2">
           <p className="text-[14px] font-semibold text-brand-off-white mb-2 px-4">Select Tag</p>
@@ -706,6 +751,14 @@ export default function MobilePostPage() {
         accept="image/*"
         ref={fileInputRef}
         onChange={handleImageSelect}
+        className="hidden"
+      />
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        ref={cameraInputRef}
+        onChange={handleCameraCapture}
         className="hidden"
       />
     </div>
