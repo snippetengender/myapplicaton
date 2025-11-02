@@ -119,6 +119,7 @@ export default function MobilePostPage() {
   const [pollOptions, setPollOptions] = useState(["", ""]);
   const [newOption, setNewOption] = useState("");
   const [isPortrait, setIsPortrait] = useState(false);
+  const [isTitleFocused, setIsTitleFocused] = useState(false);
   // Persisted network-mode flag; default to true if a selectedNetwork already exists
   const [enableNetworkPost, setEnableNetworkPost] = useState(() => {
     const persisted = localStorage.getItem("enableNetworkPost");
@@ -378,7 +379,7 @@ export default function MobilePostPage() {
   };
 
   const renderInputs = () => {
-    const maxLength = enableNetworkPost && selectedNetwork ? 1000 : 200;
+    const maxLength = enableNetworkPost ? 1000 : 200;
 
     // If network posting is enabled but no network selected, show nothing
     // if (enableNetworkPost && !selectedNetwork) {
@@ -405,14 +406,17 @@ export default function MobilePostPage() {
           role="textbox"
           aria-multiline="true"
           data-placeholder="Write a catchy headline"
+          data-focused={isTitleFocused}
           onInput={handleTitleEditableInput}
           onKeyDown={(e) => {
             if (e.key === "Enter") e.preventDefault();
           }}
+          onFocus={() => setIsTitleFocused(true)}
           onBlur={(e) => {
             if (!e.currentTarget.textContent?.trim()) {
               e.currentTarget.textContent = "";
             }
+            setIsTitleFocused(false);
           }}
           className="ce-ph w-full bg-transparent outline-none text-xl font-semibold whitespace-pre-wrap break-words min-h-[32px] text-brand-off-white"
         />
@@ -563,7 +567,7 @@ export default function MobilePostPage() {
       <style>{`
         .ce-ph[contenteditable="true"]:empty:before {
           content: attr(data-placeholder);
-          color: #6b7280; /* placeholder color */
+          color: #676767; /* placeholder color */
           pointer-events: none;
         }
         .scrollbar-hide::-webkit-scrollbar {
@@ -668,9 +672,7 @@ export default function MobilePostPage() {
       )}
 
       {/* Main Content Area */}
-  <div className="flex-1 px-4 pb-2" style={{ paddingBottom: bottomBarHeight + keyboardOffset }}>
-        
-
+      <div className="flex-1 px-4 pb-2" style={{ paddingBottom: bottomBarHeight + keyboardOffset }}>
         {error && (
           <p className="text-red-500 text-center my-2 text-sm">{error}</p>
         )}
@@ -732,7 +734,7 @@ export default function MobilePostPage() {
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold text-brand-off-white">
-              {enableNetworkPost ? `${1000-text.length}` : `${100-text.length}`}
+              {isTitleFocused ? `${100-title.length}` : enableNetworkPost ? `${1000-text.length}` : `${200-text.length}`} 
             </span>
             <button
               disabled={!canPost || isSubmitting || (enableNetworkPost && !selectedNetwork)}

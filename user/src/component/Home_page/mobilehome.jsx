@@ -893,15 +893,15 @@ const Home = () => {
       {/* FIX: A single "Open up now" bar that only shows on the "mixes" tab */}
       {activeTab === "mixes" && (
         <div className="fixed bottom-0 left-0 right-0 px-2 py-1 z-10">
-          <div className="backdrop-blur-md bg-black/50 border border-brand-charcoal rounded-3xl px-4 py-2 flex justify-between items-center">
-            <span className="text-brand-off-white">Open up now</span>
+          <div className=" bg-black border border-brand-charcoal rounded-[15px] px-4 py-2 flex justify-between items-center">
+            <span className="text-brand-charcoal text-[14px] font-medium">Don’t just scroll, leave your mark</span>
             <button
-              className="bg-white/10 border border-brand-charcoal text-brand-off-white px-4 py-1 rounded-xl hover:bg-white/20"
+              className="bg-brand-blue text-brand-off-white text-[12px] font-medium px-4 py-1 rounded-[10px]"
               //style={{ color: 'cyan', fontSize: '18px' }}
               onClick={() => navigate(`/selecttag/${userId}`)}
               //to="/selecttag"
             >
-              mix
+              post now
             </button>
           </div>
         </div>
