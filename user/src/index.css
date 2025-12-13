@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Marquee */
+@keyframes snips-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.snips-marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  animation: snips-marquee 10s linear infinite;
+}
+.snips-marquee-item {
+  display: inline-block;
+  padding: 0 1rem; /* space between repeats */
+  line-height: 1.5rem; /* ~ h-6 */
+}
+@media (prefers-reduced-motion: reduce) {
+  .snips-marquee-track { animation: none; }
+}
