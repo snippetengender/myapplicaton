@@ -1,17 +1,17 @@
 // ImageEditor.jsx
-import { Upload, Move, Pencil, X, Crop } from 'lucide-react';
+import { Upload, Pencil, X, Crop, Check } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 export default function ImageEditor({ onSave, onClose, isOpen }) {
   const [image, setImage] = useState(null);
-  const [scale, setScale] = useState(1);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [tool, setTool] = useState('move');
+  const [tool, setTool] = useState(null);
   const [cropStart, setCropStart] = useState(null);
   const [cropEnd, setCropEnd] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
   const canvasRef = useRef(null);
   const overlayCanvasRef = useRef(null);
+  const containerRef = useRef(null);
   const [ctx, setCtx] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -29,7 +29,6 @@ export default function ImageEditor({ onSave, onClose, isOpen }) {
         const img = new Image();
         img.onload = () => {
           setImage(img);
-          setScale(1);
           setTimeout(() => {
             drawImageOnCanvas(img);
           }, 100);
@@ -44,6 +43,8 @@ export default function ImageEditor({ onSave, onClose, isOpen }) {
     if (!canvasRef.current || !img) return;
     
     const canvas = canvasRef.current;
+    
+    // Set canvas to image's actual size
     canvas.width = img.width;
     canvas.height = img.height;
     
@@ -51,19 +52,33 @@ export default function ImageEditor({ onSave, onClose, isOpen }) {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(img, 0, 0);
     setCtx(context);
+
+    // Set overlay canvas to same size
+    if (overlayCanvasRef.current) {
+      overlayCanvasRef.current.width = img.width;
+      overlayCanvasRef.current.height = img.height;
+    }
   };
 
-  const handleScaleChange = (e) => {
-    const newScale = parseFloat(e.target.value);
-    setScale(newScale);
+  const getCanvasCoordinates = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    
+    // Calculate the scale between displayed size and actual canvas size
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    // Get coordinates relative to the displayed canvas
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    
+    return { x, y };
   };
 
   const startDrawing = (e) => {
     if (!canvasRef.current) return;
 
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / scale;
-    const y = (e.clientY - rect.top) / scale;
+    const { x, y } = getCanvasCoordinates(e);
 
     if (tool === 'crop') {
       setIsCropping(true);
@@ -74,21 +89,19 @@ export default function ImageEditor({ onSave, onClose, isOpen }) {
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.strokeStyle = '#ec4899';
-      ctx.lineWidth = 3 / scale;
+      ctx.lineWidth = 3;
       ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
     }
   };
 
   const draw = (e) => {
     if (!canvasRef.current) return;
 
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / scale;
-    const y = (e.clientY - rect.top) / scale;
+    const { x, y } = getCanvasCoordinates(e);
 
     if (tool === 'crop' && isCropping) {
       setCropEnd({ x, y });
-      drawCropOverlay();
     } else if (tool === 'draw' && isDrawing && ctx) {
       ctx.lineTo(x, y);
       ctx.stroke();
@@ -109,23 +122,24 @@ export default function ImageEditor({ onSave, onClose, isOpen }) {
     const overlayCanvas = overlayCanvasRef.current;
     const overlayCtx = overlayCanvas.getContext('2d');
     
-    overlayCanvas.width = canvasRef.current.width;
-    overlayCanvas.height = canvasRef.current.height;
-    
     overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
     
+    // Draw semi-transparent overlay over entire canvas
     overlayCtx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     overlayCtx.fillRect(0, 0, overlayCanvas.width, overlayCanvas.height);
     
+    // Calculate crop rectangle
     const x = Math.min(cropStart.x, cropEnd.x);
     const y = Math.min(cropStart.y, cropEnd.y);
     const w = Math.abs(cropEnd.x - cropStart.x);
     const h = Math.abs(cropEnd.y - cropStart.y);
     
+    // Clear the crop area (make it visible)
     overlayCtx.clearRect(x, y, w, h);
     
+    // Draw border around crop area
     overlayCtx.strokeStyle = '#3b82f6';
-    overlayCtx.lineWidth = 2 / scale;
+    overlayCtx.lineWidth = 3;
     overlayCtx.strokeRect(x, y, w, h);
   };
 
@@ -145,6 +159,7 @@ export default function ImageEditor({ onSave, onClose, isOpen }) {
     tempCanvas.height = h;
     const tempCtx = tempCanvas.getContext('2d');
     
+    // Draw the cropped portion
     tempCtx.drawImage(canvas, x, y, w, h, 0, 0, w, h);
     
     const croppedImg = new Image();
@@ -153,7 +168,7 @@ export default function ImageEditor({ onSave, onClose, isOpen }) {
       drawImageOnCanvas(croppedImg);
       setCropStart(null);
       setCropEnd(null);
-      setTool('move');
+      setTool(null);
       if (overlayCanvasRef.current) {
         const overlayCtx = overlayCanvasRef.current.getContext('2d');
         overlayCtx.clearRect(0, 0, overlayCanvasRef.current.width, overlayCanvasRef.current.height);
@@ -172,8 +187,7 @@ export default function ImageEditor({ onSave, onClose, isOpen }) {
 
   const handleClose = () => {
     setImage(null);
-    setScale(1);
-    setTool('move');
+    setTool(null);
     setCropStart(null);
     setCropEnd(null);
     if (onClose) onClose();
@@ -183,168 +197,136 @@ export default function ImageEditor({ onSave, onClose, isOpen }) {
     if (cropStart && cropEnd) {
       drawCropOverlay();
     }
-  }, [cropStart, cropEnd, scale]);
+  }, [cropStart, cropEnd]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 rounded-lg w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Editor Header */}
-        <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Edit Image</h2>
-          <button onClick={handleClose} className="text-gray-400 hover:text-white">
-            <X size={24} />
+    <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+      {!image ? (
+        <div className="w-full h-full flex items-center justify-center">
+          <label className="flex flex-col items-center justify-center cursor-pointer">
+            <Upload className="w-16 h-16 text-gray-400 mb-4" />
+            <span className="text-lg text-gray-400">Click to upload an image</span>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </label>
+        </div>
+      ) : (
+        <div className="relative w-full h-full flex items-center justify-center p-4">
+          {/* Canvas Area */}
+          <div ref={containerRef} className="relative max-w-full max-h-full overflow-auto">
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <canvas
+                ref={canvasRef}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  const touch = e.touches[0];
+                  startDrawing({ clientX: touch.clientX, clientY: touch.clientY });
+                }}
+                onTouchMove={(e) => {
+                  e.preventDefault();
+                  const touch = e.touches[0];
+                  draw({ clientX: touch.clientX, clientY: touch.clientY });
+                }}
+                onTouchEnd={stopDrawing}
+                style={{
+                  cursor: tool === 'draw' ? 'crosshair' : tool === 'crop' ? 'crosshair' : 'default',
+                  display: 'block',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  borderRadius: '12px',
+                  touchAction: 'none'
+                }}
+              />
+              <canvas
+                ref={overlayCanvasRef}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  pointerEvents: 'none',
+                  display: 'block'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Floating Action Buttons - Right Side */}
+          <div className="absolute right-6 top-1/2 transform -translate-y-1/2 flex flex-col gap-3">
+            <button
+              onClick={() => {
+                setTool('crop');
+                setCropStart(null);
+                setCropEnd(null);
+              }}
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                tool === 'crop'
+                  ? 'bg-green-500 text-white shadow-lg scale-110'
+                  : 'bg-white text-gray-800 shadow-md hover:scale-105'
+              }`}
+            >
+              <Crop className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => {
+                setTool('draw');
+                setCropStart(null);
+                setCropEnd(null);
+                if (overlayCanvasRef.current) {
+                  const overlayCtx = overlayCanvasRef.current.getContext('2d');
+                  overlayCtx.clearRect(0, 0, overlayCanvasRef.current.width, overlayCanvasRef.current.height);
+                }
+              }}
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                tool === 'draw'
+                  ? 'bg-pink-500 text-white shadow-lg scale-110'
+                  : 'bg-white text-gray-800 shadow-md hover:scale-105'
+              }`}
+            >
+              <Pencil className="w-5 h-5" />
+            </button>
+
+            {/* Apply Crop Button */}
+            {tool === 'crop' && cropStart && cropEnd && (
+              <button
+                onClick={applyCrop}
+                className="w-12 h-12 rounded-full bg-green-600 text-white shadow-lg flex items-center justify-center hover:scale-105 transition-all"
+              >
+                <Check className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+
+          {/* Close Button - Top Right */}
+          <button
+            onClick={handleClose}
+            className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white text-gray-800 shadow-md flex items-center justify-center hover:scale-105 transition-all"
+          >
+            <X size={20} />
+          </button>
+
+          {/* Save Button - Bottom Right */}
+          <button
+            onClick={saveImage}
+            className="absolute bottom-6 right-6 px-6 py-3 bg-white text-gray-800 font-medium rounded-full shadow-lg hover:scale-105 transition-all"
+          >
+            Save Image
           </button>
         </div>
-
-        {!image ? (
-          <div className="p-12 flex-1 flex items-center justify-center">
-            <label className="flex flex-col items-center justify-center cursor-pointer border-2 border-dashed border-gray-600 rounded-lg p-12 hover:border-gray-500 transition-colors">
-              <Upload className="w-16 h-16 text-gray-400 mb-4" />
-              <span className="text-lg text-gray-400">Click to upload an image</span>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-            </label>
-          </div>
-        ) : (
-          <>
-            {/* Toolbar */}
-            <div className="p-4 border-b border-gray-700 flex items-center gap-4 flex-wrap">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setTool('move');
-                    setCropStart(null);
-                    setCropEnd(null);
-                    if (overlayCanvasRef.current) {
-                      const overlayCtx = overlayCanvasRef.current.getContext('2d');
-                      overlayCtx.clearRect(0, 0, overlayCanvasRef.current.width, overlayCanvasRef.current.height);
-                    }
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    tool === 'move'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  <Move className="w-5 h-5" />
-                  Move
-                </button>
-                <button
-                  onClick={() => {
-                    setTool('crop');
-                    setCropStart(null);
-                    setCropEnd(null);
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    tool === 'crop'
-                      ? 'bg-green-500 text-white'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  <Crop className="w-5 h-5" />
-                  Crop
-                </button>
-                <button
-                  onClick={() => {
-                    setTool('draw');
-                    setCropStart(null);
-                    setCropEnd(null);
-                    if (overlayCanvasRef.current) {
-                      const overlayCtx = overlayCanvasRef.current.getContext('2d');
-                      overlayCtx.clearRect(0, 0, overlayCanvasRef.current.width, overlayCanvasRef.current.height);
-                    }
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    tool === 'draw'
-                      ? 'bg-pink-500 text-white'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  <Pencil className="w-5 h-5" />
-                  Draw
-                </button>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <label className="text-sm text-gray-300">Zoom:</label>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="2"
-                  step="0.1"
-                  value={scale}
-                  onChange={handleScaleChange}
-                  className="w-32"
-                />
-                <span className="text-sm text-gray-300 w-12">{Math.round(scale * 100)}%</span>
-              </div>
-
-              {tool === 'crop' && cropStart && cropEnd && (
-                <button
-                  onClick={applyCrop}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors ml-auto"
-                >
-                  Apply Crop
-                </button>
-              )}
-            </div>
-
-            {/* Canvas Area */}
-            <div className="flex-1 overflow-auto p-4 bg-gray-800">
-              <div style={{ position: 'relative', display: 'inline-block' }}>
-                <canvas
-                  ref={canvasRef}
-                  onMouseDown={startDrawing}
-                  onMouseMove={draw}
-                  onMouseUp={stopDrawing}
-                  onMouseLeave={stopDrawing}
-                  style={{
-                    transform: `scale(${scale})`,
-                    transformOrigin: 'top left',
-                    cursor: tool === 'draw' ? 'crosshair' : tool === 'crop' ? 'crosshair' : 'move',
-                    display: 'block'
-                  }}
-                />
-                <canvas
-                  ref={overlayCanvasRef}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    transform: `scale(${scale})`,
-                    transformOrigin: 'top left',
-                    pointerEvents: 'none',
-                    display: 'block'
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Editor Footer */}
-            <div className="p-4 border-t border-gray-700 flex justify-end gap-3">
-              <button
-                onClick={handleClose}
-                className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveImage}
-                className="px-6 py-2 bg-white text-black rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                Save Image
-              </button>
-            </div>
-          </>
-        )}
-      </div>
+      )}
     </div>
   );
 }
