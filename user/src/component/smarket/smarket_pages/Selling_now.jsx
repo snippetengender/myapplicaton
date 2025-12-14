@@ -1,6 +1,7 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Upload, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ImageEditor from './components/ImageEditor';
 
 export default function ProductListingForm() {
   const [formData, setFormData] = useState({
@@ -13,16 +14,28 @@ export default function ProductListingForm() {
     agreedToTerms: false
   });
 
+  const [showEditor, setShowEditor] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState([]);
+
+  const handleSaveImage = (imageUrl) => {
+    setUploadedImages([...uploadedImages, imageUrl]);
+  };
+
+  const removeImage = (index) => {
+    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = () => {
-    console.log('Form submitted:', formData);
+    console.log('Form submitted:', { ...formData, images: uploadedImages });
   };
 
   const navigate = useNavigate();
+
   return (
     <div className="bg-black min-h-screen text-white p-6">
       {/* Header */}
       <div className="mb-8">
-        <button className="text-white" onClick={ () => navigate("/smarket")}>
+        <button className="text-white" onClick={() => navigate("/smarket")}>
           <ArrowLeft size={24} />
         </button>
       </div>
@@ -107,11 +120,34 @@ export default function ProductListingForm() {
         <div>
           <button
             type="button"
-            className="w-full border border-gray-700 rounded-lg py-16 text-white hover:border-gray-500 transition-colors"
+            onClick={() => setShowEditor(true)}
+            className="w-full border border-gray-700 rounded-lg py-16 text-white hover:border-gray-500 transition-colors flex flex-col items-center justify-center gap-2"
           >
-            Upload
+            <Upload size={32} />
+            <span>Upload Images</span>
           </button>
         </div>
+
+        {/* Uploaded Images Preview */}
+        {uploadedImages.length > 0 && (
+          <div className="grid grid-cols-3 gap-4">
+            {uploadedImages.map((img, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={img}
+                  alt={`Product ${index + 1}`}
+                  className="w-full h-32 object-cover rounded-lg border border-gray-700"
+                />
+                <button
+                  onClick={() => removeImage(index)}
+                  className="absolute top-2 right-2 bg-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Terms and Conditions */}
         <div className="flex items-center gap-3">
@@ -135,6 +171,13 @@ export default function ProductListingForm() {
           List Product
         </button>
       </div>
+
+      {/* Image Editor Component */}
+      <ImageEditor
+        isOpen={showEditor}
+        onSave={handleSaveImage}
+        onClose={() => setShowEditor(false)}
+      />
     </div>
   );
 }
