@@ -1,7 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import ConnectButton  from "./components/Share_button";
+import api from "../../../providers/api";
+
 export default function All_listing(){
     const navigate = useNavigate();
+    
+
+    const ListedForSale = async () => {
+        ListedItems = await api.get('/marketplace/');
+        return ListedItems.data;
+    }
 
     const phoneNumber = '+919487079169'; // Your phone number
     const productName = 'Awesome Widget'; // Your product name
