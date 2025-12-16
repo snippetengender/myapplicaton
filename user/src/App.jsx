@@ -71,7 +71,7 @@ import Smarket from "./component/smarket/Smarket.jsx"
 import Item_Info from "./component/smarket/smarket_pages/Items_info.jsx"
 import Selling_now from "./component/smarket/smarket_pages/Selling_now.jsx"
 import Smaps from "./component/smaps/Smaps.jsx"
-
+import Image_Edits from "./component/mix/image_edit.jsx"
 function App() {
   // Block desktop: allow only widths <= 768px
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -157,6 +157,7 @@ function App() {
           />
 
           <Route path="/selecttag/:id" element={<SelectTagPage />} />
+          <Route path="/s-edits" element={<Image_Edits />} />
           <Route path="/comments/:mixId" element={<CommentTree />} />
           <Route
             path="/createnetworkwrapper"
