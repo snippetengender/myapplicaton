@@ -12,6 +12,8 @@ import ProfileSelector from "./ProfileSelector";
 import peekingImg from "../assets/Snippy_peeking.png";
 import addImages from "../assets/gallery-add.svg";
 import Camera from "../assets/camera.svg";
+import ImageEditor from './ImageEditor';
+
 const availableTags = [
   "confession",
   "question",
@@ -126,6 +128,14 @@ export default function MobilePostPage() {
     if (persisted !== null) return persisted === "true";
     return !!localStorage.getItem("selectedNetwork");
   });
+  const [showEditor, setShowEditor] = useState(false);
+  const [srcImage, setImageUrl] = useState(null);
+  const handleSaveImage = (imageUrl,file) => {
+    setImageUrl(imageUrl);
+    setImagePreview(imageUrl);  // For preview display
+    setImageFile(file);         // If you need the file for upload
+    setShowEditor(false); 
+  };
 
   const { isSubmitting } = useSelector((state) => state.mixes);
   const navigate = useNavigate();
@@ -725,7 +735,7 @@ export default function MobilePostPage() {
               <img src={Camera} alt="Open camera" />
             </button>
             <button 
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => setShowEditor(true)}
               disabled={selectedTag === "polls" || imagePreview !== null}
               className="text-brand-medium-gray disabled:opacity-50"
             >
@@ -763,6 +773,13 @@ export default function MobilePostPage() {
         onChange={handleCameraCapture}
         className="hidden"
       />
+
+      <ImageEditor
+        isOpen={showEditor}
+        onSave={handleSaveImage}
+        onClose={() => setShowEditor(false)}
+      />
     </div>
+    
   );
 }
