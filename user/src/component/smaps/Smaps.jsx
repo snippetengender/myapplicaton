@@ -1,8 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
-import { Menu, RefreshCw, MapPin } from "lucide-react";
+import { Menu, RefreshCw } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import "leaflet/dist/leaflet.css";
+import LogoIcon from "../snippetIcon/Vector.svg";
 
 // Fix default Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -18,6 +21,7 @@ const createCustomIcon = (imageUrl) => {
     className: 'custom-marker',
     html: `
       <div style="position: relative;">
+        <!-- Image Container -->
         <div style="
           width: 60px;
           height: 60px;
@@ -28,7 +32,22 @@ const createCustomIcon = (imageUrl) => {
           background: #000;
         ">
           <img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" />
+          
+          <!-- Pink Dot in the Center -->
+          <div style="
+            position: absolute;
+            top: 120%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background-color: pink;
+            border-radius: 50%;
+            border: 2px solid white;
+          "></div>
         </div>
+
+        <!-- Triangle Pointer (downward) -->
         <div style="
           position: absolute;
           bottom: -8px;
@@ -42,8 +61,8 @@ const createCustomIcon = (imageUrl) => {
         "></div>
       </div>
     `,
-    iconSize: [60, 68],
-    iconAnchor: [30, 68],
+    iconSize: [60, 68], // The size of the entire icon
+    iconAnchor: [30, 68], // Where the icon's anchor is located
   });
 };
 
@@ -81,42 +100,38 @@ const events = [
 ];
 
 export default function EventsMapPage() {
-  const [selectedFilter, setSelectedFilter] = useState("Online and Offline");
+  const [zoomLevel, setZoomLevel] = useState(5);  // Default zoom level for India
+  const mapRef = useRef();
+  const navigate = useNavigate();
+
+  // Hook to update zoom level
+  const MapUpdater = () => {
+    const map = useMap();
+    useEffect(() => {
+      map.setZoom(zoomLevel);  // Update zoom when zoomLevel changes
+      map.options.zoomSnap = 0.1;  // Finer zoom steps for smooth zooming
+      map.options.zoomDelta = 0.5; // Adjust zooming steps for more control
+    }, [zoomLevel, map]);
+
+    return null;
+  };
 
   return (
-    <div className="bg-black min-h-screen text-white flex flex-col">
-      {/* Header */}
-      <div className="bg-black p-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button className="text-white">
-            <Menu size={24} />
-          </button>
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-            <span className="text-black font-bold text-xl">SP</span>
-          </div>
-        </div>
-        <button className="text-white">
-          <RefreshCw size={24} />
-        </button>
-      </div>
-
-      {/* Filter Bar */}
-      <div className="bg-black px-4 pb-4 flex items-center justify-between">
-        <button className="text-white flex items-center gap-2">
-          <span>{selectedFilter}</span>
-          <span className="text-sm">▼</span>
-        </button>
-        <button className="text-white text-sm">Add Event</button>
-      </div>
-
-      {/* Map */}
-      <div className="relative h-64 w-full">
+    <div className="bg-black min-h-screen text-white flex">
+      {/* Left side: Map */}
+      <div className="relative flex-1 overflow-auto">
         <MapContainer
-          center={[19.1334, 72.9133]}
-          zoom={13}
-          style={{ height: "100%", width: "100%" }}
-          zoomControl={false}
+          ref={mapRef}
+          center={[19.1334, 72.9133]}  // Center of India
+          zoom={zoomLevel}
+          minZoom={5}  // Minimum zoom level for India view
+          maxZoom={18}  // Maximum zoom level (can adjust)
+          style={{ height: "100vh", width: "100%" }}
+          zoomControl={false}  // Disable Leaflet's default zoom control
         >
+          {/* Update map zoom via custom component */}
+          <MapUpdater />
+          
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; OpenStreetMap contributors'
@@ -139,62 +154,52 @@ export default function EventsMapPage() {
         </MapContainer>
       </div>
 
-      {/* Events List */}
-      <div className="flex-1 bg-black px-4 py-4 space-y-4 overflow-y-auto">
-        {events.map((event, index) => (
-          <div key={event.id}>
-            <div className="text-gray-400 text-sm mb-2">{event.date}</div>
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 flex gap-3">
-              <img
-                src={event.image}
-                alt={event.title}
-                className="w-16 h-16 rounded-lg object-cover"
-              />
-              <div className="flex-1">
-                <h3 className="text-white font-medium mb-1">{event.title}</h3>
-                <div className="flex items-center gap-1 text-gray-400 text-sm mb-1">
-                  <MapPin size={14} />
-                  <span>{event.location}</span>
-                </div>
-                <div className="text-gray-400 text-sm">{event.time}</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Right side: Zoom Slider
+      <div className="flex flex-col justify-between p-4 bg-black border-l border-gray-700 overflow-auto">
+        <div className="mb-4">
+          <label htmlFor="zoom-slider" className="text-white">Zoom Level</label>
+          <input
+            id="zoom-slider"
+            type="range"
+            min="3"  // Minimum zoom for India
+            max="18"  // Maximum zoom level
+            value={zoomLevel}
+            onChange={(e) => setZoomLevel(parseInt(e.target.value))}
+            className="w-full"
+          />
+          <div className="text-white text-center mt-2">Zoom: {zoomLevel}</div>
+        </div>
+      </div> */}
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 px-2 py-1 z-10">
+      <div className="fixed bottom-0 left-0 right-0 px-2 py-1 z-10 m-2">
         <div className="bg-black border border-brand-charcoal rounded-[15px] px-4 py-2 flex justify-between items-center">
-            <button
-              className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px]"
-              onClick={() => navigate('/home')}
-            >
-              Home
-            </button>
-            <button
-              className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px]"
-              onClick={() => navigate('/events')}
-              
-            >
-              Events
-            </button>
-            <button
-              className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px]"
-              onClick={() => { 
-                navigate('/smarket')
-              } }
-            >
-              Marketplace
-            </button>
-            <button
-              className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px]"
-              // onClick={() => navigate(`/profile/${userId}`)}
-            >
-              Profile
-            </button>
+          <button
+            className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px]"
+            onClick={() => navigate('/home')}
+          >
+            Home
+          </button>
+          <button
+            className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px]"
+            onClick={() => navigate('/events')}
+          >
+            Events
+          </button>
+          <button
+            className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px]"
+            onClick={() => navigate('/smarket')}
+          >
+            Marketplace
+          </button>
+          <button
+            className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px]"
+            // onClick={() => navigate(`/profile/${userId}`)}
+          >
+            Profile
+          </button>
         </div>
-  </div>
+      </div>
     </div>
   );
 }
