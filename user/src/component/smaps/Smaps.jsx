@@ -109,6 +109,8 @@ export default function EventsMapPage() {
     const map = useMap();
     useEffect(() => {
       map.setZoom(zoomLevel);  // Update zoom when zoomLevel changes
+      map.options.zoomSnap = 0.1;  // Finer zoom steps for smooth zooming
+      map.options.zoomDelta = 0.5; // Adjust zooming steps for more control
     }, [zoomLevel, map]);
 
     return null;
