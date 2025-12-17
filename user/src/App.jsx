@@ -220,8 +220,8 @@ function App() {
         </Route>
         {/* Smarket */}
         <Route path="/smarket" element={<Smarket/>} />
-        <Route path="/smarket/item-info" element={<Item_Info/>} />
-        <Route path="smarket/selling_now" element={<Selling_now/>} />
+        <Route path="/smarket/:listingId" element={<Item_Info/>} />
+        <Route path="/smarket/selling_now" element={<Selling_now/>} />
 
         {/* Smaps or Events */}
         <Route path="/events" element={<Smaps/>} />

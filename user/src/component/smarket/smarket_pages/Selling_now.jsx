@@ -56,13 +56,15 @@ export default function ProductListingForm() {
     const response = await createListing(payload);
 
     console.log('Server response:', response);
+    localStorage.setItem('college_name', response.college_name);
+    navigate('/smarket', { state: { activeTab: 'your_listing' } });
+
   } catch (error) {
     console.error('Error submitting form:', error);
   }
 };
 
-
-  const navigate = useNavigate("/your_listing");
+  const navigate = useNavigate();
 
   return (
     <div className="bg-black min-h-screen text-white p-6">
@@ -187,7 +189,9 @@ export default function ProductListingForm() {
 
         {/* Submit Button */}
         <button
-          onClick={handleSubmit}
+          onClick={() => {
+            handleSubmit();
+          }}
           className="w-full bg-white text-black font-medium py-3 rounded-lg hover:bg-gray-100 transition-colors"
         >
           List Product

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom"; 
 
 import All_listing from "./smarket_pages/all_listing";
 import Your_listing from "./smarket_pages/your_listing";
@@ -9,8 +10,8 @@ import HamburgerIcon from "../snippetIcon/menu.svg";
 import LogoIcon from "../snippetIcon/Vector.svg";
 
 export default function Smarket(){
-
-    const [activeMTab, setActiveMTab] = useState("all_listing");
+    const location = useLocation();
+    const [activeMTab, setActiveMTab] = useState(location.state?.activeTab || "all_listing");
     const navigate = useNavigate();
     const renderTab = () => {
         switch (activeMTab) {
