@@ -9,15 +9,9 @@ import SearchIcon from "../snippetIcon/search-status.svg";
 import HamburgerIcon from "../snippetIcon/menu.svg";
 import LogoIcon from "../snippetIcon/Vector.svg";
 
-<<<<<<< HEAD
-export default function Smarket() {
-
-    const [activeMTab, setActiveMTab] = useState("all_listing");
-=======
 export default function Smarket(){
     const location = useLocation();
     const [activeMTab, setActiveMTab] = useState(location.state?.activeTab || "all_listing");
->>>>>>> f939ee4a3176cf5592d5105ac60c10036df4526d
     const navigate = useNavigate();
     const renderTab = () => {
         switch (activeMTab) {

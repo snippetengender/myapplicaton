@@ -39,21 +39,7 @@ const createCustomIcon = () => {
 };
 
 // Events with various test cases (adjusted near Delhi, Mumbai, Chennai)
-const events = [
-  { id: 1, title: "Mood Indigo", location: "IIT Bombay", lat: 19.1334, lng: 72.9133 },  // Near Mumbai
-  { id: 2, title: "Mood Indigo", location: "IIT Bombay", lat: 19.1434, lng: 72.9233 },  // Near Mumbai
-  { id: 3, title: "Manad Blitz Bangalore", location: "By NSRCEL, IIM Bangalore", lat: 19.1234, lng: 72.9033 }, // Near Mumbai
-
-  // New events near Delhi
-  { id: 5, title: "Tech Summit", location: "Mumbai", lat: 28.5721, lng: 77.3200 },  // Near Delhi
-  { id: 6, title: "Hackathon", location: "IIT Delhi", lat: 28.5421, lng: 77.1688 },  // Near Delhi
-  { id: 7, title: "Music Carnival", location: "Hyderabad", lat: 28.7041, lng: 77.1025 }, // Near Delhi
-
-  // New events near Chennai
-  { id: 8, title: "Startup Expo", location: "Bangalore", lat: 13.0827, lng: 80.2707 },  // Near Chennai
-  { id: 9, title: "Art Gallery", location: "Delhi", lat: 13.0878, lng: 80.2785 },  // Near Chennai
-  { id: 10, title: "Food Festival", location: "Chennai", lat: 13.0827, lng: 80.2707 }  // Near Chennai
-];
+const events = [];
 
 
 export default function EventsMapPage() {

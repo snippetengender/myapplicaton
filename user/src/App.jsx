@@ -227,15 +227,9 @@ function App() {
           </Route>
         </Route>
         {/* Smarket */}
-<<<<<<< HEAD
-        <Route path="/smarket" element={<Smarket />} />
-        <Route path="/smarket/item-info" element={<Item_Info />} />
-        <Route path="smarket/selling_now" element={<Selling_now />} />
-=======
         <Route path="/smarket" element={<Smarket/>} />
         <Route path="/smarket/:listingId" element={<Item_Info/>} />
         <Route path="/smarket/selling_now" element={<Selling_now/>} />
->>>>>>> f939ee4a3176cf5592d5105ac60c10036df4526d
 
         {/* Smaps or Events */}
         <Route path="/events" element={<Smaps />} />
