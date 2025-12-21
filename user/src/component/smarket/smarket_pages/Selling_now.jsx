@@ -2,14 +2,16 @@ import { ArrowLeft, Upload, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImageEditor from './components/ImageEditor';
+import api from '../../../providers/api';
+import Your_listing from './your_listing';
 
 export default function ProductListingForm() {
+  const user_id = localStorage.getItem('user_id');
   const [formData, setFormData] = useState({
     productName: '',
     description: '',
     price: '',
     category: '',
-    college: '',
     phoneNumber: '', 
     agreedToTerms: false
   });
@@ -25,9 +27,42 @@ export default function ProductListingForm() {
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', { ...formData, images: uploadedImages });
+  const createListing = async (listingData) => {
+  try {
+    const response = await api.post('/marketplace/', listingData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating listing:', error);
+    throw error;
+  }
+};
+
+
+  const handleSubmit = async () => {
+  const payload = {
+    product_name: formData.productName,
+    description: formData.description,
+    price: formData.price,
+    category: formData.category,
+    phone_number: formData.phoneNumber,
+    owner_id: user_id,
+    live: true,
+    product_image: uploadedImages
   };
+
+  console.log('Sending payload:', payload);
+
+  try {
+    const response = await createListing(payload);
+
+    console.log('Server response:', response);
+    localStorage.setItem('college_name', response.college_name);
+    navigate('/smarket', { state: { activeTab: 'your_listing' } });
+
+  } catch (error) {
+    console.error('Error submitting form:', error);
+  }
+};
 
   const navigate = useNavigate();
 
@@ -92,17 +127,6 @@ export default function ProductListingForm() {
           />
         </div>
 
-        {/* College */}
-        <div>
-          <label className="block text-sm mb-2">College</label>
-          <input
-            type="text"
-            placeholder="College"
-            value={formData.college}
-            onChange={(e) => setFormData({...formData, college: e.target.value})}
-            className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-500"
-          />
-        </div>
 
         {/* Phone Number */}
         <div>
@@ -165,7 +189,9 @@ export default function ProductListingForm() {
 
         {/* Submit Button */}
         <button
-          onClick={handleSubmit}
+          onClick={() => {
+            handleSubmit();
+          }}
           className="w-full bg-white text-black font-medium py-3 rounded-lg hover:bg-gray-100 transition-colors"
         >
           List Product
