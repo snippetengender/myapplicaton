@@ -78,13 +78,13 @@ export default function Smarket(){
                     >
                         Home
                     </button>
-                    <button
+                    {/* <button
                         className="bg-black text-brand-off-white text-[12px] font-medium px-4 py-1 rounded-[10px]"
                         onClick={() => navigate('/events')}
 
                     >
                         Events
-                    </button>
+                    </button> */}
                     <button
                         className="bg-black text-brand-off-white text-[12px] font-medium px-4 py-1 rounded-[10px]"
                         onClick={() => {
@@ -94,12 +94,12 @@ export default function Smarket(){
                     >
                         Marketplace
                     </button>
-                    <button
+                    {/* <button
                         className="bg-black text-brand-off-white text-[12px] font-medium px-4 py-1 rounded-[10px]"
                     // onClick={() => navigate(`/profile/${userId}`)}
                     >
                         Profile
-                    </button>
+                    </button> */}
                 </div>
             </div>
 
