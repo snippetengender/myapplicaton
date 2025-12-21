@@ -72,6 +72,14 @@ import Item_Info from "./component/smarket/smarket_pages/Items_info.jsx"
 import Selling_now from "./component/smarket/smarket_pages/Selling_now.jsx"
 import Smaps from "./component/smaps/Smaps.jsx"
 import Image_Edits from "./component/mix/image_edit.jsx"
+
+// Smaps
+import All_events from "./component/smaps/smap_pages/All_events.jsx";
+import Add_Events from "./component/smaps/smap_pages/Add_Events.jsx";
+import Add_location from "./component/smaps/smap_pages/Add_location.jsx";
+
+
+
 function App() {
   // Block desktop: allow only widths <= 768px
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -112,7 +120,7 @@ function App() {
           element={<AlreadyRegisteredPage />}
         />{" "}
         <Route
-          path="/useronboarding/select-region"marketplace
+          path="/useronboarding/select-region" marketplace
           element={<SelectRegionPage />}
         />
         <Route
@@ -179,7 +187,7 @@ function App() {
           <Route path="/managenetwork" element={<ManageNetworkScreen />} />
           <Route path="/networkcommunity" element={<NetworkCommunityPage />} />
           <Route path="/networkadmin/:id" element={<MobileNetworkAdmin />} />
-          {}
+          { }
           <Route
             path="/communitypage/:id/editnetwork"
             element={<EditNetworkPage />}
@@ -219,12 +227,15 @@ function App() {
           </Route>
         </Route>
         {/* Smarket */}
-        <Route path="/smarket" element={<Smarket/>} />
-        <Route path="/smarket/item-info" element={<Item_Info/>} />
-        <Route path="smarket/selling_now" element={<Selling_now/>} />
+        <Route path="/smarket" element={<Smarket />} />
+        <Route path="/smarket/item-info" element={<Item_Info />} />
+        <Route path="smarket/selling_now" element={<Selling_now />} />
 
         {/* Smaps or Events */}
-        <Route path="/events" element={<Smaps/>} />
+        <Route path="/events" element={<Smaps />} />
+        <Route path="/events/all_events" element={<All_events />} />
+        <Route path="/events/add_events" element={<Add_Events />} />
+        <Route path="/events/add_location" element={<Add_location />} />
         {/* Fallback */}
         {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>
