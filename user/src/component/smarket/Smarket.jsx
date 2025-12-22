@@ -69,7 +69,7 @@ export default function Smarket(){
                 {renderTab()}
             </div>
             
-            <div className="fixed bottom-0 left-0 right-0 px-2 py-1 z-10">
+            {/* <div className="fixed bottom-0 left-0 right-0 px-2 py-1 z-10">
                 <div className="bg-black border border-brand-charcoal rounded-[15px] px-4 py-2 flex justify-between items-center">
                     <button
                     className="bg-black text-brand-off-white text-[12px] font-medium px-4 py-1 rounded-[10px]"
@@ -99,7 +99,7 @@ export default function Smarket(){
                     Profile
                     </button>
                 </div>
-            </div>
+            </div> */}
 
         </div>
     );

@@ -10,7 +10,7 @@ export default function All_listing(){
     const ListedForSale = async () => {
         try
         {
-            const listedItems = await api.get('/marketplace/', {});
+            const listedItems = await api.get('/marketplace/live', {});
             setListedItems(listedItems.data);
             console.log("Listings fetched:", listedItems.data);
         }
@@ -31,7 +31,8 @@ export default function All_listing(){
                 </h1>
             ) : (
                 listedItems.map((listing) => (
-            <div className="border-2 border-gray-700 rounded-2xl p-5 hover:bg-gray-900 w-full h-min">
+            <div key={listing.listing_id}
+            className="border-2 border-gray-700 rounded-2xl p-5 hover:bg-gray-900 w-full h-min">
                 <div className="flex flex-col justify-start font-medium">
                     <img 
                         src={listing.product_image?.[0]} 
@@ -39,7 +40,7 @@ export default function All_listing(){
                         className="rounded-2xl"
                         onClick={() => navigate(`/smarket/${listing.listing_id}`)}/>
                     <h1 className="text-xl mt-2">
-                        {listing.name}
+                        {listing.product_name}
                     </h1>
                     
                     <div className="flex grid-cols-2 justify-between">

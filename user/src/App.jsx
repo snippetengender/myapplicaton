@@ -112,7 +112,7 @@ function App() {
           element={<AlreadyRegisteredPage />}
         />{" "}
         <Route
-          path="/useronboarding/select-region"marketplace
+          path="/useronboarding/select-region"
           element={<SelectRegionPage />}
         />
         <Route

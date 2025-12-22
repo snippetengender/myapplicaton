@@ -40,7 +40,7 @@ export default function  Your_listing(){
                 src={listing.product_image?.[0]}
                 alt={listing.product_name}
                 className="rounded-2xl cursor-pointer"
-                onClick={() => navigate(`/smarket/${listing.listing_id}`)}
+                onClick={() => navigate(`/smarket/${listing.listing_id}`, {state: { from: "your_listing" }})}
             />
 
             <h1 className="text-xl mt-2">
@@ -52,17 +52,18 @@ export default function  Your_listing(){
                 Rs. {listing.price}
                 </h1>
 
-                <h1
+                <button
                 className="cursor-pointer text-sm"
                 onClick={() => alert("share")}
                 >
                 share
-                </h1>
+                </button>
             </div>
 
             <h1 className="text-[10px] text-gray-400">
                 {listing.show}
             </h1>
+            <div><h1 className="text-[10px]"> {listing.live}</h1></div>
             </div>
             <div><h1 className="text-[10px]"> {listing.posted_at}</h1></div>
         </div>

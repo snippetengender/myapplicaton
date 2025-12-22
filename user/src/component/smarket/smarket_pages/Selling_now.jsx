@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ImageEditor from './components/ImageEditor';
 import api from '../../../providers/api';
-import Your_listing from './your_listing';
+import { LISTING_STATUS } from "./constants/listingStatus";
 
 export default function ProductListingForm() {
   const user_id = localStorage.getItem('user_id');
@@ -46,7 +46,7 @@ export default function ProductListingForm() {
     category: formData.category,
     phone_number: formData.phoneNumber,
     owner_id: user_id,
-    live: true,
+    live: LISTING_STATUS.LISTED,
     product_image: uploadedImages
   };
 

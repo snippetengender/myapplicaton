@@ -1,12 +1,16 @@
-import { useNavigate, useParams } from "react-router-dom" ;
+import { useNavigate, useParams, useLocation } from "react-router-dom" ;
 // import bucketImage from './Assets/stanley_bucket.webp';
 import ConnectButton  from "./components/Share_button";
 import api from "../../../providers/api";
 import { useState, useEffect } from "react";
+import Completed_listing from "./components/completed_button";
+import { use } from "react";
 
 
 export default function Item_Info(){
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from || "all_listing";
     const [listing, setListing] = useState({});
     const { listingId } = useParams();
 
@@ -30,6 +34,8 @@ export default function Item_Info(){
             <div className="flex justify-between m-4">
                 <button className="border-gray-700 border-2 px-6 rounded-xl" onClick={() => navigate('/smarket')}>Back</button>
                 <button className="border-gray-700 border-2 px-6 rounded-xl">Share</button>
+                {/* {from === "your_listing" && (<Completed_listing listingId={listingId} />)} */}
+
             </div>
             {/* Body */}
             <div className="m-4">
@@ -64,9 +70,9 @@ export default function Item_Info(){
                     <h1>{listing.posted_at}</h1>
                     </div>
                 </div>
-                <ConnectButton 
-                        className="bg-white text-black text-2xl font-normal mt-2 px-2 rounded-md w-full"
-                        phoneNumber={listing.phone_number} productName={listing.product_name}/>
+                {from === "all_listing" ?
+                 <ConnectButton phoneNumber={listing.phone_number} productName={listing.product_name}/> : 
+                 <Completed_listing listingId={listingId} status = {listing.live}/>}
                 <br/>
                 <h1 className="text-2xl font-bold my-8">Similar Products</h1>
                 <div className="grid grid-cols-2 gap-4">
