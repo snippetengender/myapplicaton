@@ -1,12 +1,18 @@
 import { ArrowLeft, Upload, X } from 'lucide-react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ImageEditor from './components/ImageEditor';
 import api from '../../../providers/api';
 import { LISTING_STATUS } from "./constants/listingStatus";
 
 export default function ProductListingForm() {
+  
   const user_id = localStorage.getItem('user_id');
+  
+  const location = useLocation();
+  const isEditMode = location.state?.mode === "edit";
+  const editListing = location.state?.listing;
+  
   const [formData, setFormData] = useState({
     productName: '',
     description: '',
@@ -16,8 +22,24 @@ export default function ProductListingForm() {
     agreedToTerms: false
   });
 
+  const [uploadedImages, setUploadedImages] = useState([])
   const [showEditor, setShowEditor] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState([]);
+  
+  useEffect(() => {
+    if (isEditMode && editListing) {
+      setFormData({
+        productName: editListing.product_name || '',
+        description: editListing.description || '',
+        price: editListing.price || '',
+        category: editListing.category || '',
+        phoneNumber: editListing.phone_number || '',
+        agreedToTerms: true
+      });
+
+      setUploadedImages(editListing.product_image || []);
+    }
+  }, [isEditMode, editListing]);
+
 
   const handleSaveImage = (imageUrl) => {
     setUploadedImages([...uploadedImages, imageUrl]);
@@ -34,8 +56,20 @@ export default function ProductListingForm() {
   } catch (error) {
     console.error('Error creating listing:', error);
     throw error;
-  }
-};
+  }};
+
+  const updateListing = async (listingId, listingData) => {
+    try {
+      const response = await api.patch(
+        `/marketplace/${listingId}`,
+        listingData
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error updating listing:', error);
+      throw error;
+    }};
+
 
 
   const handleSubmit = async () => {
@@ -45,18 +79,18 @@ export default function ProductListingForm() {
     price: formData.price,
     category: formData.category,
     phone_number: formData.phoneNumber,
-    owner_id: user_id,
-    live: LISTING_STATUS.LISTED,
     product_image: uploadedImages
   };
 
   console.log('Sending payload:', payload);
 
   try {
-    const response = await createListing(payload);
+    if (isEditMode) {
+       await updateListing(editListing.listing_id ,payload);
+    } else {
+      await createListing({...payload, owner_id: user_id, live: LISTING_STATUS.LISTED});
+    }
 
-    console.log('Server response:', response);
-    localStorage.setItem('college_name', response.college_name);
     navigate('/smarket', { state: { activeTab: 'your_listing' } });
 
   } catch (error) {
@@ -76,7 +110,7 @@ export default function ProductListingForm() {
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl font-semibold mb-8">List your Product</h1>
+      <h1 className="text-2xl font-semibold mb-8">{isEditMode ? "Edit Your Product Listing" : "List Your Product"}</h1>
 
       {/* Form Fields */}
       <div className="space-y-6">
@@ -192,9 +226,8 @@ export default function ProductListingForm() {
           onClick={() => {
             handleSubmit();
           }}
-          className="w-full bg-white text-black font-medium py-3 rounded-lg hover:bg-gray-100 transition-colors"
-        >
-          List Product
+          className="w-full bg-white text-black font-medium py-3 rounded-lg hover:bg-gray-100 transition-colors">
+          {isEditMode ? "Update Product" : "List Product"}
         </button>
       </div>
 

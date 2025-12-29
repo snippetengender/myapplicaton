@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "../../../providers/api";
 
 export default function  Your_listing(){
@@ -7,20 +7,44 @@ export default function  Your_listing(){
     const user_id = localStorage.getItem("user_id", "");
     const navigate = useNavigate();
     const [userListings, setUserListings] = useState([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const loaderRef = useRef(null);
 
-    const fetchUserListing = async () => {
+    const fetchUserListing = async (page = 1, limit = 10) => {
         try {
-            const response = await api.get(`/marketplace/${user_id}/listings`, {});
-            setUserListings(response.data);
-            console.log("Listings fetched:", response.data);
+            const response = await api.get(`/marketplace/${user_id}/listings`, {params: {page, limit}});
+            return response.data
         } catch (error) {
             console.error('Error fetching listings:', error);
         }
     };
 
+    const loadMoreListings = async (currentPage) => {
+        if (!hasMore) return;
+        console.log("page value is:", currentPage);
+        const res = await fetchUserListing(currentPage, 10);
+        setUserListings(prev => {
+            const updated = [...prev, ...res.data];
+            if (updated.length >= res.pagination.total) {
+            setHasMore(false);
+            }
+            return updated;
+        });
+        setPage(p => p + 1);
+        };
+
     useEffect(() => {
-        fetchUserListing();
-    }, []);
+        if (!hasMore) return;
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+            observer.disconnect();
+            loadMoreListings(page);
+            }
+        });
+        if (loaderRef.current) observer.observe(loaderRef.current);
+        return () => observer.disconnect();
+        }, [page, hasMore]);
 
     return (
     <div className="m-4 grid grid-cols-2 gap-4">
@@ -68,6 +92,7 @@ export default function  Your_listing(){
             <div><h1 className="text-[10px]"> {listing.posted_at}</h1></div>
         </div>
         )))}
+        <div ref={loaderRef} className="col-span-2 h-10" />
     </div>
     );
 }
