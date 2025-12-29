@@ -19,7 +19,8 @@ export const getComments = createAsyncThunk(
       `mixes/${mixId}/comments?page=${page}&limit=${limit}`
     );
     const { data, pagination } = response.data;
-
+    
+    console.log(data)
     return {
       data,
       page: pagination.page,
@@ -27,6 +28,7 @@ export const getComments = createAsyncThunk(
       limit: pagination.limit,
     };
   }
+
 );
 
 export const createComment = createAsyncThunk(
@@ -61,6 +63,31 @@ export const createComment = createAsyncThunk(
 
       dispatch(getComments({ mixId, page: 1 }));
       return mixId;
+    } catch (err) {
+      if (!err.response) throw err;
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const updateCommentReaction = createAsyncThunk(
+  "comments/updateCommentReaction",
+  async (
+    { commentId, reaction }, // reaction = "like" | "dislike" | "neutral" | null
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.patch(
+        `/comments/${commentId}/reaction`,
+        { reaction }
+      );
+      const data=response.data;
+      console.log(data)
+      return {
+        commentId,
+        reaction: response.data.reaction,
+        reactionCounts: response.data.reaction_counts,
+      };
     } catch (err) {
       if (!err.response) throw err;
       return rejectWithValue(err.response.data);
@@ -162,7 +189,23 @@ const commentsSlice = createSlice({
       .addCase(deleteComment.rejected, (state, action) => {
         state.deleteStatus = "failed";
         state.error = action.payload?.detail || action.error.message;
-      });
+      })
+          .addCase(updateCommentReaction.fulfilled, (state, action) => {
+      const { commentId, reactionCounts, reaction } = action.payload;
+
+      const comment = state.comments.find(
+        (c) => c.id === commentId
+      );
+
+      if (comment) {
+        comment.likes = reactionCounts.like;
+        comment.dislikes = reactionCounts.dislike;
+        comment.neutral = reactionCounts.neutral;
+        comment.user_reaction = reaction;
+      }
+    })
+
+      
   },
 });
 

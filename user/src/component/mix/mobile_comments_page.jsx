@@ -927,6 +927,7 @@ import addImages from "../assets/gallery-add.svg"
 import Lottie from "lottie-react";
 import loadingAnimation from "../assets/1 second Loop.json";
 import trashIcon from "../assets/trash.svg";
+import { updateCommentReaction } from "../../features/mixes/commentSlice";
 
 const formatTimeAgo = (timestampMs) => {
   if (!timestampMs) return "";
@@ -1119,7 +1120,7 @@ const NewCommentInput = ({
   );
 };
 
-const Comment = (props) => {
+const Comment = ({commment,...props}) => {
   const {
     postOwnerId=null,
     comment,
@@ -1132,18 +1133,22 @@ const Comment = (props) => {
   } = props;
   const {
     //here the user_id is the id of the commentor
+    id,
     user_id,
     user_details,
     created_at,
     comment: content,
     image,
     replies = [],
-    likes_count,
+    likes,
+    dislikes,
+    neutral,
+    user_reaction=null,
     comment_type,
   } = comment;
   
 
-  const [currentVotes, setCurrentVotes] = useState(likes_count);
+  //const [currentVotes, setCurrentVotes] = useState(likes_count);
   const postStatus = useSelector((state) => state.comments.postStatus);
 
   const canReply = indentLevel < 1;
@@ -1177,6 +1182,15 @@ const Comment = (props) => {
     );
     onToggleReply(null);
   };
+  const handleReaction = (reactionType) => {
+  dispatch(
+    updateCommentReaction({
+      commentId: id,
+      reaction: user_reaction === reactionType ? null : reactionType,
+    })
+  );
+};
+
 
   if (!hasValidUserDetails) {
     return (
@@ -1238,6 +1252,7 @@ const Comment = (props) => {
               <div className="w-full">
                 {replies.map((reply) => (
                   <Comment
+                    
                     key={reply.id}
                     {...props}
                     comment={reply}
@@ -1353,7 +1368,37 @@ const Comment = (props) => {
               >
                 Reply
               </span>
+              
             )}
+            <div className="flex gap-2 ml-auto">
+              <div className="flex items-center gap-3 h-6">
+
+  {/* LIKE */}
+  <div
+    className={`flex items-center gap-1 cursor-pointer ${
+      user_reaction === "like" ? "text-pink-500" : ""
+    }`}
+    onClick={() => handleReaction("like")}
+  >
+    <FiChevronUp size={22} />
+    {likes > 0 && <span className="text-xs">{likes}</span>}
+  </div>
+
+  {/* DISLIKE */}
+  <div
+    className={`flex items-center gap-1 cursor-pointer ${
+      user_reaction === "dislike" ? "text-pink-500" : ""
+    }`}
+    onClick={() => handleReaction("dislike")}
+  >
+    {dislikes > 0 && <span className="text-xs">{dislikes}</span>}
+    <FiChevronDown size={22} />
+  </div>
+
+</div>
+
+            </div>
+
           </div>
           {isReplyBoxOpen && (
             <div className="mt-2">
@@ -1537,8 +1582,11 @@ const CommentsPage = () => {
         {/* Rendered Comments */}
         {nestedComments.map((comment) => (
           <Comment
+
+            
             postOwnerId={selectedMix?.user_details?.firebase_id ?? null}
             key={comment.id}
+            
             comment={comment}
             dispatch={dispatch}
             mixId={mixId}
