@@ -77,7 +77,7 @@ import Image_Edits from "./component/mix/image_edit.jsx"
 import All_events from "./component/smaps/smap_pages/All_events.jsx";
 import Add_Events from "./component/smaps/smap_pages/Add_Events.jsx";
 import Add_location from "./component/smaps/smap_pages/Add_location.jsx";
-
+import Event_Info from "./component/smaps/smap_pages/Event_Info.jsx";
 
 
 function App() {
@@ -236,6 +236,8 @@ function App() {
         <Route path="/events/all_events" element={<All_events />} />
         <Route path="/events/add_events" element={<Add_Events />} />
         <Route path="/events/add_location" element={<Add_location />} />
+        <Route path="/events/event-info"  element={<Event_Info/>} />
+
         {/* Fallback */}
         {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>

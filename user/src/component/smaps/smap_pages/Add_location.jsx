@@ -25,7 +25,7 @@ export default function Add_location() {
         // but state is updated on moveend so it should be fine.
         const currentCenter = mapRef.current ? mapRef.current.getCenter() : center;
 
-        sessionStorage.setItem('temp_location', JSON.stringify({
+        localStorage.setItem('temp_location', JSON.stringify({
             lat: currentCenter.lat,
             lng: currentCenter.lng
         }));

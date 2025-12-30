@@ -2,12 +2,13 @@ import { ArrowLeft, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
+
 export default function All_events() {
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
 
     useEffect(() => {
-        const storedEvents = sessionStorage.getItem('user_events');
+        const storedEvents = localStorage.getItem('user_events');
         if (storedEvents) {
             setEvents(JSON.parse(storedEvents));
         }
@@ -34,16 +35,36 @@ export default function All_events() {
                     <div className="flex flex-col gap-4">
                         {/* Events List */}
                         {events.map((event) => (
-                            <div key={event.id} className="border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-center group hover:border-gray-700 transition-colors">
-                                <div className="flex flex-col gap-1 flex-grow mr-4">
-                                    <h2 className="text-white font-medium truncate pr-2">{event.name}</h2>
-                                    <p className="text-sm text-gray-400 truncate pr-2">{event.college}</p>
-                                    <p className="text-xs text-gray-500">{event.time}</p>
+                            <button onclick={() => navigate("/events/event-info")}>
+                                <div key={event.id} className="border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-center group hover:border-gray-700 transition-colors">
+                                    <div className="flex flex-col gap-1 flex-grow mr-4">
+                                        <h2 className="text-white font-medium truncate pr-2">{event.name}</h2>
+                                        <p className="text-sm text-gray-400 truncate pr-2">{event.college}</p>
+                                        <p className="text-xs text-gray-500">
+                                            {(() => {
+                                                if (!event.time) return '';
+                                                try {
+                                                    const [datePart, timePart] = event.time.split('T');
+                                                    if (!datePart || !timePart) return event.time;
+                                                    const [year, month, day] = datePart.split('-');
+                                                    const [hour, minute] = timePart.split(':');
+                                                    return (
+                                                        <>
+                                                            Date: {day}-{month}-{year}
+                                                            <br />
+                                                            Time: {hour}:{minute}
+                                                        </>
+                                                    )
+                                                } catch (e) { return event.time; }
+                                            })()}
+                                        </p>
+                                    </div>
+                                    <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-gray-800 bg-gray-900">
+                                        <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
+                                    </div>
                                 </div>
-                                <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-gray-800 bg-gray-900">
-                                    <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
-                                </div>
-                            </div>
+                            </button>
+                            
                         ))}
 
                         {events.length === 0 && (

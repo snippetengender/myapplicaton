@@ -14,14 +14,14 @@ export default function Add_events() {
 
     useEffect(() => {
         // Load temp data if exists (resuming draft)
-        const savedData = sessionStorage.getItem('temp_event_data');
+        const savedData = localStorage.getItem('temp_event_data');
         if (savedData) {
             const parsedData = JSON.parse(savedData);
             setEventData(parsedData);
         }
 
         // Check if we have a location returned from Add_location
-        const savedLocation = sessionStorage.getItem('temp_location');
+        const savedLocation = localStorage.getItem('temp_location');
         if (savedLocation) {
             const { lat, lng } = JSON.parse(savedLocation);
             setEventData(prev => ({ ...prev, location: { lat, lng } }));
@@ -42,14 +42,14 @@ export default function Add_events() {
 
     const handleAddLocation = () => {
         // Save current state before navigating away
-        sessionStorage.setItem('temp_event_data', JSON.stringify(eventData));
+        localStorage.setItem('temp_event_data', JSON.stringify(eventData));
         navigate('/events/add_location');
     };
 
     const handleSave = () => {
         if (!eventData.name.trim()) return;
 
-        const storedEvents = JSON.parse(sessionStorage.getItem('user_events') || '[]');
+        const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
         const newEvent = {
             id: Date.now(),
             name: eventData.name,
@@ -62,11 +62,11 @@ export default function Add_events() {
         };
 
         const updatedEvents = [newEvent, ...storedEvents];
-        sessionStorage.setItem('user_events', JSON.stringify(updatedEvents));
+        localStorage.setItem('user_events', JSON.stringify(updatedEvents));
 
         // Clear temp data
-        sessionStorage.removeItem('temp_event_data');
-        sessionStorage.removeItem('temp_location');
+        localStorage.removeItem('temp_event_data');
+        localStorage.removeItem('temp_location');
 
         navigate('/events/all_events');
     };
@@ -78,8 +78,8 @@ export default function Add_events() {
                 <button
                     className="text-white hover:text-gray-300 transition-colors"
                     onClick={() => {
-                        sessionStorage.removeItem('temp_event_data');
-                        sessionStorage.removeItem('temp_location');
+                        localStorage.removeItem('temp_event_data');
+                        localStorage.removeItem('temp_location');
                         navigate("/events/all_events");
                     }}
                 >
@@ -137,9 +137,8 @@ export default function Add_events() {
                     <div className="space-y-2">
                         <label className="text-sm text-gray-400 ml-1">Time</label>
                         <input
-                            type="text"
-                            placeholder="e.g. 10:00 AM"
-                            className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all"
+                            type="datetime-local"
+                            className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all [color-scheme:dark]"
                             value={eventData.time}
                             onChange={(e) => setEventData({ ...eventData, time: e.target.value })}
                         />
@@ -149,8 +148,8 @@ export default function Add_events() {
                     <button
                         onClick={handleAddLocation}
                         className={`w-full py-3 px-4 border rounded-xl flex items-center justify-start gap-3 transition-all group ${eventData.location
-                                ? 'border-green-800 bg-green-900/20 text-green-400'
-                                : 'border-gray-800 text-gray-400 hover:text-white hover:bg-gray-900/50 hover:border-gray-600'
+                            ? 'border-green-800 bg-green-900/20 text-green-400'
+                            : 'border-gray-800 text-gray-400 hover:text-white hover:bg-gray-900/50 hover:border-gray-600'
                             }`}
                     >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${eventData.location ? 'bg-green-900 text-green-400' : 'bg-gray-900 group-hover:bg-gray-800'}`}>
