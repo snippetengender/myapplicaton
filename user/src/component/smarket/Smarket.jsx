@@ -101,7 +101,7 @@ export default function Smarket(){
                         Profile
                     </button> */}
                 </div>
-            </div>
+            </div> 
 
         </div>
     );
