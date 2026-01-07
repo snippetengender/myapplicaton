@@ -35,12 +35,15 @@ export default function All_events() {
                     <div className="flex flex-col gap-4">
                         {/* Events List */}
                         {events.map((event) => (
-                            <button onclick={() => navigate("/events/event-info")}>
-                                <div key={event.id} className="border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-center group hover:border-gray-700 transition-colors">
+                            <div key={event.id} className="w-full">
+                                <div
+                                    onClick={() => navigate("/events/event-info", { state: { event } })}
+                                    className="cursor-pointer border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-center group hover:border-gray-700 transition-colors"
+                                >
                                     <div className="flex flex-col gap-1 flex-grow mr-4">
                                         <h2 className="text-white font-medium truncate pr-2">{event.name}</h2>
                                         <p className="text-sm text-gray-400 truncate pr-2">{event.college}</p>
-                                        <p className="text-xs text-gray-500">
+                                        <div className="text-xs text-gray-500 mb-2">
                                             {(() => {
                                                 if (!event.time) return '';
                                                 try {
@@ -50,21 +53,29 @@ export default function All_events() {
                                                     const [hour, minute] = timePart.split(':');
                                                     return (
                                                         <>
-                                                            Date: {day}-{month}-{year}
-                                                            <br />
-                                                            Time: {hour}:{minute}
+                                                            <span>Date: {day}-{month}-{year}</span><br />
+                                                            <span>Time: {hour}:{minute}</span>
                                                         </>
                                                     )
                                                 } catch (e) { return event.time; }
                                             })()}
-                                        </p>
+                                        </div>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate("/events/event-info", { state: { event } });
+                                            }}
+                                            className="bg-white text-black text-xs font-bold py-2 px-4 rounded-lg w-fit hover:bg-gray-200 transition-colors"
+                                        >
+                                            View Event
+                                        </button>
                                     </div>
                                     <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-gray-800 bg-gray-900">
                                         <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
                                     </div>
                                 </div>
-                            </button>
-                            
+                            </div>
+
                         ))}
 
                         {events.length === 0 && (

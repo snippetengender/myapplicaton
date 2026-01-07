@@ -1,16 +1,35 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
-import SearchIcon from "../snippetIcon/search-status.svg";
 import HamburgerIcon from "../snippetIcon/menu.svg";
 import LogoIcon from "../snippetIcon/Vector.svg";
 
 import Events_list from "../smaps/components/Events_list";
 import Events_map from "../smaps/components/Events_map";
+import FilterModal from "../smaps/components/FilterModal";
 
 export default function EventsMapPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(false); // false = Map, true = List
+  const location = useLocation();
+
+  // Initialize activeTab directly from location.state to prevent flicker
+  const [activeTab, setActiveTab] = useState(() => {
+    return location.state?.activeTab !== undefined ? location.state.activeTab : false;
+  });
+
+  // Filter state
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  // Cleanup: Clear navigation state on unmount to ensure fresh start on next visit
+  useEffect(() => {
+    return () => {
+      // This ensures that when user navigates away and comes back, state is fresh
+      window.history.replaceState({}, document.title);
+    };
+  }, []);
 
   return (
     <div className="bg-black min-h-screen text-white flex flex-col relative">
@@ -32,17 +51,52 @@ export default function EventsMapPage() {
             Add Event
           </button>
 
-          {/* Search/Filter (Placeholder) */}
-          <button className="bg-black border-2 border-gray-700 text-white rounded-[25px] px-6 py-1 text-sm hover:bg-gray-900 transition">
+          {/* Filter Button */}
+          <button
+            onClick={() => setShowFilterModal(true)}
+            className={`bg-black border-2 text-white rounded-[25px] px-6 py-1 text-sm hover:bg-gray-900 transition relative ${selectedState || selectedDistrict || selectedCategory ? 'border-pink-600' : 'border-gray-700'
+              }`}
+          >
             Filter
+            {(selectedState || selectedDistrict || selectedCategory) && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-pink-600 rounded-full border-2 border-black"></span>
+            )}
           </button>
         </div>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 relative w-full overflow-hidden">
-        {activeTab ? <Events_list /> : <Events_map />}
+        {activeTab ? (
+          <Events_list
+            activeTab={activeTab}
+            selectedState={selectedState}
+            selectedDistrict={selectedDistrict}
+            selectedCategory={selectedCategory}
+          />
+        ) : (
+          <Events_map
+            activeTab={activeTab}
+            selectedState={selectedState}
+            selectedDistrict={selectedDistrict}
+            selectedCategory={selectedCategory}
+          />
+        )}
       </div>
+
+      {/* Filter Modal */}
+      <FilterModal
+        isOpen={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        onApplyFilter={(state, district, category) => {
+          setSelectedState(state);
+          setSelectedDistrict(district);
+          setSelectedCategory(category);
+        }}
+        currentState={selectedState}
+        currentDistrict={selectedDistrict}
+        currentCategory={selectedCategory}
+      />
 
       {/* Floating Toggle Button */}
       <div className="fixed bottom-[80px] left-1/2 transform -translate-x-1/2 z-[1002]">

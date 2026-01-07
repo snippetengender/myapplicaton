@@ -1093,7 +1093,7 @@ const NewCommentInput = ({
             </>
           )}
         </div>
-        
+
         {/* Posting options */}
         <div className="flex gap-[15px] items-center">
           <button
@@ -1104,11 +1104,10 @@ const NewCommentInput = ({
           </button>
 
           <button
-            className={`text-sm font-medium px-3 pt-1 pb-[6px] rounded-[10px] leading-[17px] ${
-              (!text.trim() && !imageFile) || isSubmitting
+            className={`text-sm font-medium px-3 pt-1 pb-[6px] rounded-[10px] leading-[17px] ${(!text.trim() && !imageFile) || isSubmitting
                 ? "text-brand-off-white cursor-not-allowed border border-brand-almost-black"
                 : "bg-brand-off-white text-brand-almost-black"
-            }`}
+              }`}
             disabled={(!text.trim() && !imageFile) || isSubmitting}
             onClick={handleSubmit}
           >
@@ -1120,9 +1119,9 @@ const NewCommentInput = ({
   );
 };
 
-const Comment = ({commment,...props}) => {
+const Comment = ({ commment, ...props }) => {
   const {
-    postOwnerId=null,
+    postOwnerId = null,
     comment,
     indentLevel = 0,
     activeReplyId,
@@ -1143,10 +1142,10 @@ const Comment = ({commment,...props}) => {
     likes,
     dislikes,
     neutral,
-    user_reaction=null,
+    user_reaction = null,
     comment_type,
   } = comment;
-  
+
 
   //const [currentVotes, setCurrentVotes] = useState(likes_count);
   const postStatus = useSelector((state) => state.comments.postStatus);
@@ -1156,13 +1155,13 @@ const Comment = ({commment,...props}) => {
   const isLowkeyComment = comment_type === "lowkey";
 
   const hasValidUserDetails =
-  user_details && Object.keys(user_details).length > 0;
+    user_details && Object.keys(user_details).length > 0;
   //check whether the commentor is the user who is viewing other posts
   const commentAuthorId = user_id?.reference_id;
   //check whether the loggedInUserId and the post owner id is the same 
-  const isPostOwner =loggedInUserId && postOwnerId && loggedInUserId === postOwnerId;
+  const isPostOwner = loggedInUserId && postOwnerId && loggedInUserId === postOwnerId;
   const isCommentAuthor =
-  loggedInUserId && commentAuthorId && loggedInUserId === commentAuthorId;
+    loggedInUserId && commentAuthorId && loggedInUserId === commentAuthorId;
 
   const canDeleteComment = isPostOwner || isCommentAuthor;
 
@@ -1183,13 +1182,13 @@ const Comment = ({commment,...props}) => {
     onToggleReply(null);
   };
   const handleReaction = (reactionType) => {
-  dispatch(
-    updateCommentReaction({
-      commentId: id,
-      reaction: user_reaction === reactionType ? null : reactionType,
-    })
-  );
-};
+    dispatch(
+      updateCommentReaction({
+        commentId: id,
+        reaction: user_reaction === reactionType ? null : reactionType,
+      })
+    );
+  };
 
 
   if (!hasValidUserDetails) {
@@ -1216,7 +1215,7 @@ const Comment = ({commment,...props}) => {
                 <img src={reportFlag} alt="Report comment" className="ml-2 w-3 h-3" />
               </button>
             </div>
-            <div className="flex-grow min-w-0 mt-[10px]"> 
+            <div className="flex-grow min-w-0 mt-[10px]">
               {image && (
                 <img
                   src={image}
@@ -1252,7 +1251,7 @@ const Comment = ({commment,...props}) => {
               <div className="w-full">
                 {replies.map((reply) => (
                   <Comment
-                    
+
                     key={reply.id}
                     {...props}
                     comment={reply}
@@ -1281,17 +1280,16 @@ const Comment = ({commment,...props}) => {
     }
   };
 
-  const handleDelete = () =>{
-    
+  const handleDelete = () => {
+
     if (window.confirm("Are you sure you want to delete this mix?")) {
-      dispatch(deleteComment({commentId:comment.id}));
+      dispatch(deleteComment({ commentId: comment.id }));
     }
   }
   return (
     <div
-      className={`relative w-full font-inter ${
-        indentLevel > 0 ? "border-l border-brand-almost-black pl-2" : ""
-      }`}
+      className={`relative w-full font-inter ${indentLevel > 0 ? "border-l border-brand-almost-black pl-2" : ""
+        }`}
       style={{ marginLeft: `${indentLevel > 0 ? (indentLevel - 1) * 14 + 2 : 0}px` }}
     >
       {/* {indentLevel > 0 && (
@@ -1303,7 +1301,7 @@ const Comment = ({commment,...props}) => {
       <div className="flex-col items-start mt-2">
         {/* Header */}
         <div className=" flex text-[10px]">
-          
+
           {comment_type === "lowkey" ? (
             <img
               src={user_details.profile_image}
@@ -1318,7 +1316,7 @@ const Comment = ({commment,...props}) => {
               className="flex-shrink-0 w-6 h-6 mr-[5px] rounded-full object-cover"
             />
           )}
-          
+
           <div className="flex items-center gap-1 flex-wrap text-brand-dark-gray mr-auto">
             <span
               className="font-bold text-brand-off-white"
@@ -1368,34 +1366,32 @@ const Comment = ({commment,...props}) => {
               >
                 Reply
               </span>
-              
+
             )}
             <div className="flex gap-2 ml-auto">
               <div className="flex items-center gap-3 h-6">
 
-  {/* LIKE */}
-  <div
-    className={`flex items-center gap-1 cursor-pointer ${
-      user_reaction === "like" ? "text-pink-500" : ""
-    }`}
-    onClick={() => handleReaction("like")}
-  >
-    <FiChevronUp size={22} />
-    {likes > 0 && <span className="text-xs">{likes}</span>}
-  </div>
+                {/* LIKE */}
+                <div
+                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "like" ? "text-pink-500" : ""
+                    }`}
+                  onClick={() => handleReaction("like")}
+                >
+                  <FiChevronUp size={22} />
+                  {likes > 0 && <span className="text-xs">{likes}</span>}
+                </div>
 
-  {/* DISLIKE */}
-  <div
-    className={`flex items-center gap-1 cursor-pointer ${
-      user_reaction === "dislike" ? "text-pink-500" : ""
-    }`}
-    onClick={() => handleReaction("dislike")}
-  >
-    {dislikes > 0 && <span className="text-xs">{dislikes}</span>}
-    <FiChevronDown size={22} />
-  </div>
+                {/* DISLIKE */}
+                <div
+                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "dislike" ? "text-pink-500" : ""
+                    }`}
+                  onClick={() => handleReaction("dislike")}
+                >
+                  {dislikes > 0 && <span className="text-xs">{dislikes}</span>}
+                  <FiChevronDown size={22} />
+                </div>
 
-</div>
+              </div>
 
             </div>
 
@@ -1439,7 +1435,7 @@ const CommentsPage = () => {
   const [activeReplyId, setActiveReplyId] = useState(null);
 
   const { selectedMix, status: mixStatus } = useSelector(
-    
+
     (state) => state.mixes
   );
 
@@ -1451,7 +1447,7 @@ const CommentsPage = () => {
     loadingInitial,
     loadingMore,
   } = useSelector((state) => state.comments);
-  
+
   const loggedInUserId = useSelector((state) => state.user.userId);
 
   const isSubmitting = useSelector(
@@ -1496,8 +1492,8 @@ const CommentsPage = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-6 bg-black min-h-screen">
-        <Lottie 
-          animationData={loadingAnimation} 
+        <Lottie
+          animationData={loadingAnimation}
           loop={true}
           style={{ width: 120, height: 120 }} // Adjust size as needed
         />
@@ -1544,7 +1540,7 @@ const CommentsPage = () => {
                 {selectedMix.network_id.name}
               </h1>
               <p className="text-[8px] text-brand-off-white font-bold">
-                {selectedMix.network_members_count} 
+                {selectedMix.network_members_count}
                 <span className="text-brand-dark-gray ml-1 font-normal">members</span>
               </p>
 
@@ -1557,7 +1553,7 @@ const CommentsPage = () => {
       <div className="">
         <PostCard post={selectedMix} isPartial={true} isCommentPage={true} />
       </div>
-      
+
       <div className="px-[16px] py-[10px] font-bold text-[16px] border-b border-brand-almost-black">
         <h1>thoughts</h1>
       </div>
@@ -1583,10 +1579,10 @@ const CommentsPage = () => {
         {nestedComments.map((comment) => (
           <Comment
 
-            
+
             postOwnerId={selectedMix?.user_details?.firebase_id ?? null}
             key={comment.id}
-            
+
             comment={comment}
             dispatch={dispatch}
             mixId={mixId}
@@ -1596,13 +1592,13 @@ const CommentsPage = () => {
             loggedInUserId={loggedInUserId}
           />
         ))}
-        
+
 
         {/* Infinite Scroll Sentinel and Loader (replaced skeleton) */}
         {loadingInitial && (
           <div className="flex justify-center items-center py-6 bg-black min-h-screen">
-            <Lottie 
-              animationData={loadingAnimation} 
+            <Lottie
+              animationData={loadingAnimation}
               loop={true}
               style={{ width: 120, height: 120 }} // Adjust size as needed
             />

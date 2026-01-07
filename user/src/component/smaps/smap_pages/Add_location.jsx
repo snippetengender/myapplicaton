@@ -47,30 +47,25 @@ export default function Add_location() {
 
             {/* Map */}
             <MapContainer
-                center={[19.1334, 72.9133]}
-                zoom={13}
+                center={[11.027456478466824, 77.02760607004167]} //CIT College Location 
+                zoom={5}
+                minZoom={5}
+                maxZoom={18}
                 style={{ height: "100%", width: "100%" }}
                 ref={mapRef}
                 zoomControl={false}
             >
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; OpenStreetMap contributors'
                 />
                 <MapEvents />
             </MapContainer>
 
             {/* Center Marker Overlay */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[900] pointer-events-none flex flex-col items-center justify-center pb-8">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] pointer-events-none flex flex-col items-center justify-center">
                 {/* Pin Icon */}
-                <div className="relative">
-                    <div className="w-4 h-4 rounded-full border-2 border-white bg-red-500 shadow-lg shadow-black/30 z-10 relative"></div>
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[2px] h-4 bg-black/50"></div>
-                </div>
-                {/* Optional: explicit text label if desired, but a pin is usually enough */}
-                <div className="mt-1 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">
-                    Center
-                </div>
+                <div className="w-4 h-4 rounded-full border-2 border-white bg-red-500 shadow-lg shadow-black/30 relative"></div>
+
             </div>
 
             {/* Save Button */}
