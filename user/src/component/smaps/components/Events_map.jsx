@@ -254,6 +254,19 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
         maxZoom={18}
         style={{ height: "100%", width: "100%" }}
         zoomControl={false}
+        zoomSnap={0.1}
+        zoomDelta={0.1}
+        wheelPxPerZoomLevel={120}
+        touchZoom={true}
+        scrollWheelZoom={true}
+        doubleClickZoom={true}
+        boxZoom={true}
+        keyboard={true}
+        dragging={true}
+        zoomAnimation={true}
+        zoomAnimationThreshold={4}
+        fadeAnimation={true}
+        markerZoomAnimation={true}
       >
         <MapUpdater />
         <TileLayer
