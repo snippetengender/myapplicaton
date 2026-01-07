@@ -1,5 +1,5 @@
 import axios from "axios";
-import { auth } from "../constants/firebaseConfig";
+import { auth, authReady } from "../constants/firebaseConfig";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -13,7 +13,7 @@ let cachedUid = null;
 
 const getToken = async () => {
   const now = Date.now();
-  const user = auth.currentUser;
+  const user = auth.currentUser || await authReady;
 
   if (!user) {
     console.warn("No Firebase user. Returning null token.");
