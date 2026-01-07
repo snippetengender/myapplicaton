@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Events_list({ activeTab, selectedState, selectedDistrict, selectedCategory }) {
     const [events, setEvents] = useState([]);
+    const [showNoEventsPopup, setShowNoEventsPopup] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -29,8 +30,34 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
         return true;
     });
 
+    // Show popup when filters are applied and no events found
+    useEffect(() => {
+        const hasFilters = selectedState || selectedDistrict || selectedCategory;
+        if (hasFilters && filteredEvents.length === 0 && events.length > 0) {
+            setShowNoEventsPopup(true);
+            const timer = setTimeout(() => {
+                setShowNoEventsPopup(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        } else {
+            setShowNoEventsPopup(false);
+        }
+    }, [filteredEvents.length, selectedState, selectedDistrict, selectedCategory, events.length]);
+
     return (
         <div className="relative flex-1 overflow-auto bg-black p-4" style={{ height: "calc(100vh - 130px)" }}>
+            {/* No Events Found Popup */}
+            {showNoEventsPopup && (
+                <div
+                    className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-gray-900 border border-gray-700 rounded-lg px-6 py-3 shadow-lg"
+                    style={{
+                        animation: 'fadeIn 0.3s ease-in-out'
+                    }}
+                >
+                    <p className="text-white text-sm font-medium">No events found</p>
+                </div>
+            )}
+
             <div className="flex flex-col gap-4 pb-20">
 
                 {filteredEvents.map((event) => (

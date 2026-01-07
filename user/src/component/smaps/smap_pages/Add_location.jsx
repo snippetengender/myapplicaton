@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Check } from "lucide-react";
@@ -8,14 +8,38 @@ export default function Add_location() {
     const navigate = useNavigate();
     const mapRef = useRef(null);
     const [center, setCenter] = useState({ lat: 19.1334, lng: 72.9133 }); // Default center
+    const [currentZoom, setCurrentZoom] = useState(5);
 
-    // Component to track map movement
+    // Component to track map movement and zoom
     function MapEvents() {
         const map = useMap();
+
+        // Track zoom level changes
+        useEffect(() => {
+            const handleZoomEnd = () => {
+                setCurrentZoom(map.getZoom());
+            };
+
+            map.on('zoomend', handleZoomEnd);
+
+            return () => {
+                map.off('zoomend', handleZoomEnd);
+            };
+        }, [map]);
+
         // Update center state when map move ends
-        map.on('moveend', () => {
-            setCenter(map.getCenter());
-        });
+        useEffect(() => {
+            const handleMoveEnd = () => {
+                setCenter(map.getCenter());
+            };
+
+            map.on('moveend', handleMoveEnd);
+
+            return () => {
+                map.off('moveend', handleMoveEnd);
+            };
+        }, [map]);
+
         return null;
     }
 
@@ -45,18 +69,59 @@ export default function Add_location() {
                 </button>
             </div>
 
+            {/* Zoom Out Button - appears when zoom > 6 */}
+            {currentZoom > 6 && (
+                <button
+                    className="absolute top-4 right-4 z-[1000] px-4 py-2.5 bg-[#F06CB7] text-white border-none rounded-lg cursor-pointer font-bold shadow-md flex items-center gap-2 hover:bg-[#E05BA6] transition-colors"
+                    onClick={() => {
+                        if (mapRef.current) {
+                            mapRef.current.setZoom(4);
+                        }
+                    }}
+                >
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            )}
+
             {/* Map */}
             <MapContainer
                 center={[11.027456478466824, 77.02760607004167]} //CIT College Location 
                 zoom={5}
-                minZoom={5}
+                minZoom={4}
                 maxZoom={18}
                 style={{ height: "100%", width: "100%" }}
                 ref={mapRef}
                 zoomControl={false}
+                zoomSnap={0.1}
+                zoomDelta={0.1}
+                wheelPxPerZoomLevel={120}
+                touchZoom={true}
+                scrollWheelZoom={true}
+                doubleClickZoom={true}
+                boxZoom={true}
+                keyboard={true}
+                dragging={true}
+                zoomAnimation={true}
+                zoomAnimationThreshold={4}
+                fadeAnimation={true}
+                markerZoomAnimation={true}
             >
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution=''
                 />
                 <MapEvents />
             </MapContainer>
