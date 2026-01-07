@@ -3,22 +3,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 /* Marquee */
 @keyframes snips-marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
+
 .snips-marquee-track {
   display: inline-flex;
   white-space: nowrap;
   will-change: transform;
   animation: snips-marquee 10s linear infinite;
 }
+
 .snips-marquee-item {
   display: inline-block;
-  padding: 0 1rem; /* space between repeats */
-  line-height: 1.5rem; /* ~ h-6 */
+  padding: 0 1rem;
+  /* space between repeats */
+  line-height: 1.5rem;
+  /* ~ h-6 */
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .snips-marquee-track { animation: none; }
+  .snips-marquee-track {
+    animation: none;
+  }
+}
+
+/* Custom Leaflet Popup Styles */
+.compact-popup .leaflet-popup-content-wrapper {
+  padding: 0 !important;
+  border-radius: 8px;
+}
+
+.compact-popup .leaflet-popup-content {
+  margin: 8px 10px !important;
+  line-height: 1.4;
 }
