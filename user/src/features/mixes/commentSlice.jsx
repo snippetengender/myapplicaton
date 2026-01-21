@@ -78,7 +78,7 @@ export const updateCommentReaction = createAsyncThunk(
   ) => {
     try {
       const response = await api.patch(
-        `/comments/${commentId}/reaction`,
+        `/mixes/comments/${commentId}/reaction`,
         { reaction }
       );
       const data=response.data;
