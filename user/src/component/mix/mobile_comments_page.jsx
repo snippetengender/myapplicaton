@@ -1146,7 +1146,7 @@ const Comment = ({ commment, ...props }) => {
     comment_type,
   } = comment;
 
-
+ 
   //const [currentVotes, setCurrentVotes] = useState(likes_count);
   const postStatus = useSelector((state) => state.comments.postStatus);
 
@@ -1370,29 +1370,30 @@ const Comment = ({ commment, ...props }) => {
             )}
             <div className="flex gap-2 ml-auto">
               <div className="flex items-center gap-3 h-6">
-
+                
                 {/* LIKE */}
                 <div
-                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "like" ? "text-pink-500" : ""
+                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "like" ? "text-pink-500" : "text-gray-400"
                     }`}
                   onClick={() => handleReaction("like")}
                 >
                   <FiChevronUp size={22} />
-                  {likes > 0 && <span className="text-xs">{likes}</span>}
+                  
+                  {(user_reaction === "like" || user_reaction === "like") && likes > 0 && <span className="text-xs">{likes}</span>}
                 </div>
 
                 {/* DISLIKE */}
                 <div
-                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "dislike" ? "text-pink-500" : ""
+                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "dislike" ? "text-pink-500" : "text-gray-400"
                     }`}
                   onClick={() => handleReaction("dislike")}
                 >
-                  {dislikes > 0 && <span className="text-xs">{dislikes}</span>}
+                  {(user_reaction === "dislike" || user_reaction === "dislike") && dislikes > 0 && <span className="text-xs">{dislikes}</span>}
                   <FiChevronDown size={22} />
                 </div>
 
               </div>
-
+ 
             </div>
 
           </div>

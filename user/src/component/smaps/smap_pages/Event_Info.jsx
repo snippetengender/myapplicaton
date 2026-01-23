@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Calendar, Share, MoreVertical, Navigation, ExternalLink } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function Event_Info() {
     const location = useLocation();
@@ -20,7 +21,27 @@ export default function Event_Info() {
         registrationLink: e.registrationLink,
     }));
 
-    const currentEvent = userEvents.find(e => e.id === event?.id) || event;
+    // Try to get event from navigation state, or fall back to localStorage
+    let currentEvent = userEvents.find(e => e.id === event?.id) || event;
+
+    // If no event in navigation state, try to get from localStorage (for browser back button)
+    if (!currentEvent) {
+        const savedEvent = localStorage.getItem('current_event');
+        if (savedEvent) {
+            try {
+                currentEvent = JSON.parse(savedEvent);
+            } catch (e) {
+                console.error('Error parsing saved event:', e);
+            }
+        }
+    }
+
+    // Save current event to localStorage whenever it changes
+    useEffect(() => {
+        if (currentEvent) {
+            localStorage.setItem('current_event', JSON.stringify(currentEvent));
+        }
+    }, [currentEvent]);
 
     if (!currentEvent) {
         return (
@@ -166,7 +187,7 @@ export default function Event_Info() {
                         </div>
                         <div>
                             <p className="font-semibold text-lg text-white">{college}</p>
-                            <p className="text-sm text-gray-400 mt-0.5">View on map</p>
+                            <p className="text-sm text-gray-400 mt-0.5">College</p>
                         </div>
                     </div>
                 </div>
@@ -204,17 +225,20 @@ export default function Event_Info() {
                             const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
                             window.open(googleMapsUrl, '_blank');
                         }}
-                        className="flex-1 bg-gray-800 text-white font-semibold text-base py-4 rounded-2xl hover:bg-gray-700 transition-all transform active:scale-95 shadow-lg border border-gray-700 flex items-center justify-center gap-2"
+                        className={`${location.state?.mapState ? 'flex-1' : 'flex-1'} bg-gray-800 text-white font-semibold text-base py-4 rounded-2xl hover:bg-gray-700 transition-all transform active:scale-95 shadow-lg border border-gray-700 flex items-center justify-center gap-2`}
                     >
                         <Navigation size={20} />
                         Directions
                     </button>
-                    <button
-                        onClick={() => navigate("/events", { state: { focusEvent: event, activeTab: false } })}
-                        className="flex-1 bg-white text-black font-bold text-base py-4 rounded-2xl hover:bg-gray-200 transition-all transform active:scale-95 shadow-lg shadow-white/5"
-                    >
-                        Locate on Map
-                    </button>
+                    {/* Only show "Locate on Map" button when NOT coming from map view */}
+                    {!location.state?.mapState && (
+                        <button
+                            onClick={() => navigate("/events", { state: { focusEvent: event, activeTab: false } })}
+                            className="flex-1 bg-white text-black font-bold text-base py-4 rounded-2xl hover:bg-gray-200 transition-all transform active:scale-95 shadow-lg shadow-white/5"
+                        >
+                            Locate on Map
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

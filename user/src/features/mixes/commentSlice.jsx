@@ -19,8 +19,8 @@ export const getComments = createAsyncThunk(
       `mixes/${mixId}/comments?page=${page}&limit=${limit}`
     );
     const { data, pagination } = response.data;
-    
-    console.log(data)
+    console.log("=================================================")
+    console.log(data);
     return {
       data,
       page: pagination.page,
@@ -78,7 +78,7 @@ export const updateCommentReaction = createAsyncThunk(
   ) => {
     try {
       const response = await api.patch(
-        `/comments/${commentId}/reaction`,
+        `/mixes/comments/${commentId}/reaction`,
         { reaction }
       );
       const data=response.data;

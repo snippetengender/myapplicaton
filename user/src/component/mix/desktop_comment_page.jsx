@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../desktop_components/Header";
 import LeftSidebar from "../desktop_components/LeftSidebar";
 import RightSidebar from "../desktop_components/RightSidebar";
@@ -250,6 +250,10 @@ export default function Dashboard() {
   const [isInputExpanded, setIsInputExpanded] = useState(false);
   const [mainReplyText, setMainReplyText] = useState("");
   const [activeReplyId, setActiveReplyId] = useState(null);
+
+  useEffect(() => {
+    console.log("allComments:", allComments);
+  }, [allComments]);
 
   const handleToggleReply = (commentId) => {
     setActiveReplyId((prevId) => (prevId === commentId ? null : commentId));

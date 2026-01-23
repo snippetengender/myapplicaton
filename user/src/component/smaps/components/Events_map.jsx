@@ -39,6 +39,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
   const location = useLocation();
   const mapRef = useRef();
   const navigate = useNavigate();
+  const [showNoEventsPopup, setShowNoEventsPopup] = useState(false);
 
   // Compute initial map state from navigation state
   const getInitialMapState = () => {
@@ -68,6 +69,8 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
 
   const initialMapState = getInitialMapState();
   const [zoomLevel, setZoom] = useState(initialMapState.zoom);
+  const [currentZoom, setCurrentZoom] = useState(initialMapState.zoom);
+  const [filteredEventCount, setFilteredEventCount] = useState(0);
 
   // Function to add markers to the map
   const updateMarkers = (map) => {
@@ -142,6 +145,9 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
       return true;
     });
 
+    // Update filtered event count for popup logic
+    setFilteredEventCount(filteredEvents.length);
+
     filteredEvents.forEach((event) => {
       if (!event.lat || !event.lng) return;
 
@@ -213,7 +219,11 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
     map.addLayer(markerCluster);
     return markerCluster;
   };
-
+  const ZoomOutButton = () => {
+    if (zoomLevel < 10) {
+      setZoom(4);
+    };
+  }
   const MapUpdater = () => {
     const map = useMap();
     const clusterRef = useRef(null);
@@ -225,9 +235,20 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
       console.log("Map initialized at:", map.getCenter(), "zoom:", map.getZoom());
     }, [map]);
 
+    // Track zoom level changes
     useEffect(() => {
-      map.setZoom(zoomLevel);
+      const handleZoomEnd = () => {
+        setCurrentZoom(map.getZoom());
+      };
 
+      map.on('zoomend', handleZoomEnd);
+
+      return () => {
+        map.off('zoomend', handleZoomEnd);
+      };
+    }, [map]);
+
+    useEffect(() => {
       if (clusterRef.current) {
         map.removeLayer(clusterRef.current);
       }
@@ -239,13 +260,69 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
           map.removeLayer(clusterRef.current);
         }
       };
-    }, [zoomLevel, map, selectedState, selectedDistrict, selectedCategory]);
+    }, [map, selectedState, selectedDistrict, selectedCategory]);
 
     return null;
   };
 
+  // Show popup when filters are applied and no events found
+  useEffect(() => {
+    const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
+    const hasFilters = selectedState || selectedDistrict || selectedCategory;
+    const hasEvents = events.length > 0 || storedEvents.length > 0;
+
+    if (hasFilters && filteredEventCount === 0 && hasEvents) {
+      setShowNoEventsPopup(true);
+      const timer = setTimeout(() => {
+        setShowNoEventsPopup(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowNoEventsPopup(false);
+    }
+  }, [filteredEventCount, selectedState, selectedDistrict, selectedCategory]);
+
   return (
     <div className="relative flex-1" style={{ height: "calc(100vh - 130px)", width: "100%" }}>
+      {/* No Events Found Popup */}
+      {showNoEventsPopup && (
+        <div
+          className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[1001] bg-gray-900 border border-gray-700 rounded-lg px-6 py-3 shadow-lg"
+          style={{
+            animation: 'fadeIn 0.3s ease-in-out'
+          }}
+        >
+          <p className="text-white text-sm font-medium">No events found</p>
+        </div>
+      )}
+
+      {/* Button that appears when zoom > 6 */}
+      {currentZoom > 6 && (
+        <button
+          className="absolute top-2.5 right-2.5 z-[1000] px-4 py-2.5 bg-[#F06CB7] text-white border-none rounded-lg cursor-pointer font-bold shadow-md flex items-center gap-2 hover:bg-[#E05BA6] transition-colors"
+          onClick={() => {
+            if (mapRef.current) {
+              mapRef.current.setZoom(4);
+            }
+          }}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      )}
+
       <MapContainer
         ref={mapRef}
         center={initialMapState.center}
@@ -269,6 +346,9 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
         markerZoomAnimation={true}
       >
         <MapUpdater />
+        <button onClick={ZoomOutButton}>
+          Zoom Out
+        </button>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution=''
