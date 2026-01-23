@@ -19,8 +19,8 @@ export const getComments = createAsyncThunk(
       `mixes/${mixId}/comments?page=${page}&limit=${limit}`
     );
     const { data, pagination } = response.data;
-    
-    console.log(data)
+    console.log("=================================================")
+    console.log(data);
     return {
       data,
       page: pagination.page,
