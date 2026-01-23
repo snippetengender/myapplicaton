@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import ConnectButton from "./components/Share_button";
 import api from "../../../providers/api";
 import { useState, useEffect, useRef } from "react";
+import { LISTING_CATEGORY } from "./constants/listingStatus";
 
 export default function All_listing(){
     const navigate = useNavigate();
@@ -9,11 +10,15 @@ export default function All_listing(){
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const loaderRef = useRef(null);
+    const [selectedCategory, setSelectedCategory] = useState(null);
     
-    const fetchListings = async (page = 1, limit = 10) => {
+    const fetchListings = async (page = 1, limit = 10, category = null) => {
         try
         {
-            const response = await api.get('/marketplace/live', {params: {page, limit}});
+            const params = { page, limit };
+            if (category) params.category = category;   
+
+            const response = await api.get('/marketplace/live', {params: params});
             return response.data
         }
         catch (error)
@@ -24,9 +29,14 @@ export default function All_listing(){
     const loadMoreListings = async (currentPage) => {
         if (!hasMore) return;
         console.log("page value is:", currentPage);
-        const res = await fetchListings(currentPage, 10);
+        if (currentPage === 1 && listedItems.length > 0) return;
+        const res = await fetchListings(currentPage, 10, selectedCategory);
         setListedItems(prev => {
-            const updated = [...prev, ...res.data];
+            const existingIds = new Set(prev.map(i => i.listing_id));
+            const newItems = res.data.filter(
+            item => !existingIds.has(item.listing_id)
+            );
+            const updated = [...prev, ...newItems];
             if (updated.length >= res.pagination.total) {
             setHasMore(false);
             }
@@ -36,19 +46,40 @@ export default function All_listing(){
         };
 
     useEffect(() => {
+        setListedItems([]); 
+        setPage(1);           
+        setHasMore(true);
+        }, [selectedCategory]);
+
+    useEffect(() => {
         if (!hasMore) return;
         const observer = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting) {
-            observer.disconnect();
             loadMoreListings(page);
             }
         });
         if (loaderRef.current) observer.observe(loaderRef.current);
         return () => observer.disconnect();
-        }, [page, hasMore]);
+        }, [page, hasMore, selectedCategory]);
 
     return(
         <div className="m-4 grid grid-cols-2 gap-4">
+            <div className="col-span-2 mb-4">
+            <label className="block text-sm mb-1 text-gray-400">
+                Select Category
+            </label>
+            <select
+                value={selectedCategory || ""}
+                onChange={(e) => setSelectedCategory(e.target.value || null)}
+                className="w-full p-2 rounded-md bg-black text-white border border-gray-600">
+                <option value="">All Categories</option>
+                {Object.entries(LISTING_CATEGORY).map(([key, label]) => (
+                <option key={key} value={label}>
+                    {label}
+                </option>
+                ))}
+            </select>
+            </div>
             {listedItems.length === 0 ? (
                 <h1 className="text-center col-span-2 text-gray-500 mt-10">
                     No items listed for sale.

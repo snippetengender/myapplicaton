@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ImageEditor from './components/ImageEditor';
 import api from '../../../providers/api';
-import { LISTING_STATUS } from "./constants/listingStatus";
+import { LISTING_STATUS, LISTING_CATEGORY } from "./constants/listingStatus";
 
 export default function ProductListingForm() {
   
@@ -152,13 +152,17 @@ export default function ProductListingForm() {
         {/* Category */}
         <div>
           <label className="block text-sm mb-2">Category</label>
-          <input
-            type="text"
-            placeholder="Category"
-            value={formData.category}
+          <select
+            value={formData.category || ""}
             onChange={(e) => setFormData({...formData, category: e.target.value})}
-            className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-500"
-          />
+            className="w-full p-2 rounded-md bg-black text-white border border-gray-600">
+            <option value="">All Categories</option>
+            {Object.entries(LISTING_CATEGORY).map(([key, label]) => (
+                <option key={key} value={label}>
+                  {label}
+                </option>
+              ))}
+            </select>
         </div>
 
 
