@@ -22,6 +22,14 @@
 //       commentTree.push(commentsMap[comment.id]);
 //     }
 //   });
+//   // Sort main comments by likes in descending order
+//   commentTree.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
+//   // Sort replies by likes in descending order
+//   commentTree.forEach((comment) => {
+//     if (comment.replies && comment.replies.length > 0) {
+//       comment.replies.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
+//     }
+//   });
 //   return commentTree;
 // };
 
@@ -896,6 +904,7 @@
 
 import React, {
   useState,
+
   useEffect,
   useMemo,
   useRef,
@@ -1119,6 +1128,8 @@ const NewCommentInput = ({
   );
 };
 
+
+
 const Comment = ({ commment, ...props }) => {
   const {
     postOwnerId = null,
@@ -1130,8 +1141,8 @@ const Comment = ({ commment, ...props }) => {
     mixId,
     loggedInUserId,
   } = props;
+
   const {
-    //here the user_id is the id of the commentor
     id,
     user_id,
     user_details,
@@ -1146,9 +1157,8 @@ const Comment = ({ commment, ...props }) => {
     comment_type,
   } = comment;
 
- 
-  //const [currentVotes, setCurrentVotes] = useState(likes_count);
   const postStatus = useSelector((state) => state.comments.postStatus);
+  const netScore = (likes || 0) - (dislikes || 0);
 
   const canReply = indentLevel < 1;
   const isReplyBoxOpen = activeReplyId === comment.id;
@@ -1156,31 +1166,35 @@ const Comment = ({ commment, ...props }) => {
 
   const hasValidUserDetails =
     user_details && Object.keys(user_details).length > 0;
-  //check whether the commentor is the user who is viewing other posts
+
   const commentAuthorId = user_id?.reference_id;
-  //check whether the loggedInUserId and the post owner id is the same 
-  const isPostOwner = loggedInUserId && postOwnerId && loggedInUserId === postOwnerId;
+  const isPostOwner =
+    loggedInUserId && postOwnerId && loggedInUserId === postOwnerId;
   const isCommentAuthor =
     loggedInUserId && commentAuthorId && loggedInUserId === commentAuthorId;
 
   const canDeleteComment = isPostOwner || isCommentAuthor;
 
-  const handleAddReply = ({
-    comment: replyText,
-    imageFile,
-    is_lowkey: is_lowkey,
-  }) => {
+  const navigate = useNavigate();
+
+  /* =====================
+     DELETE MODAL STATE
+  ===================== */
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleAddReply = ({ comment: replyText, imageFile, is_lowkey }) => {
     dispatch(
       createComment({
         mixId,
         comment: replyText,
         parentCommentId: comment.id,
         imageFile,
-        is_lowkey: is_lowkey,
+        is_lowkey,
       })
     );
     onToggleReply(null);
   };
+
   const handleReaction = (reactionType) => {
     dispatch(
       updateCommentReaction({
@@ -1190,87 +1204,25 @@ const Comment = ({ commment, ...props }) => {
     );
   };
 
+  /* =====================
+     DELETE HANDLERS
+  ===================== */
+  const handleDelete = () => {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    dispatch(deleteComment({ commentId: comment.id }));
+    setShowDeleteModal(false);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+  };
 
   if (!hasValidUserDetails) {
-    return (
-      <div
-        className="relative w-full"
-        style={{ marginLeft: `${indentLevel * 14}px` }}
-      >
-        {indentLevel > 0 && (
-          <div
-            className="absolute top-0 w-px bg-gray-700 h-full"
-            style={{ left: "-7px" }}
-          ></div>
-        )}
-        <div className="flex items-start mt-4">
-          <div className="flex-shrink-0 w-8 h-8 mr-3 rounded-full bg-gray-600"></div>
-          <div className="flex-grow min-w-0">
-            <div className="flex items-center text-sm gap-1 flex-wrap">
-              <span className="font-semibold text-gray-500">
-                {isLowkeyComment ? `{${user_id.name}}` : `<${user_id.name}>`} •{" "}
-              </span>
-              <span>{formatTimeAgo(created_at)}</span>
-              <button>
-                <img src={reportFlag} alt="Report comment" className="ml-2 w-3 h-3" />
-              </button>
-            </div>
-            <div className="flex-grow min-w-0 mt-[10px]">
-              {image && (
-                <img
-                  src={image}
-                  alt="Comment attachment"
-                  className="mt-[10px] rounded-lg max-w-full h-auto"
-                />
-              )}
-              {content && (
-                <p className="text-brand-off-white text-[10px] break-words">
-                  {content}
-                </p>
-              )}
-              <div className="flex items-center text-xs mt-[9px]">
-                {canReply && (
-                  <span
-                    className="text-brand-off-white font-bold cursor-pointer"
-                    onClick={() => onToggleReply(comment.id)}
-                  >
-                    Reply
-                  </span>
-                )}
-              </div>
-              {isReplyBoxOpen && (
-                <div className="mt-2">
-                  <NewCommentInput
-                    placeholder="Write a reply..."
-                    onSubmit={handleAddReply}
-                    isSubmitting={postStatus === "loading"}
-                    userId={loggedInUserId}
-                  />
-                </div>
-              )}
-              <div className="w-full">
-                {replies.map((reply) => (
-                  <Comment
-
-                    key={reply.id}
-                    {...props}
-                    comment={reply}
-                    indentLevel={indentLevel + 1}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-          {/* <div className="absolute right-0 top-4 flex flex-col items-center">
-            <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
-            <span className="text-pink-500 font-semibold">{currentVotes}</span>
-            <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
-          </div> */}
-        </div>
-      </div>
-    );
+    return null;
   }
-  const navigate = useNavigate();
 
   const handleClickProfile = () => {
     if (isLowkeyComment) {
@@ -1280,51 +1232,36 @@ const Comment = ({ commment, ...props }) => {
     }
   };
 
-  const handleDelete = () => {
-
-    if (window.confirm("Are you sure you want to delete this mix?")) {
-      dispatch(deleteComment({ commentId: comment.id }));
-    }
-  }
   return (
     <div
-      className={`relative w-full font-inter ${indentLevel > 0 ? "border-l border-brand-almost-black pl-2" : ""
-        }`}
-      style={{ marginLeft: `${indentLevel > 0 ? (indentLevel - 1) * 14 + 2 : 0}px` }}
+      className={`relative w-full font-inter ${
+        indentLevel > 0 ? "border-l border-brand-almost-black pl-2" : ""
+      }`}
+      style={{
+        marginLeft: `${indentLevel > 0 ? (indentLevel - 1) * 14 + 2 : 0}px`,
+      }}
     >
-      {/* {indentLevel > 0 && (
-        <div
-          className="absolute top-0 w-px bg-gray-700 h-full"
-          style={{ left: "-7px" }}
-        ></div>
-      )} */}
       <div className="flex-col items-start mt-2">
         {/* Header */}
-        <div className=" flex text-[10px]">
-
-          {comment_type === "lowkey" ? (
-            <img
-              src={user_details.profile_image}
-              alt={user_details.name}
-              className="flex-shrink-0 w-6 h-6 mr-[5px] rounded-full object-cover"
-            />
-
-          ) : (
-            <img
-              src={user_details.profile}
-              alt={user_details.name}
-              className="flex-shrink-0 w-6 h-6 mr-[5px] rounded-full object-cover"
-            />
-          )}
+        <div className="flex text-[10px]">
+          <img
+            src={
+              comment_type === "lowkey"
+                ? user_details.profile_image
+                : user_details.profile
+            }
+            alt={user_details.name}
+            className="flex-shrink-0 w-6 h-6 mr-[5px] rounded-full object-cover"
+          />
 
           <div className="flex items-center gap-1 flex-wrap text-brand-dark-gray mr-auto">
             <span
-              className="font-bold text-brand-off-white"
+              className="font-bold text-brand-off-white cursor-pointer"
               onClick={handleClickProfile}
             >
               {isLowkeyComment
                 ? `{${user_details.username}}`
-                : `<${user_details.username}>`}{" "}
+                : `<${user_details.username}>`}
             </span>
             <span>•</span>
             <span>
@@ -1334,19 +1271,20 @@ const Comment = ({ commment, ...props }) => {
             <span className="mx-1">•</span>
             <span>{formatTimeAgo(created_at)}</span>
           </div>
+
           {canDeleteComment && (
             <button onClick={handleDelete}>
               <img
                 style={{ width: "18px", height: "18px" }}
                 src={trashIcon}
                 className="button-icon"
+                alt="Delete comment"
               />
             </button>
           )}
         </div>
 
-
-        {/* Contents */}
+        {/* Content */}
         <div className="flex-grow min-w-0 text-[10px]">
           {image && (
             <img
@@ -1355,9 +1293,13 @@ const Comment = ({ commment, ...props }) => {
               className="mt-2 rounded-lg max-w-44 h-auto"
             />
           )}
+
           {content && (
-            <p className="text-brand-off-white text-[14px] mt-1 break-words">{content}</p>
+            <p className="text-brand-off-white text-[14px] mt-1 break-words">
+              {content}
+            </p>
           )}
+
           <div className="flex items-center mt-2">
             {canReply && (
               <span
@@ -1366,37 +1308,42 @@ const Comment = ({ commment, ...props }) => {
               >
                 Reply
               </span>
-
             )}
+
             <div className="flex gap-2 ml-auto">
               <div className="flex items-center gap-3 h-6">
-                
-                {/* LIKE */}
+                {/* Upvote */}
                 <div
-                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "like" ? "text-pink-500" : "text-gray-400"
-                    }`}
+                  className={`flex items-center gap-1 cursor-pointer ${
+                    user_reaction === "like"
+                      ? "text-pink-500"
+                      : "text-gray-400"
+                  }`}
                   onClick={() => handleReaction("like")}
                 >
                   <FiChevronUp size={22} />
-                  
-                  {(user_reaction === "like" || user_reaction === "like") && likes > 0 && <span className="text-xs">{likes}</span>}
                 </div>
 
-                {/* DISLIKE */}
+                {/* Downvote + Net Score */}
                 <div
-                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "dislike" ? "text-pink-500" : "text-gray-400"
-                    }`}
+                  className={`flex items-center gap-1 cursor-pointer ${
+                    user_reaction === "dislike"
+                      ? "text-pink-500"
+                      : "text-gray-400"
+                  }`}
                   onClick={() => handleReaction("dislike")}
                 >
-                  {(user_reaction === "dislike" || user_reaction === "dislike") && dislikes > 0 && <span className="text-xs">{dislikes}</span>}
+                  {netScore  && (
+                    <span className="text-xs text-pink-500 font-semibold">
+                      {netScore}
+                    </span>
+                  )}
                   <FiChevronDown size={22} />
                 </div>
-
               </div>
- 
             </div>
-
           </div>
+
           {isReplyBoxOpen && (
             <div className="mt-2">
               <NewCommentInput
@@ -1407,6 +1354,7 @@ const Comment = ({ commment, ...props }) => {
               />
             </div>
           )}
+
           <div className="w-full">
             {replies.map((reply) => (
               <Comment
@@ -1418,15 +1366,44 @@ const Comment = ({ commment, ...props }) => {
             ))}
           </div>
         </div>
-        {/* <div className="absolute right-0 top-4 flex flex-col items-center">
-          <FiChevronUp className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
-          <span className="text-pink-500 font-semibold">{currentVotes}</span>
-          <FiChevronDown className="h-6 w-6 text-gray-400 cursor-pointer hover:text-brand-off-white" />
-        </div> */}
       </div>
+
+      {/* DELETE CONFIRM POPUP */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+          <div className="w-[90%] max-w-sm rounded-xl border border-white/20 bg-[#050505] p-5 text-center">
+            <h2 className="text-brand-off-white text-lg font-semibold mb-2">
+              Delete Comment?
+            </h2>
+
+            <p className="text-brand-dark-gray text-sm mb-5">
+              This action can’t be undone.
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 rounded-full border border-white text-brand-off-white text-sm hover:bg-white/5 transition"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded-full border border-brand-pink text-brand-pink text-sm hover:bg-brand-pink/5 transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+export { Comment };
+
 
 const CommentsPage = () => {
   const navigate = useNavigate();
