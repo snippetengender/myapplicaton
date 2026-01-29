@@ -166,7 +166,7 @@ const EventsView = () => {
             </div>
           </div>
           <div className="flex-grow overflow-y-auto px-4">
-            <div className="flex items-center justify-center pt-[19px] pb-[21px]"> 
+            <div className="flex items-center justify-center pt-[19px] pb-[21px]">
               <img
                 src="https://img.freepik.com/free-vector/technology-banner-background-with-hexagonal-shapes-text-space_1017-22589.jpg"
                 alt="Just Snippet"
@@ -176,7 +176,7 @@ const EventsView = () => {
 
             {Object.entries(groupedEvents).map(([dayKey, events], idx) => (
               <div key={dayKey} className="relative pl-6">
-                {idx < Object.entries(groupedEvents).length -1 && (
+                {idx < Object.entries(groupedEvents).length - 1 && (
                   <div className="absolute left-[5px] top-2 h-full border-l-2 border-dashed border-brand-almost-black"></div>
                 )}
                 <div className="absolute left-[-2px] top-1 w-4 h-4 rounded-full bg-brand-off-white border-4 border-black"></div>
@@ -198,32 +198,29 @@ const EventsView = () => {
       <div className="fixed bottom-0 left-0 right-0 flex justify-around items-center bg-black border-t border-brand-charcoal z-10">
         <button
           onClick={() => setActiveHood("your hood")}
-          className={`font-semibold py-2 w-1/2 text-[14px] text-center ${
-            activeHood === "your hood"
-              ? "text-brand-off-white border-t-2 border-white"
-              : "text-brand-medium-gray"
-          }`}
+          className={`font-semibold py-2 w-1/2 text-[14px] text-center ${activeHood === "your hood"
+            ? "text-brand-off-white border-t-2 border-white"
+            : "text-brand-medium-gray"
+            }`}
         >
           your hood
         </button>
         <button
           onClick={() => setActiveHood("other hoods")}
-          className={`font-semibold py-2 w-1/2 text-[14px] text-center relative ${
-            activeHood === "other hoods"
-              ? "text-brand-off-white border-t-2 border-white"
-              : "text-brand-medium-gray"
-          }`}
+          className={`font-semibold py-2 w-1/2 text-[14px] text-center relative ${activeHood === "other hoods"
+            ? "text-brand-off-white border-t-2 border-white"
+            : "text-brand-medium-gray"
+            }`}
         >
           other hoods
           {/* <span className="absolute top-2 right-[25%] block h-1.5 w-1.5 rounded-full bg-pink-500"></span> */}
         </button>
         <button
           onClick={() => setActiveHood("snippet maps")}
-          className={`font-semibold py-2 w-1/2 text-[14px] text-center relative ${
-            activeHood === "snippet maps"
-              ? "text-brand-off-white border-t-2 border-white"
-              : "text-brand-medium-gray"
-          }`}
+          className={`font-semibold py-2 w-1/2 text-[14px] text-center relative ${activeHood === "snippet maps"
+            ? "text-brand-off-white border-t-2 border-white"
+            : "text-brand-medium-gray"
+            }`}
         >
           snippet maps
           {/* <span className="absolute top-2 right-[25%] block h-1.5 w-1.5 rounded-full bg-pink-500"></span> */}
@@ -252,7 +249,7 @@ const SnippetMaps = () => {
           <span className="snips-marquee-item" aria-hidden="true">We are working on these feature. Join Waitlist!</span>
         </div>
       </div>
-      
+
       {/* Map placeholder (design block) */}
       <div className="bg-brand-off-white w-full flex-1 min-h-[330px] flex items-center justify-center">
         <span className="text-black/60 text-[12px]">map preview</span>
@@ -655,6 +652,31 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState("mixes");
   const [hasNotification, setHasNotification] = useState(true);
 
+  // State for scroll-based tab visibility
+  const [isTabsVisible, setIsTabsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  // Scroll handler for tabs visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Show tabs when scrolling up, hide when scrolling down
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        // Scrolling down - hide tabs
+        setIsTabsVisible(false);
+      } else {
+        // Scrolling up - show tabs
+        setIsTabsVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   useEffect(() => {
     if (status === "idle" && posts.length === 0) {
       dispatch(fetchMixes(1));
@@ -736,7 +758,7 @@ const Home = () => {
       {" "}
       {/* Header banner */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      
+
       <nav className="fixed top-0 left-0 right-0 flex justify-between items-center w-full h-15 p-3 bg-black border-b border-brand-almost-black z-20">
         {/* Left Side: Menu and Logo */}
         <div className="flex items-center space-x-2">
@@ -750,7 +772,7 @@ const Home = () => {
 
         {/* Right Side: Actions and Profile */}
         {/* Actions and profile in mixes page only */}
-        {activeTab==="mixes" && (
+        {activeTab === "mixes" && (
           <div className="flex items-center space-x-6">
             <div className="cursor-pointer" onClick={() => navigate('/select-network', { state: { fromHomePage: true } })}>
               <img src={SearchIcon} alt="search" className="w-6 h-6" />
@@ -798,7 +820,7 @@ const Home = () => {
           </div>
         )}
         {/* Events page for the "own event" button */}
-        {activeTab==="events" && (
+        {activeTab === "events" && (
           <div className="flex items-center space-x-6">
             <div className="cursor-pointer">
               <img src={SearchIcon} alt="search" className="w-6 h-6" />
@@ -813,11 +835,11 @@ const Home = () => {
         {/* MarketPlace */}
         {activeTab === "marketplace" && (
           <div className="flex items-center space-x-6">
-            
+
             {/* Start Selling Now Button */}
             <button
               onClick={() => navigate('/start-selling')} // Replace with actual path
-              className="bg-black border-2 border-gray-700 text-white rounded-[25px] px-6 py-2 text-sm"
+              className="border border-brand-charcoal rounded-[25px] px-3 py-1 text-[12px]"
             >
               Start Selling Now
             </button>
@@ -862,29 +884,44 @@ const Home = () => {
           </div>
         )}
       </nav>
-      {/* Tabs */}
-      <div className="flex justify-around border-b border-brand-almost-black">
+      {/* Tabs - Fixed at bottom with scroll-based visibility */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 flex justify-around bg-black border-t border-brand-almost-black z-20 transition-transform duration-300 ease-in-out ${isTabsVisible ? 'translate-y-0' : 'translate-y-full'
+          }`}
+      >
         <button
           onClick={() => setActiveTab("mixes")}
-          className={`relative w-full py-3 font-semibold text-center ${
-            activeTab === "mixes" ? "text-brand-off-white" : "text-brand-medium-gray"
-          }`}
+          className={`relative w-full py-3 font-semibold text-center ${activeTab === "mixes" ? "text-brand-off-white" : "text-brand-medium-gray"
+            }`}
         >
           mixes
           {activeTab === "mixes" && (
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
+            <span className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
           )}
         </button>
         <button
           onClick={() => setActiveTab("events")}
-          className={`relative w-full py-3 font-semibold text-center ${
-            activeTab === "events" ? "text-brand-off-white" : "text-brand-medium-gray"
-          }`}
+          className={`relative w-full py-3 font-semibold text-center ${activeTab === "events" ? "text-brand-off-white" : "text-brand-medium-gray"
+            }`}
         >
           events
           {activeTab === "events" && (
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-brand-off-white rounded"></span>
+            <span className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-brand-off-white rounded"></span>
           )}
+        </button>
+        <button
+          onClick={() => navigate("/smarket")}
+          className="relative w-full py-3 font-semibold text-center text-brand-medium-gray"
+        >
+          marketplace
+        </button>
+        <button
+          onClick={() => {
+            if (userId) navigate(`/user-profile-owner/${userId}`);
+          }}
+          className="relative w-full py-3 font-semibold text-center text-brand-medium-gray"
+        >
+          profile
         </button>
       </div>
 
@@ -938,9 +975,9 @@ const Home = () => {
               </p>
             )}
           </>
-        ) : (
+        ) : activeTab === "events" ? (
           <EventsView />
-        )}
+        ) : null}
       </div>
       {/* FIX: A single "Open up now" bar that only shows on the "mixes" tab */}
       {/* {activeTab === "mixes" && (
@@ -959,7 +996,7 @@ const Home = () => {
         </div>
       )} */}
 
-      
+
       {/* <div className="fixed bottom-0 left-0 right-0 px-2 py-1 z-10">
         <div className="bg-black border border-brand-charcoal rounded-[15px] px-4 py-2 flex justify-between items-center">
             <button

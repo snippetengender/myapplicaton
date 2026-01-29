@@ -6,25 +6,25 @@ import api from '../../../providers/api';
 import { LISTING_STATUS, LISTING_CATEGORY } from "./constants/listingStatus";
 
 export default function ProductListingForm() {
-  
+
   const user_id = localStorage.getItem('user_id');
-  
+
   const location = useLocation();
   const isEditMode = location.state?.mode === "edit";
   const editListing = location.state?.listing;
-  
+
   const [formData, setFormData] = useState({
     productName: '',
     description: '',
     price: '',
     category: '',
-    phoneNumber: '', 
+    phoneNumber: '',
     agreedToTerms: false
   });
 
   const [uploadedImages, setUploadedImages] = useState([])
   const [showEditor, setShowEditor] = useState(false);
-  
+
   useEffect(() => {
     if (isEditMode && editListing) {
       setFormData({
@@ -50,13 +50,14 @@ export default function ProductListingForm() {
   };
 
   const createListing = async (listingData) => {
-  try {
-    const response = await api.post('/marketplace/', listingData);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating listing:', error);
-    throw error;
-  }};
+    try {
+      const response = await api.post('/marketplace/', listingData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating listing:', error);
+      throw error;
+    }
+  };
 
   const updateListing = async (listingId, listingData) => {
     try {
@@ -68,35 +69,36 @@ export default function ProductListingForm() {
     } catch (error) {
       console.error('Error updating listing:', error);
       throw error;
-    }};
+    }
+  };
 
 
 
   const handleSubmit = async () => {
-  const payload = {
-    product_name: formData.productName,
-    description: formData.description,
-    price: formData.price,
-    category: formData.category,
-    phone_number: formData.phoneNumber,
-    product_image: uploadedImages
-  };
+    const payload = {
+      product_name: formData.productName,
+      description: formData.description,
+      price: formData.price,
+      category: formData.category,
+      phone_number: formData.phoneNumber,
+      product_image: uploadedImages
+    };
 
-  console.log('Sending payload:', payload);
+    console.log('Sending payload:', payload);
 
-  try {
-    if (isEditMode) {
-       await updateListing(editListing.listing_id ,payload);
-    } else {
-      await createListing({...payload, owner_id: user_id, live: LISTING_STATUS.LISTED});
+    try {
+      if (isEditMode) {
+        await updateListing(editListing.listing_id, payload);
+      } else {
+        await createListing({ ...payload, owner_id: user_id, live: LISTING_STATUS.LISTED });
+      }
+
+      navigate('/smarket', { state: { activeTab: 'your_listing' } });
+
+    } catch (error) {
+      console.error('Error submitting form:', error);
     }
-
-    navigate('/smarket', { state: { activeTab: 'your_listing' } });
-
-  } catch (error) {
-    console.error('Error submitting form:', error);
-  }
-};
+  };
 
   const navigate = useNavigate();
 
@@ -121,7 +123,7 @@ export default function ProductListingForm() {
             type="text"
             placeholder="Product Name"
             value={formData.productName}
-            onChange={(e) => setFormData({...formData, productName: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
             className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-500"
           />
         </div>
@@ -132,7 +134,7 @@ export default function ProductListingForm() {
           <textarea
             rows="4"
             value={formData.description}
-            onChange={(e) => setFormData({...formData, description: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-500 resize-none"
           />
         </div>
@@ -142,9 +144,14 @@ export default function ProductListingForm() {
           <label className="block text-sm mb-2">Price</label>
           <input
             type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="Price"
             value={formData.price}
-            onChange={(e) => setFormData({...formData, price: e.target.value})}
+            onChange={(e) => {
+              const numericValue = e.target.value.replace(/[^0-9]/g, '');
+              setFormData({ ...formData, price: numericValue });
+            }}
             className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-500"
           />
         </div>
@@ -154,15 +161,15 @@ export default function ProductListingForm() {
           <label className="block text-sm mb-2">Category</label>
           <select
             value={formData.category || ""}
-            onChange={(e) => setFormData({...formData, category: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             className="w-full p-2 rounded-md bg-black text-white border border-gray-600">
             <option value="">All Categories</option>
             {Object.entries(LISTING_CATEGORY).map(([key, label]) => (
-                <option key={key} value={label}>
-                  {label}
-                </option>
-              ))}
-            </select>
+              <option key={key} value={label}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
 
 
@@ -171,9 +178,15 @@ export default function ProductListingForm() {
           <label className="block text-sm mb-2">Phone Number</label>
           <input
             type="tel"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="Phone Number"
             value={formData.phoneNumber}
-            onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+            maxLength={10}
+            onChange={(e) => {
+              const numericValue = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+              setFormData({ ...formData, phoneNumber: numericValue });
+            }}
             className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-500"
           />
         </div>
@@ -217,7 +230,7 @@ export default function ProductListingForm() {
             type="checkbox"
             id="terms"
             checked={formData.agreedToTerms}
-            onChange={(e) => setFormData({...formData, agreedToTerms: e.target.checked})}
+            onChange={(e) => setFormData({ ...formData, agreedToTerms: e.target.checked })}
             className="w-4 h-4 bg-transparent border border-gray-700 rounded"
           />
           <label htmlFor="terms" className="text-sm">
