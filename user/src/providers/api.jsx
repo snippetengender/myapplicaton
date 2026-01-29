@@ -60,7 +60,17 @@ api.interceptors.request.use(
     if (config.data instanceof FormData) {
       delete config.headers["Content-Type"];
     }
+<<<<<<< Updated upstream
     
+=======
+    // console.log("📤 OUTGOING REQUEST:");
+    // console.log("URL:", config.baseURL + config.url);
+    // console.log("METHOD:", config.method);
+    // console.log("HEADERS:", config.headers);
+    // console.log("DATA:", config.data);
+    // console.log("PARAMS:", config.params);
+
+>>>>>>> Stashed changes
     return config;
   },
   (error) => Promise.reject(error)
