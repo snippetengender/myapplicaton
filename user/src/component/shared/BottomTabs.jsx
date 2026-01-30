@@ -12,6 +12,8 @@ const BottomTabs = ({ userId }) => {
     // Determine active tab based on current route
     const getActiveTab = () => {
         if (location.pathname.startsWith("/smarket")) return "marketplace";
+        if (location.pathname.startsWith("/events")) return "events";
+        if (location.pathname.startsWith("/user-profile-owner")) return "profile";
         if (location.pathname === "/home" || location.pathname === "/") return "mixes";
         // Add more route checks as needed
         return "mixes";
@@ -79,9 +81,13 @@ const BottomTabs = ({ userId }) => {
                 onClick={() => {
                     if (userId) navigate(`/user-profile-owner/${userId}`);
                 }}
-                className="relative w-full py-3 font-semibold text-center text-brand-medium-gray"
+                className={`relative w-full py-3 font-semibold text-center ${activeTab === "profile" ? "text-brand-off-white" : "text-brand-medium-gray"
+                    }`}
             >
                 profile
+                {activeTab === "profile" && (
+                    <span className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[2px] bg-brand-off-white rounded"></span>
+                )}
             </button>
         </div>
     );

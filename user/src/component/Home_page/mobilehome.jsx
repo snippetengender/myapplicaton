@@ -900,7 +900,7 @@ const Home = () => {
           )}
         </button>
         <button
-          onClick={() => setActiveTab("events")}
+          onClick={() => navigate('/events')}
           className={`relative w-full py-3 font-semibold text-center ${activeTab === "events" ? "text-brand-off-white" : "text-brand-medium-gray"
             }`}
         >

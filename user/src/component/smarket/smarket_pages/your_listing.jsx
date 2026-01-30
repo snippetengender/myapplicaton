@@ -51,6 +51,7 @@ export default function Your_listing() {
         setUserListings([]);
         setPage(1);
         setHasMore(true);
+        setIsLoading(true);
     }, [selectedCategory]);
 
     // Initial load on mount
@@ -73,84 +74,81 @@ export default function Your_listing() {
     }, [page, hasMore, isLoading, selectedCategory]);
 
     const getStatusInfo = (live, removed) => {
-        if (live === "sold") return { color: "bg-red-500", text: "Sold" };
-        return { color: "bg-green-500", text: "Live" };
+        if (removed) return { color: "bg-red-500", text: "Snippet Removed this Listing" };
+        if (live === "sold") return { color: "bg-yellow-400", text: "You ended this listing" };
+        return { color: "bg-green-500", text: "Your Product is Listed" };
     };
 
     return (
-        <div className="m-4 grid grid-cols-2 gap-4">
-            <div className="col-span-2 mb-4">
-                <label className="block text-sm mb-1 text-gray-400">
-                    Select Category
-                </label>
+        <div className="mt-3 p-2 flex flex-col gap-4 max-w-3xl">
 
-                <select
-                    value={selectedCategory || ""}
-                    onChange={(e) => setSelectedCategory(e.target.value || null)}
-                    className="w-full p-2 rounded-md bg-black text-white border border-gray-600">
-                    <option value="">All Categories</option>
-                    {Object.entries(LISTING_CATEGORY).map(([key, label]) => (
-                        <option key={key} value={label}>
-                            {label}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            {userListings.length === 0 ? (
-                <h1 className="text-center col-span-2 text-gray-500 mt-10">
+            {isLoading && userListings.length === 0 ? (
+                <div className="col-span-2 space-y-4">
+                    <YourListingSkeleton />
+                    <YourListingSkeleton />
+                    <YourListingSkeleton />
+                </div>
+            ) : userListings.length === 0 ? (
+                <h1 className="text-center text-gray-500 mt-10">
                     You have no listings yet.
                 </h1>
             ) : (
-                userListings.map((listing) => (
-                    <div
-                        key={listing.listing_id || listing.posted_at}
-                        className="border-2 border-gray-700 rounded-2xl p-5 hover:bg-gray-900 w-full h-min"
-                    >
-                        <div className="flex flex-col justify-start font-medium">
+                userListings.map((listing) => {
+                    const status = getStatusInfo(listing.status, listing.is_removed);
 
-                            <img
-                                src={listing.product_image?.[0]}
-                                alt={listing.product_name}
-                                className="rounded-2xl cursor-pointer"
-                                onClick={() => navigate(`/smarket/${listing.listing_id}`, { state: { from: "your_listing" } })}
-                            />
-
-                            {/* Info - Right Side */}
-                            <div className="flex flex-col flex-1 min-w-0">
-                                <h3 className="text-gray-400 text-[10px] font-medium mb-0.5">@cit</h3>
-                                <h2 className="text-white text-md font-bold leading-tight mb-1 truncate">
-                                    {listing.product_name}
-                                </h2>
-                                <div className="text-white text-lg font-bold mb-1">
-                                    Rs. {listing.price}
-                                </div>
-                                <div className="text-gray-400 text-[9px] mb-2">
-                                    Updated On : {listing.posted_at || "Dec 8, 05:44 PM"}
+                    return (
+                        <div
+                            key={listing.listing_id || listing.posted_at}
+                            className="border border-gray-800 rounded-2xl p-[9px] bg-black w-full"
+                        >
+                            <div className="flex gap-4">
+                                {/* Image - Left Side - White Box Container */}
+                                <div className="w-32 h-32 rounded-2xl bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
+                                    <img
+                                        src={listing.product_image?.[0]}
+                                        alt={listing.product_name}
+                                        className="w-full h-full object-contain cursor-pointer"
+                                        onClick={() => navigate(`/smarket/${listing.listing_id}`, { state: { from: "your_listing" } })}
+                                    />
                                 </div>
 
-                                <div className="flex items-center gap-1.5 mt-auto">
-                                    <div className={`w-2 h-2 rounded-full ${status.color}`}></div>
-                                    <span className="text-gray-300 text-[10px] font-medium">
-                                        {status.text}
-                                    </span>
+                                {/* Info - Right Side */}
+                                <div className="flex flex-col flex-1 min-w-0 h-32">
+                                    <h3 className="text-gray-400 text-[10px] font-medium mb-0.5">@cit</h3>
+                                    <h2 className="text-white text-md font-bold leading-tight mb-0.5 truncate">
+                                        {listing.product_name}
+                                    </h2>
+                                    <div className="text-white text-lg font-bold mb-0.5">
+                                        Rs. {listing.price}
+                                    </div>
+                                    <div className="text-gray-400 text-[9px] mb-1.5">
+                                        Updated On : {listing.posted_at || "Dec 8, 05:44 PM"}
+                                    </div>
+
+                                    <div className="flex items-center gap-1.5 mb-2">
+                                        <div className={`w-2 h-2 rounded-full ${status.color}`}></div>
+                                        <span className="text-white text-[10px] font-medium">
+                                            {status.text}
+                                        </span>
+                                    </div>
+
+                                    {/* Edit Button */}
+                                    <button
+                                        onClick={() => navigate('/smarket/selling_now', {
+                                            state: {
+                                                mode: "edit",
+                                                listing
+                                            }
+                                        })}
+                                        className="w-full mt-auto bg-gray-200 hover:bg-white text-black text-sm font-bold py-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors"
+                                    >
+                                        edit your product <FiChevronRight />
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        {/* Edit Button */}
-                        <button
-                            onClick={() => navigate('/smarket/selling_now', {
-                                state: {
-                                    mode: "edit",
-                                    listing
-                                }
-                            })}
-                            className="w-full mt-3 bg-gray-200 hover:bg-white text-black text-sm font-bold py-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors"
-                        >
-                            edit your product <FiChevronRight />
-                        </button>
-                    </div>
-                ))
+                    );
+                })
             )}
             <div ref={loaderRef} className="h-10" />
         </div>

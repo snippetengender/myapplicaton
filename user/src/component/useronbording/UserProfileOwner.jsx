@@ -12,6 +12,7 @@ import { MixCardSkeleton } from "../lowkey/LowKeyProfile";
 import profileBanner from "../assets/banner.png";
 import backArrow from "../assets/BackArrow.svg";
 import wip from "../assets/Snippy_with_Sign.png";
+import BottomTabs from "../shared/BottomTabs";
 
 const ProfileSkeleton = () => (
   <div className="min-h-screen bg-black text-white p-4 animate-pulse">
@@ -62,10 +63,10 @@ const formatBirthday = (day, month) => {
     day % 10 === 1 && day !== 11
       ? "st"
       : day % 10 === 2 && day !== 12
-      ? "nd"
-      : day % 10 === 3 && day !== 13
-      ? "rd"
-      : "th";
+        ? "nd"
+        : day % 10 === 3 && day !== 13
+          ? "rd"
+          : "th";
   // Abbreviated months
   const months = [
     "",
@@ -126,7 +127,7 @@ export default function ProfileOwner() {
   useEffect(() => {
     if (userId) {
       dispatch(fetchUserProfile(userId));
-      
+
     }
     return () => {
       dispatch(resetUserMixes());
@@ -138,43 +139,49 @@ export default function ProfileOwner() {
       dispatch(fetchParticularUserMix({ userId, page: 1 }));
     }
   }, [userId, posts.length, dispatch]);
-  
+
 
 
   if (status === "loading" || status === "idle") {
-    return <ProfileSkeleton />;
+    return (
+      <div className="relative min-h-screen">
+        <ProfileSkeleton />
+        <BottomTabs userId={userId} />
+      </div>
+    );
   }
   if (status === "failed" || !profile) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        Error: Could not load profile.
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center relative">
+        <div>Error: Could not load profile.</div>
+        <BottomTabs userId={userId} />
       </div>
     );
   }
 
   const handleLowKeyClick = () => {
-  if (profile && profile.lowkey_profile) {
-    navigate(`/lowkey-profile/${profile.lowkey_profile.user_id}`);
-  } else {
-    navigate('/lowkey');
-  }
-};
+    if (profile && profile.lowkey_profile) {
+      navigate(`/lowkey-profile/${profile.lowkey_profile.user_id}`);
+    } else {
+      navigate('/lowkey');
+    }
+  };
 
 
   return (
     <div className="min-h-screen bg-black text-[#E7E9EA]">
       {/* Profile banner */}
       <div className="relative">
-        <img 
-          src={profileBanner} 
-          alt="Profile banner" 
+        <img
+          src={profileBanner}
+          alt="Profile banner"
           className="w-full h-full"
         />
         <div className="absolute bottom-[17px] left-[16px] flex items-center justify-center bg-white/30 rounded-full w-[39px] h-[38px] ">
           <button onClick={() => navigate(-1)} className="-left-1">
-            <img 
-              src={backArrow} 
-              alt="Back to Home page"   
+            <img
+              src={backArrow}
+              alt="Back to Home page"
             />
           </button>
         </div>
@@ -254,11 +261,10 @@ export default function ProfileOwner() {
         {/* Tabs */}
         <div className="flex border-b border-gray-700">
           <button
-            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
-              activeTab === "mixes"
-                ? "text-brand-off-white"
-                : "text-brand-dark-gray"
-            }`}
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "mixes"
+              ? "text-brand-off-white"
+              : "text-brand-dark-gray"
+              }`}
             onClick={() => setActiveTab("mixes")}
           >
             mixes
@@ -267,11 +273,10 @@ export default function ProfileOwner() {
             )}
           </button>
           <button
-            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
-              activeTab === "stuffs"
-                ? "text-brand-off-white"
-                : "text-brand-dark-gray"
-            }`}
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "stuffs"
+              ? "text-brand-off-white"
+              : "text-brand-dark-gray"
+              }`}
             onClick={() => setActiveTab("stuffs")}
           >
             stuffs
@@ -313,15 +318,16 @@ export default function ProfileOwner() {
 
           {activeTab === "stuffs" && (
             <div className="flex w-full h-full justify-center items-center p-5">
-              <img 
-                src={wip} 
-                alt="Work in progress" 
+              <img
+                src={wip}
+                alt="Work in progress"
                 className="w-[117px]"
               />
             </div>
           )}
         </div>
       </div>
+      <BottomTabs userId={userId} />
     </div>
   );
 }
