@@ -1,81 +1,102 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, MapPin, Calendar, Share, MoreVertical, Navigation, ExternalLink } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchEventById, formatTimestamp } from '../api';
 
 export default function Event_Info() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { event } = location.state || {};
+    const { eventId } = useParams();
+    const { mapState, activeTab } = location.state || {};
+    
+    const [event, setEvent] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
-    const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
-    const userEvents = storedEvents.map(e => ({
-        id: e.id,
-        title: e.name,
-        location: e.college,
-        lat: e.lat,
-        lng: e.lng,
-        s_time: e.s_time,
-        e_time: e.e_time,
-        image: e.image,
-        description: e.description,
-        registrationLink: e.registrationLink,
-    }));
+    // const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
+    
 
     // Try to get event from navigation state, or fall back to localStorage
-    let currentEvent = userEvents.find(e => e.id === event?.id) || event;
+    // let currentEvent = userEvents.find(e => e.id === event?.id) || event;
 
-    // If no event in navigation state, try to get from localStorage (for browser back button)
-    if (!currentEvent) {
-        const savedEvent = localStorage.getItem('current_event');
-        if (savedEvent) {
+    useEffect(() => {
+        if (!eventId){
+            setError(true);
+            setLoading(false);
+            return;
+        }
+
+        async function loadEvent(){
             try {
-                currentEvent = JSON.parse(savedEvent);
-            } catch (e) {
-                console.error('Error parsing saved event:', e);
+                const data = await fetchEventById(eventId);
+                setEvent(data);
+            } catch(err){
+                console.error("failed to fetch the event: ", err)
+            } finally {
+                setLoading(false);
             }
         }
+
+        loadEvent()
+    }, [eventId]);
+
+    if (loading) {
+        return (
+            <div className="bg-black min-h-screen text-white flex items-center justify-center">
+                <p>Loading Event...</p>
+            </div>
+        );
     }
 
-    // Save current event to localStorage whenever it changes
-    useEffect(() => {
-        if (currentEvent) {
-            localStorage.setItem('current_event', JSON.stringify(currentEvent));
-        }
-    }, [currentEvent]);
-
-    if (!currentEvent) {
+    if (error || !event) {
         return (
             <div className="bg-black min-h-screen text-white p-6 flex flex-col items-center justify-center">
                 <p>Event not found.</p>
                 <button
                     onClick={() => navigate("/events")}
                     className="mt-4 text-blue-500 hover:underline"
-                >
-                    Go back
+                >Go back
                 </button>
             </div>
         );
     }
 
-    const { title: name, location: college, s_time, e_time, image, description, registrationLink } = currentEvent;
+    const {
+        event_title,
+        description,
+        event_start_time,
+        event_end_time,
+        event_poster,
+        college,
+        location: eventLocation,
+        registrationLink
+    } = event;
 
-    const formatDate = (timeString) => {
-        if (!timeString) return { date: '', s_time: '' };
-        try {
-            const dateObj = new Date(timeString);
-            if (isNaN(dateObj.getTime())) {
-                const [datePart, timePart] = timeString.split('T');
-                return { date: datePart, s_time: timePart || '' };
-            }
-            const options = { weekday: 'long', month: 'long', day: 'numeric' };
-            const date = dateObj.toLocaleDateString('en-US', options);
-            const s_time = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-            return { date, s_time };
-        } catch (e) { return { date: timeString, s_time: '' }; }
-    };
+    // const currentEvent = event;
 
-    const formattedTime = formatDate(s_time);
-    const formattedEndTime = formatDate(e_time);
+    // const name = event_title;
+    // const s_time = event_start_time;
+    // const e_time = event_end_time;
+    // const image = event_poster;
+
+    // const formatTimestamp = (timeString) => {
+    //     if (!timeString) return { date: '', s_time: '' };
+    //         const dateObj = new Date(timeString);
+    //         return {
+    //             date: dateObj.toLocaleDateString('en-US', {
+    //                 weekday: 'long',
+    //                 month: 'long',
+    //                 day: 'numeric'
+    //             }),
+    //             time: dateObj.toLocaleDateString('en-US', {
+    //                 hour: 'numeric',
+    //                 minute: '2-digit'
+    //             })
+    //         };
+    //     };
+
+    const start = formatTimestamp(event_start_time);
+    const end = formatTimestamp(event_end_time);  
 
     return (
         <div className="bg-black min-h-screen text-white font-sans pb-24">
@@ -84,30 +105,24 @@ export default function Event_Info() {
             <div className="fixed top-0 left-0 right-0 z-20 flex justify-between items-center p-4 bg-gradient-to-b from-black/80 to-transparent">
                 <button
                     onClick={() => {
-                        console.log("Back clicked. Location State:", location.state);
-                        if (location.state?.mapState) {
+                        if (mapState) {
                             navigate("/events", {
-                                state: {
-                                    restoredMapState: location.state.mapState,
-                                    activeTab: location.state.activeTab !== undefined ? location.state.activeTab : false
-                                }
+                                state: {restoredMapState: mapState, activeTab}
                             });
-                        } else if (location.state?.activeTab !== undefined) {
+                        } else if (activeTab !== undefined) {
                             // If no mapState but we have activeTab (from list view)
                             navigate("/events", {
-                                state: {
-                                    activeTab: location.state.activeTab
-                                }
+                                state: {activeTab: activeTab}
                             });
                         } else {
                             console.log("No mapState found, going back default.");
                             navigate(-1);
                         }
                     }}
-                    className="p-2 bg-black/50 backdrop-blur rounded-full hover:bg-black/70 transition-colors border border-white/10"
-                >
+                    className="p-2 bg-black/50 backdrop-blur rounded-full hover:bg-black/70 transition-colors border border-white/10">
                     <ArrowLeft size={20} />
                 </button>
+
                 <div className="flex gap-3">
                     <button className="p-2 bg-black/50 backdrop-blur rounded-full hover:bg-black/70 transition-colors border border-white/10">
                         <Share size={20} />
@@ -121,8 +136,8 @@ export default function Event_Info() {
             {/* Hero Image */}
             <div className="w-full flex justify-center mt-20 mb-6">
                 <div className="relative w-[90%] aspect-video rounded-2xl border-2 border-gray-800 overflow-hidden shadow-2xl bg-gray-900">
-                    {image ? (
-                        <img src={image} alt={name} className="w-full h-full object-cover" />
+                    {event_poster ? (
+                        <img src={event_poster} alt={event_title} className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-700">No Image</div>
                     )}
@@ -138,7 +153,7 @@ export default function Event_Info() {
 
                 {/* Title */}
                 <h1 className="text-3xl font-bold leading-tight mb-4">
-                    {name}
+                    {event_title}
                 </h1>
 
                 {/* Registration Button */}
@@ -156,7 +171,6 @@ export default function Event_Info() {
 
                 {/* Info Grid */}
                 <div className="flex flex-col gap-6 mb-8">
-                    {/* Date */}
                     {/* Start time */}
                     <h1>Start Time</h1>
                     <div className="flex items-start gap-4">
@@ -164,8 +178,8 @@ export default function Event_Info() {
                             <Calendar size={24} className="text-white" />
                         </div>
                         <div>
-                            <p className="font-semibold text-lg text-white">{formattedTime.date}</p>
-                            <p className="text-gray-400">{formattedTime.s_time}</p>
+                            <p className="font-semibold text-lg text-white">{start.date}</p>
+                            <p className="text-gray-400">{start.time}</p>
                         </div>
                     </div>
                     {/* End Time */}
@@ -175,8 +189,8 @@ export default function Event_Info() {
                             <Calendar size={24} className="text-white" />
                         </div>
                         <div>
-                            <p className="font-semibold text-lg text-white">{formattedEndTime.date}</p>
-                            <p className="text-gray-400">{formattedEndTime.s_time}</p>
+                            <p className="font-semibold text-lg text-white">{end.date}</p>
+                            <p className="text-gray-400">{end.time}</p>
                         </div>
                     </div>
 
@@ -221,8 +235,8 @@ export default function Event_Info() {
                     <button
                         onClick={() => {
                             // Open Google Maps with directions from user's current location to event location
-                            const destination = `${currentEvent.lat},${currentEvent.lng}`;
-                            const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
+                            const destination = `${eventLocation.coordinates[1]},${eventLocation.coordinates[0]}`;
+                            const googleMapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(destination)}`;
                             window.open(googleMapsUrl, '_blank');
                         }}
                         className={`${location.state?.mapState ? 'flex-1' : 'flex-1'} bg-gray-800 text-white font-semibold text-base py-4 rounded-2xl hover:bg-gray-700 transition-all transform active:scale-95 shadow-lg border border-gray-700 flex items-center justify-center gap-2`}
@@ -231,7 +245,7 @@ export default function Event_Info() {
                         Directions
                     </button>
                     {/* Only show "Locate on Map" button when NOT coming from map view */}
-                    {!location.state?.mapState && (
+                    {!mapState && (
                         <button
                             onClick={() => navigate("/events", { state: { focusEvent: event, activeTab: false } })}
                             className="flex-1 bg-white text-black font-bold text-base py-4 rounded-2xl hover:bg-gray-200 transition-all transform active:scale-95 shadow-lg shadow-white/5"
@@ -243,4 +257,4 @@ export default function Event_Info() {
             </div>
         </div>
     )
-}
+};
