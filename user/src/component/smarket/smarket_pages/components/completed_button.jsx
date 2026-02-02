@@ -7,10 +7,10 @@ export default function Completed_listing({ listingId, status }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  if (status === LISTING_STATUS.SOLD ) {
+  if (status === LISTING_STATUS.SOLD) {
     // returns a disabled button
     return <button
-      className="bg-gray-400 text-black text-2xl font-normal mt-2 px-2 rounded-md w-full"
+      className="w-full py-3 bg-gray-600 text-gray-300 text-base font-bold rounded-lg cursor-not-allowed"
       disabled={true}
     >
       Listing Ended
@@ -19,8 +19,8 @@ export default function Completed_listing({ listingId, status }) {
 
   const handleCompleteListing = async () => {
     try {
-      setLoading(true); 
-      
+      setLoading(true);
+
       await api.patch(
         `/marketplace/${listingId}/listing_completed`,
         {}
@@ -38,11 +38,11 @@ export default function Completed_listing({ listingId, status }) {
 
   return (
     <button
-      className="bg-white text-black text-2xl font-normal mt-2 px-2 rounded-md w-full"
+      className="w-full py-3 bg-gray-200 text-black text-base font-bold rounded-lg hover:bg-white transition-colors"
       onClick={handleCompleteListing}
       disabled={loading}
     >
-      {loading ? "Ending..." : "End the Listing"}
+      {loading ? "Ending..." : "End Listing"}
     </button>
   );
 }

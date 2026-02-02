@@ -7,6 +7,7 @@ import LogoIcon from "../snippetIcon/Vector.svg";
 import Events_list from "../smaps/components/Events_list";
 import Events_map from "../smaps/components/Events_map";
 import FilterModal from "../smaps/components/FilterModal";
+import BottomTabs from "../shared/BottomTabs";
 
 export default function EventsMapPage() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function EventsMapPage() {
   const [selectedState, setSelectedState] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const userId = localStorage.getItem("user_id");
 
   // Cleanup: Clear navigation state on unmount to ensure fresh start on next visit
   useEffect(() => {
@@ -120,33 +122,7 @@ export default function EventsMapPage() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 px-2 py-1 z-20 bg-gradient-to-t from-black to-transparent pb-4">
-        <div className="bg-black border border-brand-charcoal rounded-[15px] px-4 py-2 flex justify-between items-center shadow-2xl">
-          <button
-            className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px] hover:bg-gray-900 transition"
-            onClick={() => navigate('/home')}
-          >
-            Home
-          </button>
-          <button
-            className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px] hover:bg-gray-900 transition"
-            onClick={() => navigate('/events')}
-          >
-            Events
-          </button>
-          <button
-            className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px] hover:bg-gray-900 transition"
-            onClick={() => navigate('/smarket')}
-          >
-            Marketplace
-          </button>
-          <button
-            className="bg-black text-brand-off-white text-[12px] px-4 py-1 rounded-[10px] hover:bg-gray-900 transition"
-          >
-            Profile
-          </button>
-        </div>
-      </div>
+      <BottomTabs userId={userId} />
     </div>
   );
 }

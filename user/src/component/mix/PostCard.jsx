@@ -53,6 +53,9 @@ export const PostCard = ({
 
   // Track whether the post image is portrait (height > width)
   const [isPortrait, setIsPortrait] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteMixId, setDeleteMixId] = useState(null);
+  
   const handleImageLoad = (e) => {
     const { naturalWidth, naturalHeight } = e.currentTarget;
     if (naturalWidth && naturalHeight) {
@@ -66,9 +69,19 @@ export const PostCard = ({
   };
 
   const handleDelete = (mixId) => {
-    if (window.confirm("Are you sure you want to delete this mix?")) {
-      dispatch(deleteMix(mixId));
-    }
+    setDeleteMixId(mixId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    dispatch(deleteMix(deleteMixId));
+    setShowDeleteModal(false);
+    setDeleteMixId(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeleteMixId(null);
   };
 
   const netScore = stats.upvote - stats.downvote;
@@ -450,6 +463,41 @@ export const PostCard = ({
       )}
 
       {/* Post Content Section - This was moved to its correct location */}
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+          <div className="w-[90%] max-w-sm rounded-xl border border-white/20 bg-[#050505] p-5 text-center">
+
+            
+            <h2 className="text-brand-off-white text-lg font-semibold mb-2">
+              Delete Mix?
+            </h2>
+
+            <p className="text-brand-dark-gray text-sm mb-5">
+              This action can't be undone.
+            </p>
+
+            <div className="flex justify-center gap-4">
+              {/* Cancel */}
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 rounded-full border border-white text-brand-off-white text-sm hover:bg-white/10 transition"
+              >
+                Cancel
+              </button>
+
+              {/* Delete */}
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded-full border border-brand-pink text-brand-pink text-sm hover:bg-brand-pink/10 transition"
+              >
+                Delete
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 };
