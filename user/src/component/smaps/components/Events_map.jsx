@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -6,7 +6,6 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster';
 import "leaflet/dist/leaflet.css";
-import { fetchAllEventLocations } from "../api";
 
 // Fix default Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -41,12 +40,9 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
   const mapRef = useRef();
   const navigate = useNavigate();
   const [showNoEventsPopup, setShowNoEventsPopup] = useState(false);
-  const [filteredEventCount, setFilteredEventCount] = useState(0);
-  const [storedEvents, setStoredEvents] = useState([]);
-  const [eventsLoaded, setEventsLoaded] = useState(false);
 
-  // Memoize initial map state to avoid recalculation
-  const initialMapState = useMemo(() => {
+  // Compute initial map state from navigation state
+  const getInitialMapState = () => {
     const focusEvent = location.state?.focusEvent;
     const restoredState = location.state?.restoredMapState;
 
@@ -69,30 +65,15 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
       center: [11.027456478466824, 77.02760607004167],
       zoom: 4
     };
-  }, [location.state?.focusEvent, location.state?.restoredMapState]);
+  };
 
+  const initialMapState = getInitialMapState();
   const [zoomLevel, setZoom] = useState(initialMapState.zoom);
   const [currentZoom, setCurrentZoom] = useState(initialMapState.zoom);
-
-  // Fetch events only once on component mount
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const events = await fetchAllEventLocations();
-        setStoredEvents(events || []);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setStoredEvents([]);
-      } finally {
-        setEventsLoaded(true);
-      }
-    };
-
-    loadEvents();
-  }, []); // Empty dependency array - runs only once
+  const [filteredEventCount, setFilteredEventCount] = useState(0);
 
   // Function to add markers to the map
-  const updateMarkers = useCallback((map) => {
+  const updateMarkers = (map) => {
     const markerCluster = new L.MarkerClusterGroup({
       iconCreateFunction: (cluster) => {
         return L.divIcon({
@@ -130,15 +111,16 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
     });
 
     // Combine default events with user events
-    
+    const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
+
     const userEvents = storedEvents.map(e => ({
-      id: e.event_id,
-      title: e.event_title,
+      id: e.id,
+      title: e.name,
       location: e.college,
-      lat: e.location?.coordinates ? e.location.coordinates[1] : null,
-      lng: e.location?.coordinates ? e.location.coordinates[0] : null,
-      s_time: e.event_start_time,
-      image: e.event_poster,
+      lat: e.lat,
+      lng: e.lng,
+      s_time: e.s_time,
+      image: e.image,
       state: e.state,           // Include state for filtering
       district: e.district,     // Include district for filtering
       category: e.category,     // Include category for filtering
@@ -215,7 +197,6 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
       `, { permanent: true, direction: 'top', className: 'compact-popup', offset: [0, -10], interactive: true });
 
       const tooltip = marker.getTooltip();
-      const id = event.id;
       tooltip.on('click', () => {
         const center = map.getCenter();
         const mapState = {
@@ -224,10 +205,11 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
         };
         console.log("Saving Map State:", mapState);
 
-        navigate(`/events/event-info/${id}`, {
+        navigate('/events/event-info', {
           state: {
+            event,
             mapState,
-            activeTab 
+            activeTab: activeTab  // Save which tab user was on
           }
         });
       });
@@ -236,7 +218,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
 
     map.addLayer(markerCluster);
     return markerCluster;
-  }, [storedEvents, selectedState, selectedDistrict, selectedCategory]); // Add filter dependencies
+  };
   const ZoomOutButton = () => {
     if (zoomLevel < 10) {
       setZoom(4);
@@ -267,10 +249,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
     }, [map]);
 
     useEffect(() => {
-      if (!eventsLoaded) return; // Wait for events to load
-
       if (clusterRef.current) {
-        clusterRef.current.clearLayers(); // Clear all layers in the cluster
         map.removeLayer(clusterRef.current);
       }
 
@@ -278,20 +257,21 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
 
       return () => {
         if (clusterRef.current) {
-          clusterRef.current.clearLayers(); // Clear all layers before removal
           map.removeLayer(clusterRef.current);
         }
       };
-    }, [map, selectedState, selectedDistrict, selectedCategory, updateMarkers, eventsLoaded]);
+    }, [map, selectedState, selectedDistrict, selectedCategory]);
 
     return null;
   };
 
   // Show popup when filters are applied and no events found
   useEffect(() => {
+    const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
     const hasFilters = selectedState || selectedDistrict || selectedCategory;
+    const hasEvents = events.length > 0 || storedEvents.length > 0;
 
-    if (hasFilters && filteredEventCount === 0 && storedEvents.length > 0) {
+    if (hasFilters && filteredEventCount === 0 && hasEvents) {
       setShowNoEventsPopup(true);
       const timer = setTimeout(() => {
         setShowNoEventsPopup(false);
@@ -300,7 +280,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
     } else {
       setShowNoEventsPopup(false);
     }
-  }, [filteredEventCount, selectedState, selectedDistrict, selectedCategory, storedEvents.length]);
+  }, [filteredEventCount, selectedState, selectedDistrict, selectedCategory]);
 
   return (
     <div className="relative flex-1" style={{ height: "calc(100vh - 130px)", width: "100%" }}>

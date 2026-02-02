@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchAllEventLocations, formatTimestamp } from '../api';
 
 export default function Events_list({ activeTab, selectedState, selectedDistrict, selectedCategory }) {
     const [events, setEvents] = useState([]);
@@ -10,17 +9,10 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
     const containerRef = useRef(null);
 
     useEffect(() => {
-        // const storedEvents = fetchAllEventLocations()
-        async function loadAllEvents() {
-            try{
-                const storedEvents = await fetchAllEventLocations()
-                setEvents(storedEvents);
-            }
-            catch(error) {
-                console.log("can't get all the events from backend: ", error)
-            }}
-        
-        loadAllEvents();
+        const storedEvents = localStorage.getItem('user_events');
+        if (storedEvents) {
+            setEvents(JSON.parse(storedEvents));
+        }
     }, []);
 
     // Filter events based on selected state, district, and category
@@ -112,7 +104,7 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
     // Group events
     const groupedEvents = filteredEvents.reduce((groups, event) => {
         // Use getDateKey to handle missing/malformed times safely
-        const dateKey = getDateKey(event.event_start_time);
+        const dateKey = getDateKey(event.s_time);
 
         if (!groups[dateKey]) {
             groups[dateKey] = [];
@@ -193,30 +185,36 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                                 {/* Events for this date */}
                                 <div className="flex flex-col gap-4">
                                     {groupedEvents[dateKey].map((event) => (
-                                        <div key={event.event_id} className="w-full">
+                                        <div key={event.id} className="w-full">
                                             <div
-                                                onClick={() => navigate(`/events/event-info/${event.event_id}`, {
+                                                onClick={() => navigate("/events/event-info", {
                                                     state: {
+                                                        event,
                                                         activeTab: activeTab
                                                     }
                                                 })}
                                                 className="cursor-pointer border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-center group hover:border-gray-700 transition-colors"
                                             >
                                                 <div className="flex flex-col gap-1 flex-grow mr-4">
-                                                    <h2 className="text-white font-medium truncate pr-2">{event.event_title}</h2>
+                                                    <h2 className="text-white font-medium truncate pr-2">{event.name}</h2>
                                                     <p className="text-sm text-gray-400 truncate pr-2">{event.college}</p>
                                                     <div className="text-xs text-gray-500 mb-2">
                                                         {(() => {
                                                             try {
-                                                                const timestamp = formatTimestamp(event.event_start_time);
-                                                                return timestamp.time || event.event_start_time;
-                                                            } catch (e) { return event.event_start_time; }
+                                                                const [datePart, timePart] = event.s_time.split('T');
+                                                                const [hour, minute] = timePart.split(':');
+                                                                // Convert to 12-hour format
+                                                                const hourInt = parseInt(hour, 10);
+                                                                const ampm = hourInt >= 12 ? 'PM' : 'AM';
+                                                                const hour12 = hourInt % 12 || 12;
+                                                                return `${hour12}:${minute} ${ampm}`;
+                                                            } catch (e) { return event.s_time; }
                                                         })()}
                                                     </div>
                                                 </div>
                                                 <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-gray-800 bg-gray-900">
-                                                    {event.event_poster ? (
-                                                        <img src={event.event_poster} alt={event.event_title} className="w-full h-full object-cover" />
+                                                    {event.image ? (
+                                                        <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-500 text-xs">No Image</div>
                                                     )}

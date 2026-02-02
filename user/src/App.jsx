@@ -236,7 +236,7 @@ function App() {
         <Route path="/events/all_events" element={<All_events />} />
         <Route path="/events/add_events" element={<Add_Events />} />
         <Route path="/events/add_location" element={<Add_location />} />
-        <Route path="/events/event-info/:eventId"  element={<Event_Info/>} />
+        <Route path="/events/event-info"  element={<Event_Info/>} />
 
         {/* Fallback */}
         {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
