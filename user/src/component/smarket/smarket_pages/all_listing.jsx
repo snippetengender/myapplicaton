@@ -52,12 +52,20 @@ export default function All_listing() {
         loadMoreListings(1);
     }, []);
 
-    // IntersectionObserver for infinite scroll (subsequent loads)
+    // Reset state when category changes
     useEffect(() => {
         setListedItems([]);
         setPage(1);
         setHasMore(true);
+        setIsLoading(true);
     }, [selectedCategory]);
+
+    // Load data after state is reset (separate effect to avoid stale closure)
+    useEffect(() => {
+        if (isLoading && listedItems.length === 0) {
+            loadMoreListings(1);
+        }
+    }, [isLoading, selectedCategory]);
 
     useEffect(() => {
         if (!hasMore || isLoading || page === 1) return;
