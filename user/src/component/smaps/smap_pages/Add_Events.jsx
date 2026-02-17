@@ -3,15 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import statesData from '../../../data/india-states-districts.json';
 import categoriesData from '../../../data/all-categorys.json';
+import {createEvent} from "../api"
 
 export default function Add_events() {
     const navigate = useNavigate();
     const [eventData, setEventData] = useState({
         name: '',
         college: '',
-        s_time: '',
-        e_time: '',
-        image: null,
+        event_start_time: '',
+        event_end_time: '',
+        event_poster: null,
         location: null,
         description: '',
         state: '',
@@ -20,6 +21,7 @@ export default function Add_events() {
         registrationLink: ''
     });
     const [availableDistricts, setAvailableDistricts] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Search terms for filtering
     const [stateSearchTerm, setStateSearchTerm] = useState('');
@@ -91,7 +93,7 @@ export default function Add_events() {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setEventData(prev => ({ ...prev, image: reader.result }));
+                setEventData(prev => ({ ...prev, event_poster: reader.result }));
             };
             reader.readAsDataURL(file);
         }
@@ -103,35 +105,37 @@ export default function Add_events() {
         navigate('/events/add_location');
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!eventData.name.trim()) return;
 
-        const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
+        setIsLoading(true);
+        // const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
         const newEvent = {
-            id: Date.now(),
-            name: eventData.name,
+            // event_id: Date.now(),
+            event_title: eventData.name,
             college: eventData.college,
-            s_time: eventData.s_time,
-            e_time: eventData.e_time,
-            image: eventData.image || `https://picsum.photos/200/200?random=${Date.now()}`,
+            event_start_time: eventData.event_start_time,
+            event_end_time: eventData.event_end_time,
+            event_poster: eventData.event_poster || `https://picsum.photos/200/200?random=${Date.now()}`,
             description: eventData.description,
             state: eventData.state,
             district: eventData.district,
             category: eventData.category,
             registrationLink: eventData.registrationLink,
-            // Add location data if available, or default to center of India if critical
-            lat: eventData.location?.lat || 19.1334,
-            lng: eventData.location?.lng || 72.9133
+            location: eventData.location,
         };
 
-        const updatedEvents = [newEvent, ...storedEvents];
-        localStorage.setItem('user_events', JSON.stringify(updatedEvents));
-
-        // Clear temp data
-        localStorage.removeItem('temp_event_data');
-        localStorage.removeItem('temp_location');
-
-        navigate('/events/all_events');
+        // const updatedEvents = [newEvent, ...storedEvents];
+        // localStorage.setItem('user_events', JSON.stringify(updatedEvents));
+        try{
+            await createEvent(newEvent);
+            localStorage.removeItem('temp_event_data');
+            localStorage.removeItem('temp_location');
+            navigate('/events/all_events');
+        } catch (error){
+            console.error('failed to create event:', error);
+            setIsLoading(false);
+        }
     };
 
     // Filter functions
@@ -189,8 +193,8 @@ export default function Add_events() {
                 {/* Image Upload Area */}
                 <div className="flex justify-center mb-4">
                     <div className="relative w-32 h-32 bg-gray-900 rounded-2xl border border-gray-800 flex items-center justify-center overflow-hidden group cursor-pointer hover:border-gray-600 transition-all">
-                        {eventData.image ? (
-                            <img src={eventData.image} alt="Preview" className="w-full h-full object-cover" />
+                        {eventData.event_poster ? (
+                            <img src={eventData.event_poster} alt="Preview" className="w-full h-full object-cover" />
                         ) : (
                             <div className="text-center p-2 flex flex-col items-center gap-2 text-gray-600 group-hover:text-gray-400">
                                 <ImageIcon size={28} />
@@ -244,8 +248,8 @@ export default function Add_events() {
                         <input
                             type="datetime-local"
                             className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all [color-scheme:dark]"
-                            value={eventData.s_time}
-                            onChange={(e) => setEventData({ ...eventData, s_time: e.target.value })}
+                            value={eventData.event_start_time}
+                            onChange={(e) => setEventData({ ...eventData, event_start_time: e.target.value })}
                         />
                     </div>
 
@@ -254,8 +258,8 @@ export default function Add_events() {
                         <input
                             type="datetime-local"
                             className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all [color-scheme:dark]"
-                            value={eventData.e_time}
-                            onChange={(e) => setEventData({ ...eventData, e_time: e.target.value })}
+                            value={eventData.event_end_time}
+                            onChange={(e) => setEventData({ ...eventData, event_end_time: e.target.value })}
                         />
                     </div>
 
@@ -421,10 +425,10 @@ export default function Add_events() {
                 <div className="mt-auto pt-8 pb-4">
                     <button
                         onClick={handleSave}
-                        disabled={!eventData.name}
+                        disabled={!eventData.name || isLoading}
                         className="w-full bg-white text-black font-semibold py-3 px-4 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-white/10"
                     >
-                        Create Event
+                        {isLoading ? 'Creating...' : 'Create Event'}
                     </button>
                 </div>
             </div>
