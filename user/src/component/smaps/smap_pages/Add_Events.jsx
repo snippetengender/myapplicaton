@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import statesData from '../../../data/india-states-districts.json';
 import categoriesData from '../../../data/all-categorys.json';
-import {createEvent} from "../api"
+import { createEvent, searchColleges } from "../api"
 
 export default function Add_events() {
     const navigate = useNavigate();
     const [eventData, setEventData] = useState({
         name: '',
-        college: '',
+        college_id: '',
+        collegeName: '',
         event_start_time: '',
         event_end_time: '',
         event_poster: null,
@@ -18,7 +19,8 @@ export default function Add_events() {
         state: '',
         district: '',
         category: '',
-        registrationLink: ''
+        registrationLink: '',
+        visibility: 'public'
     });
     const [availableDistricts, setAvailableDistricts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -32,11 +34,16 @@ export default function Add_events() {
     const [showStateDropdown, setShowStateDropdown] = useState(false);
     const [showDistrictDropdown, setShowDistrictDropdown] = useState(false);
     const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+    const [showCollegeDropdown, setShowCollegeDropdown] = useState(false);
+    const [collegeResults, setCollegeResults] = useState([]);
+    const [isSearchingCollege, setIsSearchingCollege] = useState(false);
+    const collegeSearchTimeout = useRef(null);
 
     // Refs for click outside detection
     const stateRef = useRef(null);
     const districtRef = useRef(null);
     const categoryRef = useRef(null);
+    const collegeRef = useRef(null);
 
     useEffect(() => {
         // Load temp data if exists (resuming draft)
@@ -82,6 +89,9 @@ export default function Add_events() {
             if (categoryRef.current && !categoryRef.current.contains(event.target)) {
                 setShowCategoryDropdown(false);
             }
+            if (collegeRef.current && !collegeRef.current.contains(event.target)) {
+                setShowCollegeDropdown(false);
+            }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
@@ -113,7 +123,7 @@ export default function Add_events() {
         const newEvent = {
             // event_id: Date.now(),
             event_title: eventData.name,
-            college: eventData.college,
+            college_id: eventData.college_id,
             event_start_time: eventData.event_start_time,
             event_end_time: eventData.event_end_time,
             event_poster: eventData.event_poster || `https://picsum.photos/200/200?random=${Date.now()}`,
@@ -123,16 +133,17 @@ export default function Add_events() {
             category: eventData.category,
             registrationLink: eventData.registrationLink,
             location: eventData.location,
+            visibility: eventData.visibility,
         };
 
         // const updatedEvents = [newEvent, ...storedEvents];
         // localStorage.setItem('user_events', JSON.stringify(updatedEvents));
-        try{
+        try {
             await createEvent(newEvent);
             localStorage.removeItem('temp_event_data');
             localStorage.removeItem('temp_location');
             navigate('/events/all_events');
-        } catch (error){
+        } catch (error) {
             console.error('failed to create event:', error);
             setIsLoading(false);
         }
@@ -168,6 +179,43 @@ export default function Add_events() {
         setEventData({ ...eventData, category: categoryName });
         setCategorySearchTerm('');
         setShowCategoryDropdown(false);
+    };
+
+    const handleCollegeSearch = async (query) => {
+        setEventData(prev => ({ ...prev, collegeName: query, college_id: '' }));
+        setShowCollegeDropdown(true);
+
+        if (collegeSearchTimeout.current) {
+            clearTimeout(collegeSearchTimeout.current);
+        }
+
+        if (query.trim().length < 3) {
+            setCollegeResults([]);
+            return;
+        }
+
+        setIsSearchingCollege(true);
+        collegeSearchTimeout.current = setTimeout(async () => {
+            try {
+                const results = await searchColleges(query);
+                setCollegeResults(results.data || []);
+            } catch (error) {
+                console.error('Failed to search colleges', error);
+                setCollegeResults([]);
+            } finally {
+                setIsSearchingCollege(false);
+            }
+        }, 500); // 500ms debounce
+    };
+
+    const handleCollegeSelect = (college) => {
+        setEventData(prev => ({
+            ...prev,
+            college_id: college._id || college.id || '', // Handles your backend projection result
+            collegeName: college.name
+        }));
+        setShowCollegeDropdown(false);
+        setCollegeResults([]);
     };
 
     return (
@@ -222,15 +270,42 @@ export default function Add_events() {
                         />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2" ref={collegeRef}>
                         <label className="text-sm text-gray-400 ml-1">College Name</label>
-                        <input
-                            type="text"
-                            placeholder="e.g. Stanford University"
-                            className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all"
-                            value={eventData.college}
-                            onChange={(e) => setEventData({ ...eventData, college: e.target.value })}
-                        />
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="e.g. Stanford University"
+                                className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 pr-10 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all"
+                                value={eventData.collegeName}
+                                onChange={(e) => handleCollegeSearch(e.target.value)}
+                                onFocus={() => setShowCollegeDropdown(true)}
+                            />
+                            <ChevronDown
+                                size={20}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                            />
+                            {showCollegeDropdown && (eventData.collegeName.length >= 3 || collegeResults.length > 0) && (
+                                <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                    {isSearchingCollege ? (
+                                        <div className="px-4 py-2.5 text-gray-500">Searching...</div>
+                                    ) : collegeResults.length > 0 ? (
+                                        collegeResults.map((college) => (
+                                            <div
+                                                key={college._id || college.name}
+                                                onClick={() => handleCollegeSelect(college)}
+                                                className="px-4 py-2.5 text-white hover:bg-gray-700 cursor-pointer transition-colors"
+                                            >
+                                                <div className="font-medium">{college.name}</div>
+                                                {college.city && <div className="text-xs text-gray-400">{college.city}</div>}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        eventData.collegeName.length >= 3 && <div className="px-4 py-2.5 text-gray-500">No results found</div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -405,6 +480,19 @@ export default function Add_events() {
                             onChange={(e) => setEventData({ ...eventData, registrationLink: e.target.value })}
                         />
                         <p className="text-xs text-gray-500 ml-1">Add a Google Form or registration page link</p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm text-gray-400 ml-1">Visibility</label>
+                        <select
+                            className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all appearance-none"
+                            value={eventData.visibility}
+                            onChange={(e) => setEventData({ ...eventData, visibility: e.target.value })}
+                        >
+                            <option value="public">Public (Visible to everyone)</option>
+                            <option value="private">Private (Visible only to your college)</option>
+                        </select>
+                        <p className="text-xs text-gray-500 ml-1">Private events will only appear in "your hood" for your college mates.</p>
                     </div>
 
                     {/* Add Location Button */}

@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
+import { useNotification } from "../../providers/NotificationContext";
+
 const BottomTabs = ({ userId }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { hasUnreadMarketplace, markMarketplaceRead } = useNotification();
 
     // State for scroll-based visibility
     const [isTabsVisible, setIsTabsVisible] = useState(true);
@@ -68,13 +71,19 @@ const BottomTabs = ({ userId }) => {
                 )}
             </button>
             <button
-                onClick={() => navigate("/smarket")}
+                onClick={() => {
+                    navigate("/smarket");
+                    markMarketplaceRead();
+                }}
                 className={`relative w-full py-3 font-semibold text-center ${activeTab === "marketplace" ? "text-brand-off-white" : "text-brand-medium-gray"
                     }`}
             >
                 marketplace
                 {activeTab === "marketplace" && (
                     <span className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[2px] bg-brand-off-white rounded"></span>
+                )}
+                {hasUnreadMarketplace && (
+                    <span className="absolute top-2 right-[25%] w-2.5 h-2.5 bg-pink-500 rounded-full shadow-sm shadow-pink-500/50"></span>
                 )}
             </button>
             <button

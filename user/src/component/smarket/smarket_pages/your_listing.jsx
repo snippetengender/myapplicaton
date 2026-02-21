@@ -73,8 +73,8 @@ export default function Your_listing() {
         return () => observer.disconnect();
     }, [page, hasMore, isLoading, selectedCategory]);
 
-    const getStatusInfo = (live, removed) => {
-        if (removed) return { color: "bg-red-500", text: "Snippet Removed this Listing" };
+    const getStatusInfo = (live) => {
+        if (live === "cancelled") return { color: "bg-red-500", text: "Snippet Removed this Listing" };
         if (live === "sold") return { color: "bg-yellow-400", text: "You ended this listing" };
         return { color: "bg-green-500", text: "Your Product is Listed" };
     };
@@ -94,7 +94,7 @@ export default function Your_listing() {
                 </h1>
             ) : (
                 userListings.map((listing) => {
-                    const status = getStatusInfo(listing.status, listing.is_removed);
+                    const status = getStatusInfo(listing.live);
 
                     return (
                         <div
@@ -115,14 +115,14 @@ export default function Your_listing() {
                                 {/* Info - Right Side */}
                                 <div className="flex flex-col flex-1 min-w-0 h-32">
                                     <h3 className="text-gray-400 text-[10px] font-medium mb-0.5">@cit</h3>
-                                    <h2 className="text-white text-md font-bold leading-tight mb-0.5 truncate">
+                                    <div className="text-white text-lg font-bold mb-0.5">
                                         {listing.product_name}
-                                    </h2>
+                                    </div>
                                     <div className="text-white text-lg font-bold mb-0.5">
                                         Rs. {listing.price}
                                     </div>
                                     <div className="text-gray-400 text-[9px] mb-1.5">
-                                        Updated On : {listing.posted_at || "Dec 8, 05:44 PM"}
+                                        Listed on : {listing.posted_at ? new Date(Number(listing.posted_at)).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : "Dec 8, 05:44 PM"}
                                     </div>
 
                                     <div className="flex items-center gap-1.5 mb-2">

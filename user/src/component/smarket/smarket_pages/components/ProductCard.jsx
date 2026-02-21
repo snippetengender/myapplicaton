@@ -39,7 +39,7 @@ const ProductCard = ({ listing, onConnect, onShare, navigate }) => {
 
             {/* Date */}
             <div className="text-[9px] text-gray-400 mt-0.5 mb-2">
-                {listing.posted_at || "Dec 8, 05:44 PM"}
+                {listing.posted_at ? new Date(Number(listing.posted_at)).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : "Dec 8, 05:44 PM"}
             </div>
 
 

@@ -10,6 +10,7 @@ import { FiSearch, FiSend, FiUser } from "react-icons/fi";
 import Sidebar from "./Sidebar";
 import PostCardSkeleton from "./postSkeleton";
 import { useSelector, useDispatch } from "react-redux";
+import { useNotification } from "../../providers/NotificationContext";
 import { clearUser } from "../../features/userSlice/userSlice";
 import {
   fetchMixes,
@@ -640,9 +641,11 @@ const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auth = getAuth();
+  const { hasUnreadMarketplace, markMarketplaceRead } = useNotification();
   const { posts, status, hasMore, page, fetchError } = useSelector(
     (state) => state.mixes
   );
+
   const userId = useSelector((state) => state.user.userId);
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -910,10 +913,16 @@ const Home = () => {
           )}
         </button>
         <button
-          onClick={() => navigate("/smarket")}
+          onClick={() => {
+            navigate("/smarket");
+            markMarketplaceRead();
+          }}
           className="relative w-full py-3 font-semibold text-center text-brand-medium-gray"
         >
           marketplace
+          {hasUnreadMarketplace && (
+            <span className="absolute top-2 right-[25%] w-2.5 h-2.5 bg-pink-500 rounded-full shadow-sm shadow-pink-500/50"></span>
+          )}
         </button>
         <button
           onClick={() => {

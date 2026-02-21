@@ -8,29 +8,29 @@ export default function Event_Info() {
     const navigate = useNavigate();
     const { eventId } = useParams();
     const { mapState, activeTab } = location.state || {};
-    
+
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
     // const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
-    
+
 
     // Try to get event from navigation state, or fall back to localStorage
     // let currentEvent = userEvents.find(e => e.id === event?.id) || event;
 
     useEffect(() => {
-        if (!eventId){
+        if (!eventId) {
             setError(true);
             setLoading(false);
             return;
         }
 
-        async function loadEvent(){
+        async function loadEvent() {
             try {
                 const data = await fetchEventById(eventId);
                 setEvent(data);
-            } catch(err){
+            } catch (err) {
                 console.error("failed to fetch the event: ", err)
             } finally {
                 setLoading(false);
@@ -67,7 +67,7 @@ export default function Event_Info() {
         event_start_time,
         event_end_time,
         event_poster,
-        college,
+        college_name,
         location: eventLocation,
         registrationLink
     } = event;
@@ -96,7 +96,7 @@ export default function Event_Info() {
     //     };
 
     const start = formatTimestamp(event_start_time);
-    const end = formatTimestamp(event_end_time);  
+    const end = formatTimestamp(event_end_time);
 
     return (
         <div className="bg-black min-h-screen text-white font-sans pb-24">
@@ -107,12 +107,12 @@ export default function Event_Info() {
                     onClick={() => {
                         if (mapState) {
                             navigate("/events", {
-                                state: {restoredMapState: mapState, activeTab}
+                                state: { restoredMapState: mapState, activeTab }
                             });
                         } else if (activeTab !== undefined) {
                             // If no mapState but we have activeTab (from list view)
                             navigate("/events", {
-                                state: {activeTab: activeTab}
+                                state: { activeTab: activeTab }
                             });
                         } else {
                             console.log("No mapState found, going back default.");
@@ -200,7 +200,7 @@ export default function Event_Info() {
                             <MapPin size={24} className="text-white" />
                         </div>
                         <div>
-                            <p className="font-semibold text-lg text-white">{college}</p>
+                            <p className="font-semibold text-lg text-white">{college_name || "Unknown College"}</p>
                             <p className="text-sm text-gray-400 mt-0.5">College</p>
                         </div>
                     </div>

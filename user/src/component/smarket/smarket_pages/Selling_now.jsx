@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ImageEditor from './components/ImageEditor';
 import api from '../../../providers/api';
 import { LISTING_STATUS, LISTING_CATEGORY } from "./constants/listingStatus";
+import { useNotification } from "../../../providers/NotificationContext";
 
 export default function ProductListingForm() {
 
@@ -12,6 +13,7 @@ export default function ProductListingForm() {
   const location = useLocation();
   const isEditMode = location.state?.mode === "edit";
   const editListing = location.state?.listing;
+  const { markMarketplaceUnread } = useNotification();
 
   const [formData, setFormData] = useState({
     productName: '',
@@ -75,6 +77,7 @@ export default function ProductListingForm() {
 
 
   const handleSubmit = async () => {
+    // ... existing payload logic
     const payload = {
       product_name: formData.productName,
       description: formData.description,
@@ -91,6 +94,7 @@ export default function ProductListingForm() {
         await updateListing(editListing.listing_id, payload);
       } else {
         await createListing({ ...payload, owner_id: user_id, live: LISTING_STATUS.LISTED });
+        markMarketplaceUnread(); // 🔔 Trigger notification for new listing
       }
 
       navigate('/smarket', { state: { activeTab: 'your_listing' } });

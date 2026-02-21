@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { useNotification } from "../../providers/NotificationContext";
 
 import All_listing from "./smarket_pages/all_listing";
 import Your_listing from "./smarket_pages/your_listing";
@@ -17,6 +18,11 @@ export default function Smarket() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
     const userId = localStorage.getItem("user_id");
+    const { markMarketplaceRead } = useNotification();
+
+    useEffect(() => {
+        markMarketplaceRead();
+    }, []);
 
     const renderTab = () => {
         switch (activeMTab) {

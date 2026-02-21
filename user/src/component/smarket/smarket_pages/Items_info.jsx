@@ -113,7 +113,7 @@ export default function Item_Info() {
                             <div className="flex items-center gap-3">
                                 <FiCalendar className="text-white w-5 h-5 flex-shrink-0" />
                                 <span className="text-sm font-medium">
-                                    Updated On {listing.posted_at || "Dec 6, 8 : 44 PM"}
+                                    Listed on {listing.posted_at ? new Date(Number(listing.posted_at)).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : "Dec 6, 8:44 PM"}
                                 </span>
                             </div>
                         </div>

@@ -16,8 +16,13 @@ export async function fetchEventsByCategory(category) {
 }
 
 export async function fetchEventById(eventId) {
-  
+
   const res = await api.get(`/smaps/${eventId}`);
+  return res.data;
+}
+
+export async function searchColleges(name, city = '') {
+  const res = await api.get(`/college?name=${encodeURIComponent(name)}&city=${encodeURIComponent(city)}`);
   return res.data;
 }
 
@@ -26,19 +31,24 @@ export async function createEvent(payload) {
   return res.data;
 }
 
+export async function fetchUserCollegeLocation() {
+  const res = await api.get(`/smaps/user/college-location`);
+  return res.data;
+}
+
 
 export const formatTimestamp = (timeString) => {
-    if (!timeString) return { date: '', s_time: '' };
-        const dateObj = new Date(timeString);
-        return {
-            date: dateObj.toLocaleDateString('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric'
-            }),
-            time: dateObj.toLocaleDateString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit'
-            })
-        };
-    };
+  if (!timeString) return { date: '', s_time: '' };
+  const dateObj = new Date(timeString);
+  return {
+    date: dateObj.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric'
+    }),
+    time: dateObj.toLocaleDateString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit'
+    })
+  };
+};

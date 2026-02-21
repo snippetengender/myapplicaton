@@ -43,7 +43,7 @@ export default function All_events() {
                         {events.map((event) => (
                             <div key={event.event_id} className="w-full">
                                 <div
-                                    onClick={() => navigate("/events/event-info", { state: { eventId: event.event_id } })}
+                                    onClick={() => navigate(`/events/event-info/${event.event_id}`)}
                                     className="cursor-pointer border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-center group hover:border-gray-700 transition-colors"
                                 >
                                     <div className="flex flex-col gap-1 flex-grow mr-4">

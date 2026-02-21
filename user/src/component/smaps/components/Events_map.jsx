@@ -6,7 +6,8 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster';
 import "leaflet/dist/leaflet.css";
-import { fetchAllEventLocations } from "../api";
+import { fetchAllEventLocations, fetchUserCollegeLocation } from "../api";
+import MapUpdater from "./MapUpdater";
 
 // Fix default Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -44,6 +45,29 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
   const [filteredEventCount, setFilteredEventCount] = useState(0);
   const [storedEvents, setStoredEvents] = useState([]);
   const [eventsLoaded, setEventsLoaded] = useState(false);
+
+  // New state for tabs and location locking
+  const [mapTab, setMapTab] = useState('other'); // 'other' | 'your'
+  const [collegeLocation, setCollegeLocation] = useState(null);
+
+  // Find college location when 'your hood' is selected
+  useEffect(() => {
+    const fetchLocation = async () => {
+      if (mapTab === 'your' && !collegeLocation) {
+        try {
+          const locationData = await fetchUserCollegeLocation();
+          if (locationData && locationData.coordinates) {
+            // coordinates are [lng, lat] from backend
+            const [lng, lat] = locationData.coordinates;
+            setCollegeLocation([lat, lng]);
+          }
+        } catch (err) {
+          console.error("Failed to fetch college location", err);
+        }
+      }
+    };
+    fetchLocation();
+  }, [mapTab, collegeLocation]);
 
   // Memoize initial map state to avoid recalculation
   const initialMapState = useMemo(() => {
@@ -130,7 +154,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
     });
 
     // Combine default events with user events
-    
+
     const userEvents = storedEvents.map(e => ({
       id: e.event_id,
       title: e.event_title,
@@ -142,12 +166,18 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
       state: e.state,           // Include state for filtering
       district: e.district,     // Include district for filtering
       category: e.category,     // Include category for filtering
+      visibility: e.visibility || 'public', // Include visibility for mapTab filtering
     }));
 
     const allEvents = [...events, ...userEvents];
 
     // Apply filters
     const filteredEvents = allEvents.filter(event => {
+      // Filter by visibility (private events are not shown in 'other' hood)
+      if (mapTab === 'other' && event.visibility === 'private') {
+        return false;
+      }
+
       // Filter by state
       if (selectedState && event.state !== selectedState) {
         return false;
@@ -227,7 +257,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
         navigate(`/events/event-info/${id}`, {
           state: {
             mapState,
-            activeTab 
+            activeTab
           }
         });
       });
@@ -236,56 +266,13 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
 
     map.addLayer(markerCluster);
     return markerCluster;
-  }, [storedEvents, selectedState, selectedDistrict, selectedCategory]); // Add filter dependencies
+  }, [storedEvents, selectedState, selectedDistrict, selectedCategory, mapTab]); // Add filter dependencies
   const ZoomOutButton = () => {
     if (zoomLevel < 10) {
       setZoom(4);
     };
   }
-  const MapUpdater = () => {
-    const map = useMap();
-    const clusterRef = useRef(null);
-    const location = useLocation();
-
-    // Map is already initialized at correct position via MapContainer props
-    // This effect is just for logging/debugging
-    useEffect(() => {
-      console.log("Map initialized at:", map.getCenter(), "zoom:", map.getZoom());
-    }, [map]);
-
-    // Track zoom level changes
-    useEffect(() => {
-      const handleZoomEnd = () => {
-        setCurrentZoom(map.getZoom());
-      };
-
-      map.on('zoomend', handleZoomEnd);
-
-      return () => {
-        map.off('zoomend', handleZoomEnd);
-      };
-    }, [map]);
-
-    useEffect(() => {
-      if (!eventsLoaded) return; // Wait for events to load
-
-      if (clusterRef.current) {
-        clusterRef.current.clearLayers(); // Clear all layers in the cluster
-        map.removeLayer(clusterRef.current);
-      }
-
-      clusterRef.current = updateMarkers(map);
-
-      return () => {
-        if (clusterRef.current) {
-          clusterRef.current.clearLayers(); // Clear all layers before removal
-          map.removeLayer(clusterRef.current);
-        }
-      };
-    }, [map, selectedState, selectedDistrict, selectedCategory, updateMarkers, eventsLoaded]);
-
-    return null;
-  };
+  // Removed internal MapUpdater component
 
   // Show popup when filters are applied and no events found
   useEffect(() => {
@@ -304,6 +291,22 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
 
   return (
     <div className="relative flex-1" style={{ height: "calc(100vh - 130px)", width: "100%" }}>
+      {/* Tabs Header */}
+      <div className="absolute top-0 w-full h-[40px] z-[1000] flex items-center bg-black/80 backdrop-blur-sm border-b border-gray-800">
+        <div
+          onClick={() => setMapTab('other')}
+          className={`flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'other' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+        >
+          other hood
+        </div>
+        <div
+          onClick={() => setMapTab('your')}
+          className={`flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'your' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+        >
+          your hood
+        </div>
+      </div>
+
       {/* No Events Found Popup */}
       {showNoEventsPopup && (
         <div
@@ -316,8 +319,8 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
         </div>
       )}
 
-      {/* Button that appears when zoom > 6 */}
-      {currentZoom > 6 && (
+      {/* Button that appears when zoom > 6 and not in 'your hood' */}
+      {currentZoom > 6 && mapTab !== 'your' && (
         <button
           className="absolute top-2.5 right-2.5 z-[1000] px-4 py-2.5 bg-[#F06CB7] text-white border-none rounded-lg cursor-pointer font-bold shadow-md flex items-center gap-2 hover:bg-[#E05BA6] transition-colors"
           onClick={() => {
@@ -365,7 +368,17 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
         fadeAnimation={true}
         markerZoomAnimation={true}
       >
-        <MapUpdater />
+        <MapUpdater
+          mapTab={mapTab}
+          collegeLocation={collegeLocation}
+          eventsLoaded={eventsLoaded}
+          selectedState={selectedState}
+          selectedDistrict={selectedDistrict}
+          selectedCategory={selectedCategory}
+          updateMarkers={updateMarkers}
+          setCurrentZoom={setCurrentZoom}
+          initialMapState={initialMapState}
+        />
         <button onClick={ZoomOutButton}>
           Zoom Out
         </button>
