@@ -26,6 +26,7 @@ export default function ProductListingForm() {
 
   const [uploadedImages, setUploadedImages] = useState([])
   const [showEditor, setShowEditor] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isEditMode && editListing) {
@@ -89,6 +90,8 @@ export default function ProductListingForm() {
 
     console.log('Sending payload:', payload);
 
+    setIsSubmitting(true);
+
     try {
       if (isEditMode) {
         await updateListing(editListing.listing_id, payload);
@@ -101,6 +104,8 @@ export default function ProductListingForm() {
 
     } catch (error) {
       console.error('Error submitting form:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -244,11 +249,16 @@ export default function ProductListingForm() {
 
         {/* Submit Button */}
         <button
-          onClick={() => {
-            handleSubmit();
-          }}
-          className="w-full bg-white text-black font-medium py-3 rounded-lg hover:bg-gray-100 transition-colors">
-          {isEditMode ? "Update Product" : "List Product"}
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className={`w-full text-black font-medium py-3 rounded-lg transition-colors ${isSubmitting
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-white hover:bg-gray-100'
+            }`}
+        >
+          {isSubmitting
+            ? (isEditMode ? "Updating the product..." : "Listing the product...")
+            : (isEditMode ? "Update Product" : "List Product")}
         </button>
       </div>
 

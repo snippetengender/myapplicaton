@@ -113,7 +113,7 @@ export default function Your_listing() {
                                 </div>
 
                                 {/* Info - Right Side */}
-                                <div className="flex flex-col flex-1 min-w-0 h-32">
+                                <div className="flex flex-col flex-1 min-w-0 py-1">
                                     <h3 className="text-gray-400 text-[10px] font-medium mb-0.5">@cit</h3>
                                     <div className="text-white text-lg font-bold mb-0.5">
                                         {listing.product_name}
