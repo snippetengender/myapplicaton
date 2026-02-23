@@ -1,7 +1,7 @@
 import { ArrowLeft, Upload, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import ImageEditor from './components/ImageEditor';
+
 import api from '../../../providers/api';
 import { LISTING_STATUS, LISTING_CATEGORY } from "./constants/listingStatus";
 import { useNotification } from "../../../providers/NotificationContext";
@@ -25,8 +25,47 @@ export default function ProductListingForm() {
   });
 
   const [uploadedImages, setUploadedImages] = useState([])
-  const [showEditor, setShowEditor] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const MAX_DIM = 1200;
+
+          if (width > MAX_DIM || height > MAX_DIM) {
+            if (width > height) {
+              height = Math.round((MAX_DIM / width) * height);
+              width = MAX_DIM;
+            } else {
+              width = Math.round((MAX_DIM / height) * width);
+              height = MAX_DIM;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, width, height);
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          setUploadedImages(prev => [...prev, compressedDataUrl]);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
   useEffect(() => {
     if (isEditMode && editListing) {
@@ -44,9 +83,6 @@ export default function ProductListingForm() {
   }, [isEditMode, editListing]);
 
 
-  const handleSaveImage = (imageUrl) => {
-    setUploadedImages([...uploadedImages, imageUrl]);
-  };
 
   const removeImage = (index) => {
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
@@ -202,14 +238,17 @@ export default function ProductListingForm() {
 
         {/* Upload Button */}
         <div>
-          <button
-            type="button"
-            onClick={() => setShowEditor(true)}
-            className="w-full border border-gray-700 rounded-lg py-16 text-white hover:border-gray-500 transition-colors flex flex-col items-center justify-center gap-2"
-          >
+          <label className="w-full border border-gray-700 rounded-lg py-16 text-white hover:border-gray-500 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer">
             <Upload size={32} />
             <span>Upload Images</span>
-          </button>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </label>
         </div>
 
         {/* Uploaded Images Preview */}
@@ -252,8 +291,8 @@ export default function ProductListingForm() {
           onClick={handleSubmit}
           disabled={isSubmitting}
           className={`w-full text-black font-medium py-3 rounded-lg transition-colors ${isSubmitting
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-white hover:bg-gray-100'
+            ? 'bg-gray-400 cursor-not-allowed'
+            : 'bg-white hover:bg-gray-100'
             }`}
         >
           {isSubmitting
@@ -262,12 +301,7 @@ export default function ProductListingForm() {
         </button>
       </div>
 
-      {/* Image Editor Component */}
-      <ImageEditor
-        isOpen={showEditor}
-        onSave={handleSaveImage}
-        onClose={() => setShowEditor(false)}
-      />
+
     </div>
   );
 }
