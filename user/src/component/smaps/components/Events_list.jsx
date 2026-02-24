@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchAllEventLocations, formatTimestamp } from '../api';
+import { MapPin } from 'lucide-react';
 
 export default function Events_list({ activeTab, selectedState, selectedDistrict, selectedCategory }) {
     const [events, setEvents] = useState([]);
     const [showNoEventsPopup, setShowNoEventsPopup] = useState(false);
+    const [mapTab, setMapTab] = useState('other'); // 'other' | 'your'
     const navigate = useNavigate();
     const todayRef = useRef(null);
     const containerRef = useRef(null);
@@ -12,19 +14,25 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
     useEffect(() => {
         // const storedEvents = fetchAllEventLocations()
         async function loadAllEvents() {
-            try{
+            try {
                 const storedEvents = await fetchAllEventLocations()
                 setEvents(storedEvents);
             }
-            catch(error) {
+            catch (error) {
                 console.log("can't get all the events from backend: ", error)
-            }}
-        
+            }
+        }
+
         loadAllEvents();
     }, []);
 
     // Filter events based on selected state, district, and category
     const filteredEvents = events.filter(event => {
+        // Filter by visibility (private events are not shown in 'other' hood)
+        if (mapTab === 'other' && event.visibility === 'private') {
+            return false;
+        }
+
         // Filter by state
         if (selectedState && event.state !== selectedState) {
             return false;
@@ -59,7 +67,9 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
     const getDateKey = (dateString) => {
         if (!dateString) return '9999-12-31';
         try {
-            return dateString.split('T')[0];
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return '9999-12-31';
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         } catch (e) {
             return '9999-12-31';
         }
@@ -88,9 +98,10 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
         } else if (checkDate.getTime() === tomorrow.getTime()) {
             return "Tomorrow";
         } else {
-            // Format: 27th Jan
+            // Format: 26th March 2026
             const day = date.getDate();
-            const month = date.toLocaleString('default', { month: 'short' });
+            const month = date.toLocaleString('default', { month: 'long' });
+            const year = date.getFullYear();
 
             // Add ordinal suffix
             let suffix = "th";
@@ -98,7 +109,7 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
             else if (day % 10 === 2 && day !== 12) suffix = "nd";
             else if (day % 10 === 3 && day !== 13) suffix = "rd";
 
-            return `${day}${suffix} ${month}`;
+            return `${day}${suffix} ${month} ${year}`;
         }
     };
 
@@ -145,7 +156,23 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
     }, [sortedDates.length]);
 
     return (
-        <div ref={containerRef} className="relative flex-1 overflow-auto bg-black p-4 pl-0" style={{ height: "calc(100vh - 130px)" }}>
+        <div ref={containerRef} className="relative flex-1 overflow-auto bg-black pb-4" style={{ height: "calc(100vh - 130px)" }}>
+            {/* Tabs Header */}
+            <div className="sticky top-0 w-full h-[40px] z-[1000] flex items-center bg-black/90 backdrop-blur-sm border-b border-gray-800 mb-4">
+                <div
+                    onClick={() => setMapTab('other')}
+                    className={`flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'other' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                    other hood
+                </div>
+                <div
+                    onClick={() => setMapTab('your')}
+                    className={`flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'your' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                    your hood
+                </div>
+            </div>
+
             {/* No Events Found Popup */}
             {showNoEventsPopup && (
                 <div
@@ -173,17 +200,17 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                                 {/* Continuous Dotted Line */}
                                 {index !== sortedDates.length - 1 && (
                                     <div
-                                        className="absolute left-[0px] top-2 bottom-0 w-[2px] -ml-[1px]"
+                                        className="absolute left-[0px] top-2 -bottom-10 w-[2px] -ml-[1px] z-0"
                                         style={{
-                                            backgroundImage: 'radial-gradient(circle, #6b7280 1.5px, transparent 1.5px)',
-                                            backgroundSize: '4px 8px',
+                                            backgroundImage: 'radial-gradient(circle, #4b5563 1.5px, transparent 1.5px)',
+                                            backgroundSize: '4px 10px',
                                             backgroundRepeat: 'repeat-y',
                                             backgroundPosition: 'center top'
                                         }}
                                     ></div>
                                 )}
                                 {/* Date Header */}
-                                <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-gray-400"></div>
+                                <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-gray-300 z-10"></div>
 
                                 <div className="flex items-baseline gap-2 mb-4 -mt-1.5">
                                     <h3 className="text-white font-bold text-lg">{dateLabel}</h3>
@@ -200,12 +227,10 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                                                         activeTab: activeTab
                                                     }
                                                 })}
-                                                className="cursor-pointer border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-center group hover:border-gray-700 transition-colors"
+                                                className="cursor-pointer border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-start group hover:border-gray-700 transition-colors"
                                             >
-                                                <div className="flex flex-col gap-1 flex-grow mr-4">
-                                                    <h2 className="text-white font-medium truncate pr-2">{event.event_title}</h2>
-                                                    <p className="text-sm text-gray-400 truncate pr-2">{event.college}</p>
-                                                    <div className="text-xs text-gray-500 mb-2">
+                                                <div className="flex flex-col flex-grow mr-4">
+                                                    <div className="text-xs text-gray-500 mb-2 font-medium tracking-wide">
                                                         {(() => {
                                                             try {
                                                                 const timestamp = formatTimestamp(event.event_start_time);
@@ -213,12 +238,26 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                                                             } catch (e) { return event.event_start_time; }
                                                         })()}
                                                     </div>
+                                                    <h2 className="text-white font-bold text-lg leading-tight mb-1">{event.event_title}</h2>
+                                                    <p className="text-sm text-gray-400 mb-3">{event.college_name || event.college || "Unknown College"}</p>
+
+                                                    <div className="flex flex-col gap-2.5 mt-auto">
+                                                        {event.category && (
+                                                            <div className="inline-flex items-center gap-1 bg-white text-black px-3 py-1.5 rounded-lg font-bold text-[13px] self-start">
+                                                                <MapPin size={14} strokeWidth={2.5} />
+                                                                {event.category}
+                                                            </div>
+                                                        )}
+                                                        {event.is_cash_prize_available && event.cash_prize_amount && (
+                                                            <p className="text-[13px] font-semibold text-gray-300">Rs. {event.cash_prize_amount} Prize Pool</p>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-gray-800 bg-gray-900">
+                                                <div className="w-[100px] h-[100px] rounded-xl overflow-hidden shrink-0 border border-gray-800 bg-gray-900 mt-1">
                                                     {event.event_poster ? (
                                                         <img src={event.event_poster} alt={event.event_title} className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-500 text-xs">No Image</div>
+                                                        <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-500 text-xs text-center p-2">No Image</div>
                                                     )}
                                                 </div>
                                             </div>

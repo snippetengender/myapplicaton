@@ -8,10 +8,12 @@ import Events_list from "../smaps/components/Events_list";
 import Events_map from "../smaps/components/Events_map";
 import FilterModal from "../smaps/components/FilterModal";
 import BottomTabs from "../shared/BottomTabs";
+import { useNotification } from "../../providers/NotificationContext";
 
 export default function EventsMapPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { markEventsRead } = useNotification();
 
   // Initialize activeTab directly from location.state to prevent flicker
   const [activeTab, setActiveTab] = useState(() => {
@@ -27,6 +29,8 @@ export default function EventsMapPage() {
 
   // Cleanup: Clear navigation state on unmount to ensure fresh start on next visit
   useEffect(() => {
+    markEventsRead();
+
     return () => {
       // This ensures that when user navigates away and comes back, state is fresh
       window.history.replaceState({}, document.title);

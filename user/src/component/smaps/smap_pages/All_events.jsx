@@ -11,14 +11,14 @@ export default function All_events() {
     useEffect(() => {
         async function loadEvents() {
             try {
-            const data = await fetchAllEventLocationsOfUser();
-            setEvents(data);
+                const data = await fetchAllEventLocationsOfUser();
+                setEvents(data);
             } catch (err) {
-            console.error(err);
+                console.error(err);
             }
         }
         loadEvents();
-        }, []);
+    }, []);
 
     return (
         <div className="bg-black min-h-screen text-white font-sans">
@@ -40,49 +40,61 @@ export default function All_events() {
                 <div className="flex-grow overflow-y-auto pb-20">
                     <div className="flex flex-col gap-4">
                         {/* Events List */}
-                        {events.map((event) => (
-                            <div key={event.event_id} className="w-full">
-                                <div
-                                    onClick={() => navigate(`/events/event-info/${event.event_id}`)}
-                                    className="cursor-pointer border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-center group hover:border-gray-700 transition-colors"
-                                >
-                                    <div className="flex flex-col gap-1 flex-grow mr-4">
-                                        <h2 className="text-white font-medium truncate pr-2">{event.event_title}</h2>
-                                        <h2 className="text-sm text-gray-400 truncate pr-2">{event.college}</h2>
-                                        <div className="text-xs text-gray-500 mb-2">
-                                            {(() => {
-                                                if (!event.event_start_time) return '';
-                                                try {
-                                                    const [datePart, timePart] = event.event_start_time.split('T');
-                                                    if (!datePart || !timePart) return event.event_start_time;
-                                                    const [year, month, day] = datePart.split('-');
-                                                    const [hour, minute] = timePart.split(':');
-                                                    return (
-                                                        <>
-                                                            <span>Date: {day}-{month}-{year}</span><br />
-                                                            <span>Time: {hour}:{minute}</span>
-                                                        </>
-                                                    )
-                                                } catch (e) { return event.time; }
-                                            })()}
+                        {events.map((event) => {
+                            const formatDT = (dt) => {
+                                if (!dt) return 'N/A';
+                                try {
+                                    const d = new Date(dt);
+                                    if (isNaN(d.getTime())) return dt;
+                                    const dateStr = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+                                    let hours = d.getHours();
+                                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                                    hours = hours % 12;
+                                    hours = hours ? hours : 12; // the hour '0' should be '12'
+                                    const minutes = d.getMinutes().toString().padStart(2, '0');
+                                    hours = hours.toString().padStart(2, '0');
+                                    return `${dateStr} ${hours} : ${minutes} ${ampm}`;
+                                } catch { return 'N/A'; }
+                            };
+
+                            let statusColor = 'bg-green-500';
+                            let statusText = 'Your Event is Listed';
+                            if (event.status === 'removed') {
+                                statusColor = 'bg-yellow-400';
+                                statusText = 'You Removed this Event';
+                            } else if (event.status === 'banned') {
+                                statusColor = 'bg-red-500';
+                                statusText = 'Snippet removed this Event';
+                            } else if (event.event_end_time && Date.now() > new Date(event.event_end_time).getTime()) {
+                                statusColor = 'bg-blue-500';
+                                statusText = 'Event Got Over';
+                            }
+
+                            return (
+                                <div key={event.event_id} className="w-full">
+                                    <div
+                                        onClick={() => navigate(`/events/event-info/${event.event_id}`)}
+                                        className="cursor-pointer border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-center group hover:border-gray-700 transition-colors"
+                                    >
+                                        <div className="flex flex-col gap-1.5 flex-grow mr-4">
+                                            <h2 className="text-xl text-white font-bold truncate pr-2">{event.event_title}</h2>
+                                            <h2 className="text-sm text-gray-200 mt-1 capitalize font-medium">Visibility : {event.visibility || 'Public'}</h2>
+                                            <div className="text-sm font-medium text-gray-200">
+                                                <span>Start time : {formatDT(event.event_start_time)}</span><br />
+                                                <span>End time : {formatDT(event.event_end_time)}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <div className={`w-3 h-3 rounded-full ${statusColor}`}></div>
+                                                <span className="text-sm text-gray-200 font-medium">{statusText}</span>
+                                            </div>
                                         </div>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                navigate(`/events/event-info/${event.event_id}`);
-                                            }}
-                                            className="bg-white text-black text-xs font-bold py-2 px-4 rounded-lg w-fit hover:bg-gray-200 transition-colors"
-                                        >
-                                            View Event
-                                        </button>
-                                    </div>
-                                    <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-gray-800 bg-gray-900">
-                                        <img src={event.event_poster} alt={event.event_title} className="w-full h-full object-cover" />
+                                        <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-gray-800 bg-gray-900 self-start mt-2">
+                                            <img src={event.event_poster} alt={event.event_title} className="w-full h-full object-cover" />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                        ))}
+                            );
+                        })}
 
                         {events.length === 0 && (
                             <div className="text-center text-gray-800 mt-20 flex flex-col items-center gap-2">

@@ -8,6 +8,7 @@ import 'leaflet.markercluster';
 import "leaflet/dist/leaflet.css";
 import { fetchAllEventLocations, fetchUserCollegeLocation } from "../api";
 import MapUpdater from "./MapUpdater";
+import { useNotification } from "../../../providers/NotificationContext";
 
 // Fix default Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -41,6 +42,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
   const location = useLocation();
   const mapRef = useRef();
   const navigate = useNavigate();
+  const { hasUnreadPrivateEvents, markPrivateEventsRead } = useNotification();
   const [showNoEventsPopup, setShowNoEventsPopup] = useState(false);
   const [filteredEventCount, setFilteredEventCount] = useState(0);
   const [storedEvents, setStoredEvents] = useState([]);
@@ -118,6 +120,9 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
   // Function to add markers to the map
   const updateMarkers = useCallback((map) => {
     const markerCluster = new L.MarkerClusterGroup({
+      maxClusterRadius: 40,
+      disableClusteringAtZoom: 15,
+      spiderfyOnMaxZoom: true,
       iconCreateFunction: (cluster) => {
         return L.divIcon({
           html: `
@@ -163,13 +168,18 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
       lng: e.location?.coordinates ? e.location.coordinates[0] : null,
       s_time: e.event_start_time,
       image: e.event_poster,
-      state: e.state,           // Include state for filtering
-      district: e.district,     // Include district for filtering
-      category: e.category,     // Include category for filtering
-      visibility: e.visibility || 'public', // Include visibility for mapTab filtering
+      state: e.state,
+      district: e.district,
+      category: e.category,
+      visibility: e.visibility || 'public',
     }));
 
-    const allEvents = [...events, ...userEvents];
+    // Deduplicate events by id
+    const uniqueEventsMap = new Map();
+    [...events, ...userEvents].forEach(ev => {
+      if (ev.id) uniqueEventsMap.set(ev.id, ev);
+    });
+    const allEvents = Array.from(uniqueEventsMap.values());
 
     // Apply filters
     const filteredEvents = allEvents.filter(event => {
@@ -204,24 +214,23 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
 
       marker.bindTooltip(`
         <div style="
-            width: 70px;
-            height: 80px;
+            width: 80px;
+            height: 90px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background-color: white; 
-            border-radius: 20px;
-            padding: 1px;
+            background-color: transparent; 
+            padding: 4px;
             box-sizing: border-box;
-            color: black; 
+            color: white; 
             font-family: sans-serif; 
             font-size: 10px; 
             line-height: 1.2;
             cursor: pointer;
         ">
-          <img src=${event.image} style="width: 40px; height: 40px; border-radius: 5px; object-fit: cover; margin-bottom: 4px;" />
+          <img src=${event.image} style="width: 45px; height: 45px; border-radius: 5px; object-fit: cover; margin-bottom: 4px;" />
           <strong style="
               display: block; 
               white-space: nowrap; 
@@ -233,10 +242,30 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
           
           ${event.s_time ? (() => {
           try {
-            const datePart = event.s_time.split('T')[0];
-            if (!datePart) return '';
-            const [year, month, day] = datePart.split('-');
-            return `<span style="color: #666; font-size: 9px; display: block; margin-top: 2px;">${day}-${month}-${year}</span>`;
+            const start = new Date(event.s_time).getTime();
+            if (isNaN(start)) return '';
+            const now = Date.now();
+            const diff = start - now;
+
+            if (diff <= 0) return '<span style="color: #ccc; font-size: 9px; display: block; margin-top: 2px;">Live Now</span>';
+
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const weeks = Math.floor(days / 7);
+            const months = Math.floor(days / 30);
+            const years = Math.floor(days / 365);
+
+            let text = '';
+            if (minutes < 2) text = 'In a Moment';
+            else if (hours < 1) text = `In ${minutes} minute${minutes > 1 ? 's' : ''}`;
+            else if (days < 1) text = `In ${hours} hour${hours > 1 ? 's' : ''}`;
+            else if (weeks < 1) text = `In ${days} day${days > 1 ? 's' : ''}`;
+            else if (months < 1) text = `In ${weeks} week${weeks > 1 ? 's' : ''}`;
+            else if (years < 1) text = `In ${months} month${months > 1 ? 's' : ''}`;
+            else text = `In ${years} year${years > 1 ? 's' : ''}`;
+
+            return `<span style="color: #ccc; font-size: 9px; display: block; margin-top: 2px;">${text}</span>`;
           } catch (e) {
             return '';
           }
@@ -300,10 +329,16 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
           other hood
         </div>
         <div
-          onClick={() => setMapTab('your')}
-          className={`flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'your' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+          onClick={() => {
+            setMapTab('your');
+            markPrivateEventsRead();
+          }}
+          className={`relative flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'your' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
         >
           your hood
+          {hasUnreadPrivateEvents && mapTab !== 'your' && (
+            <span className="absolute top-3 right-[35%] w-2 h-2 bg-pink-500 rounded-full shadow-sm shadow-pink-500/50"></span>
+          )}
         </div>
       </div>
 

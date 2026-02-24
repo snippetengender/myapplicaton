@@ -1,12 +1,16 @@
 import { ArrowLeft, MapPin, Plus, Image as ImageIcon, ChevronDown } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import statesData from '../../../data/india-states-districts.json';
 import categoriesData from '../../../data/all-categorys.json';
-import { createEvent, searchColleges } from "../api"
+import { createEvent, searchColleges, updateEvent } from "../api"
+import { useNotification } from "../../../providers/NotificationContext";
 
 export default function Add_events() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const editEvent = location.state?.editEvent;
+
     const [eventData, setEventData] = useState({
         name: '',
         college_id: '',
@@ -20,7 +24,13 @@ export default function Add_events() {
         district: '',
         category: '',
         registrationLink: '',
-        visibility: 'public'
+        visibility: 'public',
+        college_location: null,
+        countryCode: '+91',
+        phone_number: '',
+        organizer_platform: '',
+        is_cash_prize_available: false,
+        cash_prize_amount: ''
     });
     const [availableDistricts, setAvailableDistricts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -46,11 +56,66 @@ export default function Add_events() {
     const collegeRef = useRef(null);
 
     useEffect(() => {
-        // Load temp data if exists (resuming draft)
+        const isResuming = location.state?.resumingDraft;
         const savedData = localStorage.getItem('temp_event_data');
-        if (savedData) {
-            const parsedData = JSON.parse(savedData);
-            setEventData(parsedData);
+
+        if (isResuming && savedData) {
+            setEventData(JSON.parse(savedData));
+        } else if (editEvent && !isResuming) {
+            const formatToLocalISO = (timestamp) => {
+                if (!timestamp) return '';
+                const date = new Date(timestamp);
+                if (isNaN(date.getTime())) return '';
+                const pad = (n) => n.toString().padStart(2, '0');
+                return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            };
+
+            let editPhone = editEvent.phone_number || '';
+            let editCountryCode = '+91';
+
+            if (editPhone.includes(' ')) {
+                const parts = editPhone.split(' ');
+                if (parts[0].startsWith('+')) {
+                    editCountryCode = parts[0];
+                    editPhone = parts.slice(1).join('').replace(/\D/g, '');
+                }
+            } else if (editPhone.startsWith('+91')) {
+                editCountryCode = '+91';
+                editPhone = editPhone.substring(3).replace(/\D/g, '');
+            } else if (editPhone.startsWith('+1')) {
+                editCountryCode = '+1';
+                editPhone = editPhone.substring(2).replace(/\D/g, '');
+            } else if (editPhone.startsWith('+44')) {
+                editCountryCode = '+44';
+                editPhone = editPhone.substring(3).replace(/\D/g, '');
+            } else {
+                editPhone = editPhone.replace(/\D/g, '');
+            }
+
+            setEventData({
+                name: editEvent.event_title || '',
+                college_id: editEvent.college_id || '',
+                collegeName: editEvent.college_name || '',
+                event_start_time: formatToLocalISO(editEvent.event_start_time),
+                event_end_time: formatToLocalISO(editEvent.event_end_time),
+                event_poster: editEvent.event_poster || null,
+                location: editEvent.location?.coordinates ? { lng: editEvent.location.coordinates[0], lat: editEvent.location.coordinates[1] } : null,
+                description: editEvent.description || '',
+                state: editEvent.state || '',
+                district: editEvent.district || '',
+                category: editEvent.category || '',
+                registrationLink: editEvent.registrationLink || '',
+                visibility: editEvent.visibility || 'public',
+                college_location: null,
+                countryCode: editCountryCode,
+                phone_number: editPhone,
+                organizer_platform: editEvent.organizer_platform || '',
+                is_cash_prize_available: editEvent.is_cash_prize_available || false,
+                cash_prize_amount: editEvent.cash_prize_amount || ''
+            });
+        } else if (savedData) {
+            // Load temp data if exists (resuming draft outside of location flow)
+            setEventData(JSON.parse(savedData));
         }
 
         // Check if we have a location returned from Add_location
@@ -60,7 +125,7 @@ export default function Add_events() {
             setEventData(prev => ({ ...prev, location: { lat, lng } }));
             // We keep temp_location until save to be safe
         }
-    }, []);
+    }, [editEvent]);
 
     // Update available districts when state changes
     useEffect(() => {
@@ -110,22 +175,50 @@ export default function Add_events() {
     };
 
     const handleAddLocation = () => {
+        if (!eventData.college_id) return;
         // Save current state before navigating away
         localStorage.setItem('temp_event_data', JSON.stringify(eventData));
-        navigate('/events/add_location');
+        navigate('/events/add_location', { state: { collegeLocation: eventData.college_location, eventLocation: eventData.location, editEvent, resumingDraft: true } });
     };
 
+    const { markEventsUnread } = useNotification();
     const handleSave = async () => {
-        if (!eventData.name.trim()) return;
+        const requiredFields = {
+            name: "Event Title",
+            college_id: "College",
+            event_start_time: "Start Time",
+            event_end_time: "End Time",
+            description: "Description",
+            state: "State",
+            district: "District",
+            category: "Category",
+            location: "Location",
+            phone_number: "Phone Number",
+            organizer_platform: "Instagram/Webpage"
+        };
+
+        const missingFields = [];
+        Object.keys(requiredFields).forEach(key => {
+            if (!eventData[key]) {
+                missingFields.push(requiredFields[key]);
+            }
+        });
+
+        if (eventData.is_cash_prize_available && (!eventData.cash_prize_amount || isNaN(eventData.cash_prize_amount) || Number(eventData.cash_prize_amount) <= 0)) {
+            missingFields.push("Valid Cash Prize Amount");
+        }
+
+        if (missingFields.length > 0) {
+            alert(`Please fill in the following required fields:\n\n- ${missingFields.join('\n- ')}`);
+            return;
+        }
 
         setIsLoading(true);
-        // const storedEvents = JSON.parse(localStorage.getItem('user_events') || '[]');
         const newEvent = {
-            // event_id: Date.now(),
             event_title: eventData.name,
             college_id: eventData.college_id,
-            event_start_time: eventData.event_start_time,
-            event_end_time: eventData.event_end_time,
+            event_start_time: new Date(eventData.event_start_time).toISOString(),
+            event_end_time: new Date(eventData.event_end_time).toISOString(),
             event_poster: eventData.event_poster || `https://picsum.photos/200/200?random=${Date.now()}`,
             description: eventData.description,
             state: eventData.state,
@@ -134,17 +227,23 @@ export default function Add_events() {
             registrationLink: eventData.registrationLink,
             location: eventData.location,
             visibility: eventData.visibility,
+            phone_number: `${eventData.countryCode} ${eventData.phone_number}`,
+            organizer_platform: eventData.organizer_platform,
+            is_cash_prize_available: eventData.is_cash_prize_available,
+            cash_prize_amount: eventData.cash_prize_amount,
         };
 
-        // const updatedEvents = [newEvent, ...storedEvents];
-        // localStorage.setItem('user_events', JSON.stringify(updatedEvents));
         try {
-            await createEvent(newEvent);
+            if (editEvent) {
+                await updateEvent(editEvent.event_id, newEvent);
+            } else {
+                await createEvent(newEvent);
+            }
             localStorage.removeItem('temp_event_data');
             localStorage.removeItem('temp_location');
             navigate('/events/all_events');
         } catch (error) {
-            console.error('failed to create event:', error);
+            console.error('failed to save event:', error);
             setIsLoading(false);
         }
     };
@@ -212,7 +311,8 @@ export default function Add_events() {
         setEventData(prev => ({
             ...prev,
             college_id: college._id || college.id || '', // Handles your backend projection result
-            collegeName: college.name
+            collegeName: college.name,
+            college_location: college.location || null
         }));
         setShowCollegeDropdown(false);
         setCollegeResults([]);
@@ -232,7 +332,7 @@ export default function Add_events() {
                 >
                     <ArrowLeft size={24} />
                 </button>
-                <h1 className="text-lg font-semibold">Add New Event</h1>
+                <h1 className="text-lg font-semibold">{editEvent ? "Edit Event" : "Add New Event"}</h1>
             </div>
 
             {/* Form Body */}
@@ -483,6 +583,78 @@ export default function Add_events() {
                     </div>
 
                     <div className="space-y-2">
+                        <label className="text-sm text-gray-400 ml-1">Phone Number</label>
+                        <div className="flex gap-2">
+                            <select
+                                className="w-[100px] shrink-0 bg-gray-900/50 border border-gray-800 rounded-xl px-2 py-3 text-white focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all appearance-none text-center"
+                                value={eventData.countryCode || '+91'}
+                                onChange={(e) => setEventData({ ...eventData, countryCode: e.target.value })}
+                            >
+                                <option value="+91">+91 (IN)</option>
+                                <option value="+1">+1 (US)</option>
+                                <option value="+44">+44 (UK)</option>
+                                <option value="+61">+61 (AU)</option>
+                            </select>
+                            <input
+                                type="tel"
+                                maxLength="10"
+                                placeholder="9876543210"
+                                className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all"
+                                value={eventData.phone_number}
+                                onChange={(e) => {
+                                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                    setEventData({ ...eventData, phone_number: val });
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm text-gray-400 ml-1">Instagram Handle / Webpage</label>
+                        <input
+                            type="text"
+                            placeholder="e.g. IG handle/webpage link"
+                            className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all"
+                            value={eventData.organizer_platform}
+                            onChange={(e) => setEventData({ ...eventData, organizer_platform: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="space-y-4 bg-gray-900/30 p-4 rounded-xl border border-gray-800">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <label className="text-sm text-white font-medium">Cash Prize</label>
+                                <p className="text-xs text-gray-500 mt-1">Is there a cash prize for this event?</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={eventData.is_cash_prize_available}
+                                    onChange={(e) => setEventData({ ...eventData, is_cash_prize_available: e.target.checked })}
+                                />
+                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            </label>
+                        </div>
+
+                        {eventData.is_cash_prize_available && (
+                            <div className="space-y-2 pt-2 border-t border-gray-800">
+                                <label className="text-sm text-gray-400 ml-1">Prize Pool</label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
+                                    <input
+                                        type="number"
+                                        placeholder="e.g. 5000"
+                                        className="w-full bg-gray-900/50 border border-gray-800 rounded-xl pl-8 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all"
+                                        value={eventData.cash_prize_amount}
+                                        onChange={(e) => setEventData({ ...eventData, cash_prize_amount: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="space-y-2">
                         <label className="text-sm text-gray-400 ml-1">Visibility</label>
                         <select
                             className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all appearance-none"
@@ -495,12 +667,14 @@ export default function Add_events() {
                         <p className="text-xs text-gray-500 ml-1">Private events will only appear in "your hood" for your college mates.</p>
                     </div>
 
-                    {/* Add Location Button */}
                     <button
                         onClick={handleAddLocation}
-                        className={`w-full py-3 px-4 border rounded-xl flex items-center justify-start gap-3 transition-all group ${eventData.location
-                            ? 'border-green-800 bg-green-900/20 text-green-400'
-                            : 'border-gray-800 text-gray-400 hover:text-white hover:bg-gray-900/50 hover:border-gray-600'
+                        disabled={!eventData.college_id}
+                        className={`w-full py-3 px-4 border rounded-xl flex items-center justify-start gap-3 transition-all group ${!eventData.college_id
+                            ? 'opacity-50 cursor-not-allowed border-gray-800 text-gray-500'
+                            : eventData.location
+                                ? 'border-green-800 bg-green-900/20 text-green-400'
+                                : 'border-gray-800 text-gray-400 hover:text-white hover:bg-gray-900/50 hover:border-gray-600'
                             }`}
                     >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${eventData.location ? 'bg-green-900 text-green-400' : 'bg-gray-900 group-hover:bg-gray-800'}`}>
@@ -513,10 +687,10 @@ export default function Add_events() {
                 <div className="mt-auto pt-8 pb-4">
                     <button
                         onClick={handleSave}
-                        disabled={!eventData.name || isLoading}
+                        disabled={isLoading}
                         className="w-full bg-white text-black font-semibold py-3 px-4 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-white/10"
                     >
-                        {isLoading ? 'Creating...' : 'Create Event'}
+                        {isLoading ? (editEvent ? 'Updating...' : 'Creating...') : (editEvent ? 'Update Event' : 'Create Event')}
                     </button>
                 </div>
             </div>

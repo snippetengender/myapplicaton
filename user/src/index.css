@@ -57,3 +57,19 @@
   margin: 8px 10px !important;
   line-height: 1.4;
 }
+/* Custom Tooltip Styles for Map Markers */
+.leaflet-tooltip.compact-popup {
+  background-color: black !important;
+  border: 1px solid #333 !important;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-tooltip-top.compact-popup::before {
+  border-top-color: black !important;
+}
+
+.leaflet-tooltip-bottom.compact-popup::before {
+  border-bottom-color: black !important;
+}

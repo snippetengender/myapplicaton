@@ -36,6 +36,11 @@ export async function fetchUserCollegeLocation() {
   return res.data;
 }
 
+export async function updateEvent(eventId, payload) {
+  const res = await api.patch(`/smaps/${eventId}`, payload);
+  return res.data;
+}
+
 
 export const formatTimestamp = (timeString) => {
   if (!timeString) return { date: '', s_time: '' };
@@ -46,7 +51,7 @@ export const formatTimestamp = (timeString) => {
       month: 'long',
       day: 'numeric'
     }),
-    time: dateObj.toLocaleDateString('en-US', {
+    time: dateObj.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit'
     })

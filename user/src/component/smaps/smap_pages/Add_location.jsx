@@ -1,14 +1,30 @@
 import { useState, useRef, useEffect } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Check } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
 export default function Add_location() {
     const navigate = useNavigate();
+    const routerLocation = useLocation();
     const mapRef = useRef(null);
-    const [center, setCenter] = useState({ lat: 19.1334, lng: 72.9133 }); // Default center
-    const [currentZoom, setCurrentZoom] = useState(5);
+
+    // Parse coordinates [lng, lat] from passed location
+    const collegeLocation = routerLocation.state?.collegeLocation;
+    const eventLocation = routerLocation.state?.eventLocation;
+    let initialLat = 11.027456478466824;
+    let initialLng = 77.02760607004167;
+
+    if (eventLocation && eventLocation.lat && eventLocation.lng) {
+        initialLat = eventLocation.lat;
+        initialLng = eventLocation.lng;
+    } else if (collegeLocation && collegeLocation.coordinates && collegeLocation.coordinates.length === 2) {
+        initialLng = collegeLocation.coordinates[0];
+        initialLat = collegeLocation.coordinates[1];
+    }
+
+    const [center, setCenter] = useState({ lat: initialLat, lng: initialLng });
+    const [currentZoom, setCurrentZoom] = useState(15);
 
     // Component to track map movement and zoom
     function MapEvents() {
@@ -54,7 +70,7 @@ export default function Add_location() {
             lng: currentCenter.lng
         }));
 
-        navigate('/events/add_events');
+        navigate('/events/add_events', { state: routerLocation.state });
     };
 
     return (
@@ -62,7 +78,7 @@ export default function Add_location() {
             {/* Header / Back Button */}
             <div className="absolute top-0 left-0 right-0 z-[1000] p-4 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
                 <button
-                    onClick={() => navigate('/events/add_events')}
+                    onClick={() => navigate('/events/add_events', { state: routerLocation.state })}
                     className="pointer-events-auto bg-black/50 backdrop-blur-md p-2 rounded-full text-white border border-white/10"
                 >
                     <ArrowLeft size={24} />
@@ -98,8 +114,8 @@ export default function Add_location() {
 
             {/* Map */}
             <MapContainer
-                center={[11.027456478466824, 77.02760607004167]} //CIT College Location 
-                zoom={5}
+                center={[initialLat, initialLng]}
+                zoom={15}
                 minZoom={4}
                 maxZoom={18}
                 style={{ height: "100%", width: "100%" }}

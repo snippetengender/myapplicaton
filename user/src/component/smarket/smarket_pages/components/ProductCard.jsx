@@ -24,7 +24,7 @@ const ProductCard = ({ listing, onConnect, onShare, navigate }) => {
 
             {/* Seller Info */}
             <div className="mt-2 text-[10px] text-gray-400 font-medium">
-                @{listing.seller_username || "cit"}
+                {listing.show || "@cit"}
             </div>
 
             {/* Product Name */}

@@ -60,7 +60,7 @@ api.interceptors.request.use(
     if (config.data instanceof FormData) {
       delete config.headers["Content-Type"];
     }
-    
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -86,7 +86,10 @@ api.interceptors.response.use(
         console.warn("No user during retry. Signing out.");
         auth.signOut();
         localStorage.removeItem("id_token");
-        window.location.href = "/";
+        localStorage.removeItem("user_id");
+        if (window.location.pathname !== "/") {
+          window.location.href = "/";
+        }
       }
     }
 
