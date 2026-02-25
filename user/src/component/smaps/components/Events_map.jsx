@@ -49,7 +49,12 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
   const [eventsLoaded, setEventsLoaded] = useState(false);
 
   // New state for tabs and location locking
-  const [mapTab, setMapTab] = useState('other'); // 'other' | 'your'
+  const [mapTab, setMapTab] = useState(
+    location.state?.mapTab || sessionStorage.getItem('mapTabPreference') || 'other'
+  );
+  useEffect(() => {
+    sessionStorage.setItem('mapTabPreference', mapTab);
+  }, [mapTab]);
   const [collegeLocation, setCollegeLocation] = useState(null);
 
   // Find college location when 'your hood' is selected
@@ -286,7 +291,8 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
         navigate(`/events/event-info/${id}`, {
           state: {
             mapState,
-            activeTab
+            activeTab,
+            mapTab
           }
         });
       });

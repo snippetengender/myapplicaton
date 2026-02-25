@@ -57,15 +57,23 @@ const MapUpdater = ({
         };
     }, [map, selectedState, selectedDistrict, selectedCategory, updateMarkers, eventsLoaded]);
 
+    // Track the map state for 'other' hood so we don't reset to default initial state
+    const otherMapStateRef = useRef(null);
+
     // Handle Tab Locking Behavior
     useEffect(() => {
         if (mapTab === 'your') {
+            // If switching from 'other' to 'your', save 'other' state
+            if (prevTabRef.current === 'other') {
+                otherMapStateRef.current = { center: map.getCenter(), zoom: map.getZoom() };
+            }
+
             if (collegeLocation) {
                 const [lat, lng] = collegeLocation;
 
-                // Set View and Zoom constraints
+                // Set View and Zoom constraints for 'your hood'
                 map.setView(collegeLocation, 16);
-                map.setMinZoom(15.5);
+                map.setMinZoom(4);
                 map.setMaxZoom(18); // Allow zooming in deep
 
                 // No longer locking bounds as per the requirement
@@ -86,9 +94,11 @@ const MapUpdater = ({
             map.setMaxZoom(18);
             map.setMaxBounds(null);
 
-            // If switching FROM 'your' TO 'other', reinitialize map state
+            // If switching FROM 'your' TO 'other', reinitialize map state intelligently
             if (prevTabRef.current === 'your' && mapTab === 'other') {
-                if (initialMapState) {
+                if (otherMapStateRef.current) {
+                    map.setView(otherMapStateRef.current.center, otherMapStateRef.current.zoom);
+                } else if (initialMapState) {
                     map.setView(initialMapState.center, initialMapState.zoom);
                 }
             }

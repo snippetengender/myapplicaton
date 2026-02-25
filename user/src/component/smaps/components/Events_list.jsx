@@ -1,12 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchAllEventLocations, formatTimestamp } from '../api';
 import { MapPin } from 'lucide-react';
 
 export default function Events_list({ activeTab, selectedState, selectedDistrict, selectedCategory }) {
     const [events, setEvents] = useState([]);
     const [showNoEventsPopup, setShowNoEventsPopup] = useState(false);
-    const [mapTab, setMapTab] = useState('other'); // 'other' | 'your'
+    const location = useLocation();
+
+    // Persistent mapTab across native history
+    const [mapTab, setMapTab] = useState(
+        location.state?.mapTab || sessionStorage.getItem('mapTabPreference') || 'other'
+    );
+    useEffect(() => {
+        sessionStorage.setItem('mapTabPreference', mapTab);
+    }, [mapTab]);
+
     const navigate = useNavigate();
     const todayRef = useRef(null);
     const containerRef = useRef(null);
@@ -224,7 +233,8 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                                             <div
                                                 onClick={() => navigate(`/events/event-info/${event.event_id}`, {
                                                     state: {
-                                                        activeTab: activeTab
+                                                        activeTab: activeTab,
+                                                        mapTab: mapTab
                                                     }
                                                 })}
                                                 className="cursor-pointer border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-start group hover:border-gray-700 transition-colors"

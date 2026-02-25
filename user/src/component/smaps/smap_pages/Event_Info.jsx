@@ -7,7 +7,7 @@ export default function Event_Info() {
     const location = useLocation();
     const navigate = useNavigate();
     const { eventId } = useParams();
-    const { mapState, activeTab } = location.state || {};
+    const { mapState, activeTab, mapTab } = location.state || {};
 
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -165,12 +165,12 @@ export default function Event_Info() {
                     onClick={() => {
                         if (mapState) {
                             navigate("/events", {
-                                state: { restoredMapState: mapState, activeTab }
+                                state: { restoredMapState: mapState, activeTab, mapTab }
                             });
-                        } else if (activeTab !== undefined) {
-                            // If no mapState but we have activeTab (from list view)
+                        } else if (activeTab !== undefined || mapTab !== undefined) {
+                            // If no mapState but we have activeTab or mapTab
                             navigate("/events", {
-                                state: { activeTab: activeTab }
+                                state: { activeTab: activeTab, mapTab: mapTab }
                             });
                         } else {
                             console.log("No mapState found, going back default.");
@@ -386,7 +386,7 @@ export default function Event_Info() {
                     {/* Only show "Locate on Map" button when NOT coming from map view */}
                     {!mapState && (
                         <button
-                            onClick={() => navigate("/events", { state: { focusEvent: event, activeTab: false } })}
+                            onClick={() => navigate("/events", { state: { focusEvent: event, activeTab: false, mapTab } })}
                             className="flex-1 bg-white text-black font-bold text-base py-4 rounded-2xl hover:bg-gray-200 transition-all transform active:scale-95 shadow-lg shadow-white/5"
                         >
                             Locate on Map
