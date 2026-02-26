@@ -14,6 +14,7 @@ export default function Your_listing() {
     const [isLoading, setIsLoading] = useState(true);
     const loaderRef = useRef(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const isFetchingRef = useRef(false);
 
     const fetchUserListing = async (page = 1, limit = 10, category = null) => {
         try {
@@ -27,42 +28,50 @@ export default function Your_listing() {
         }
     };
 
-    const loadMoreListings = async (currentPage) => {
-        if (!hasMore) return;
+    const loadMoreListings = async (currentPage, category = selectedCategory) => {
+        if (!hasMore && currentPage !== 1) return;
+        if (isFetchingRef.current) return;
+
+        isFetchingRef.current = true;
+        if (currentPage === 1) {
+            setIsLoading(true);
+        }
+
         console.log("page value is:", currentPage);
-        if (currentPage === 1 && userListings.length > 0) return;
-        setIsLoading(true);
-        const res = await fetchUserListing(currentPage, 10, selectedCategory);
+
+        const res = await fetchUserListing(currentPage, 10, category);
         if (!res || !res.data) {
             setIsLoading(false);
+            isFetchingRef.current = false;
             return;
         }
+
         setUserListings(prev => {
-            const existingIds = new Set(prev.map(i => i.listing_id));
+            const existingIds = new Set(currentPage === 1 ? [] : prev.map(i => i.listing_id));
             const newItems = res.data.filter(
                 item => !existingIds.has(item.listing_id)
             );
-            const updated = [...prev, ...newItems];
+            const updated = currentPage === 1 ? newItems : [...prev, ...newItems];
             if (updated.length >= res.pagination.total || res.data.length === 0) {
                 setHasMore(false);
             }
             return updated;
         });
-        setPage(p => p + 1);
+
+        setPage(currentPage + 1);
         setIsLoading(false);
+        isFetchingRef.current = false;
     };
 
+    // Initial load and reset state when category changes
     useEffect(() => {
         setUserListings([]);
         setPage(1);
         setHasMore(true);
-        setIsLoading(true);
+        loadMoreListings(1, selectedCategory);
     }, [selectedCategory]);
 
-    // Initial load on mount
-    useEffect(() => {
-        loadMoreListings(1);
-    }, []);
+
 
     // IntersectionObserver for infinite scroll (subsequent loads)
     useEffect(() => {
@@ -70,7 +79,7 @@ export default function Your_listing() {
         const observer = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting) {
                 observer.disconnect();
-                loadMoreListings(page);
+                loadMoreListings(page, selectedCategory);
             }
         });
         if (loaderRef.current) observer.observe(loaderRef.current);

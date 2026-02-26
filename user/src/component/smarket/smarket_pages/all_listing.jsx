@@ -13,6 +13,7 @@ export default function All_listing() {
     const [isLoading, setIsLoading] = useState(true);
     const loaderRef = useRef(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const isFetchingRef = useRef(false);
 
     const fetchListings = async (page = 1, limit = 10, category = null) => {
         try {
@@ -27,57 +28,55 @@ export default function All_listing() {
         }
     };
 
-    const loadMoreListings = async (currentPage) => {
-        if (!hasMore) return;
+    const loadMoreListings = async (currentPage, category = selectedCategory) => {
+        if (!hasMore && currentPage !== 1) return;
+        if (isFetchingRef.current) return;
+
+        isFetchingRef.current = true;
+        if (currentPage === 1) {
+            setIsLoading(true);
+        }
+
         console.log("page value is:", currentPage);
-        if (currentPage === 1 && listedItems.length > 0) return;
-        setIsLoading(true);
-        const res = await fetchListings(currentPage, 10, selectedCategory);
+
+        const res = await fetchListings(currentPage, 10, category);
         if (!res || !res.data) {
             setIsLoading(false);
+            isFetchingRef.current = false;
             return;
         }
+
         setListedItems(prev => {
-            const existingIds = new Set(prev.map(i => i.listing_id));
+            const existingIds = new Set(currentPage === 1 ? [] : prev.map(i => i.listing_id));
             const newItems = res.data.filter(
                 item => !existingIds.has(item.listing_id)
             );
-            const updated = [...prev, ...newItems];
+            const updated = currentPage === 1 ? newItems : [...prev, ...newItems];
             if (updated.length >= res.pagination.total || res.data.length === 0) {
                 setHasMore(false);
             }
             return updated;
         });
-        setPage(p => p + 1);
+
+        setPage(currentPage + 1);
         setIsLoading(false);
+        isFetchingRef.current = false;
     };
 
-    // Initial load on mount
-    useEffect(() => {
-        loadMoreListings(1);
-    }, []);
-
-    // Reset state when category changes
+    // Initial load and reset state when category changes
     useEffect(() => {
         setListedItems([]);
         setPage(1);
         setHasMore(true);
-        setIsLoading(true);
+        loadMoreListings(1, selectedCategory);
     }, [selectedCategory]);
-
-    // Load data after state is reset (separate effect to avoid stale closure)
-    useEffect(() => {
-        if (isLoading && listedItems.length === 0) {
-            loadMoreListings(1);
-        }
-    }, [isLoading, selectedCategory]);
 
     useEffect(() => {
         if (!hasMore || isLoading || page === 1) return;
         const observer = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting) {
                 observer.disconnect();
-                loadMoreListings(page);
+                loadMoreListings(page, selectedCategory);
             }
         });
         if (loaderRef.current) observer.observe(loaderRef.current);
@@ -138,7 +137,7 @@ export default function All_listing() {
                         ))}
                     </select>
                 </div>
-                {isLoading ? (
+                {isLoading && listedItems.length === 0 ? (
                     // Show skeletons while loading
                     [...Array(6)].map((_, index) => (
                         <ProductCardSkeleton key={index} />
