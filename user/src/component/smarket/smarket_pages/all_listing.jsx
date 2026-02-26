@@ -31,14 +31,19 @@ export default function All_listing() {
         if (!hasMore) return;
         console.log("page value is:", currentPage);
         if (currentPage === 1 && listedItems.length > 0) return;
+        setIsLoading(true);
         const res = await fetchListings(currentPage, 10, selectedCategory);
+        if (!res || !res.data) {
+            setIsLoading(false);
+            return;
+        }
         setListedItems(prev => {
             const existingIds = new Set(prev.map(i => i.listing_id));
             const newItems = res.data.filter(
                 item => !existingIds.has(item.listing_id)
             );
             const updated = [...prev, ...newItems];
-            if (updated.length >= res.pagination.total) {
+            if (updated.length >= res.pagination.total || res.data.length === 0) {
                 setHasMore(false);
             }
             return updated;

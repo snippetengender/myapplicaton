@@ -31,14 +31,19 @@ export default function Your_listing() {
         if (!hasMore) return;
         console.log("page value is:", currentPage);
         if (currentPage === 1 && userListings.length > 0) return;
+        setIsLoading(true);
         const res = await fetchUserListing(currentPage, 10, selectedCategory);
+        if (!res || !res.data) {
+            setIsLoading(false);
+            return;
+        }
         setUserListings(prev => {
             const existingIds = new Set(prev.map(i => i.listing_id));
             const newItems = res.data.filter(
                 item => !existingIds.has(item.listing_id)
             );
             const updated = [...prev, ...newItems];
-            if (updated.length >= res.pagination.total) {
+            if (updated.length >= res.pagination.total || res.data.length === 0) {
                 setHasMore(false);
             }
             return updated;
@@ -64,7 +69,6 @@ export default function Your_listing() {
         if (!hasMore || isLoading || page === 1) return;
         const observer = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting) {
-                loadMoreListings(page);
                 observer.disconnect();
                 loadMoreListings(page);
             }
@@ -114,7 +118,7 @@ export default function Your_listing() {
 
                                 {/* Info - Right Side */}
                                 <div className="flex flex-col flex-1 min-w-0 py-1">
-                                    <h3 className="text-gray-400 text-[10px] font-medium mb-0.5">@cit</h3>
+                                    <h3 className="text-gray-400 text-[10px] font-medium mb-0.5">{listing.show || "@cit"}</h3>
                                     <div className="text-white text-lg font-bold mb-0.5">
                                         {listing.product_name}
                                     </div>
