@@ -127,7 +127,8 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
     const markerCluster = new L.MarkerClusterGroup({
       maxClusterRadius: 40,
       removeOutsideVisibleBounds: false,
-      spiderfyOnMaxZoom: true,
+      spiderfyOnMaxZoom: false,
+      chunkedLoading: true,
       iconCreateFunction: (cluster) => {
         return L.divIcon({
           html: `
