@@ -6,6 +6,7 @@ import { MapPin } from 'lucide-react';
 export default function Events_list({ activeTab, selectedState, selectedDistrict, selectedCategory }) {
     const [events, setEvents] = useState([]);
     const [showNoEventsPopup, setShowNoEventsPopup] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const location = useLocation();
 
     // Persistent mapTab across native history
@@ -21,7 +22,6 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
     const containerRef = useRef(null);
 
     useEffect(() => {
-        // const storedEvents = fetchAllEventLocations()
         async function loadAllEvents() {
             try {
                 const storedEvents = await fetchAllEventLocations()
@@ -29,6 +29,8 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
             }
             catch (error) {
                 console.log("can't get all the events from backend: ", error)
+            } finally {
+                setIsLoading(false);
             }
         }
 
@@ -285,6 +287,16 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                     )
                 )}
             </div>
+
+            {/* Loading Overlay */}
+            {isLoading && (
+                <div className="absolute inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                    <div className="flex flex-col items-center">
+                        <div className="w-8 h-8 rounded-full border-4 border-[#F06CB7] border-t-transparent animate-spin"></div>
+                        <p className="text-white mt-4 font-bold text-sm">Loading Events...</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -73,7 +73,7 @@ const MapUpdater = ({
 
                 // Set View and Zoom constraints for 'your hood'
                 map.setView(collegeLocation, 16);
-                map.setMinZoom(4);
+                map.setMinZoom(15);
                 map.setMaxZoom(18); // Allow zooming in deep
 
                 // No longer locking bounds as per the requirement

@@ -126,7 +126,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
   const updateMarkers = useCallback((map) => {
     const markerCluster = new L.MarkerClusterGroup({
       maxClusterRadius: 40,
-      disableClusteringAtZoom: 15,
+      removeOutsideVisibleBounds: false,
       spiderfyOnMaxZoom: true,
       iconCreateFunction: (cluster) => {
         return L.divIcon({
@@ -348,6 +348,16 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
         </div>
       </div>
 
+      {/* Loading Overlay */}
+      {!eventsLoaded && (
+        <div className="absolute inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center">
+            <div className="w-8 h-8 rounded-full border-4 border-[#F06CB7] border-t-transparent animate-spin"></div>
+            <p className="text-white mt-4 font-bold text-sm">Loading Events...</p>
+          </div>
+        </div>
+      )}
+
       {/* No Events Found Popup */}
       {showNoEventsPopup && (
         <div
@@ -426,6 +436,9 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution=''
+          keepBuffer={8}
+          updateWhenZooming={false}
+          updateWhenIdle={false}
         />
 
       </MapContainer>
