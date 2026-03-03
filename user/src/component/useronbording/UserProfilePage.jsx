@@ -66,10 +66,10 @@ const formatBirthday = (day, month) => {
     day % 10 === 1 && day !== 11
       ? "st"
       : day % 10 === 2 && day !== 12
-      ? "nd"
-      : day % 10 === 3 && day !== 13
-      ? "rd"
-      : "th";
+        ? "nd"
+        : day % 10 === 3 && day !== 13
+          ? "rd"
+          : "th";
   // Abbreviated months
   const months = [
     "",
@@ -91,6 +91,7 @@ const formatBirthday = (day, month) => {
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("mixes");
+  const [imageHash] = useState(Date.now());
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { userId } = useParams();
@@ -157,16 +158,16 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-black text-brand-off-white font-inter">
       {/* Profile banner */}
       <div className="relative">
-        <img 
-          src={profileBanner} 
-          alt="Profile banner" 
+        <img
+          src={profileBanner}
+          alt="Profile banner"
           className="w-full h-full"
         />
         <div className="absolute bottom-[17px] left-[16px] flex items-center justify-center bg-white/30 rounded-full w-[39px] h-[38px] ">
           <button onClick={() => navigate(-1)} className="-left-1">
-            <img 
-              src={backArrow} 
-              alt="Back to Home page"   
+            <img
+              src={backArrow}
+              alt="Back to Home page"
             />
           </button>
         </div>
@@ -179,7 +180,7 @@ export default function ProfilePage() {
             {/* Profile Image */}
             <div className="w-[85px] h-[85px] rounded-full overflow-hidden">
               <img
-                src={profile.profile || "..."}
+                src={profile.profile ? `${profile.profile}?h=${imageHash}` : "..."}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
@@ -237,11 +238,10 @@ export default function ProfilePage() {
         {/* Tabs */}
         <div className="flex border-b border-gray-700">
           <button
-            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
-              activeTab === "mixes"
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "mixes"
                 ? "text-brand-off-white"
                 : "text-brand-dark-gray"
-            }`}
+              }`}
             onClick={() => setActiveTab("mixes")}
           >
             mixes
@@ -250,11 +250,10 @@ export default function ProfilePage() {
             )}
           </button>
           <button
-            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
-              activeTab === "stuffs"
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "stuffs"
                 ? "text-brand-off-white"
                 : "text-brand-dark-gray"
-            }`}
+              }`}
             onClick={() => setActiveTab("stuffs")}
           >
             stuffs
@@ -271,7 +270,7 @@ export default function ProfilePage() {
               {isInitialLoad && <MixCardSkeleton />}
 
               {posts.map((post) => (
-                <PostCard key={post.id} post={post}  />
+                <PostCard key={post.id} post={post} />
               ))}
 
               {/* Sentinel element to trigger loading more */}
@@ -296,9 +295,9 @@ export default function ProfilePage() {
 
           {activeTab === "stuffs" && (
             <div className="flex w-full h-full justify-center items-center p-5">
-              <img 
-                src={wip} 
-                alt="Work in progress" 
+              <img
+                src={wip}
+                alt="Work in progress"
                 className="w-[117px]"
               />
             </div>

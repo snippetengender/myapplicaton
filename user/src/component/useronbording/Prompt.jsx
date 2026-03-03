@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateOnboardingData,
@@ -19,10 +19,22 @@ const bioOptions = [
 
 export default function PromptEditor() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [showBioOptions, setShowBioOptions] = useState(false);
 
   const { prompt } = useSelector((state) => state.onboarding.profileData);
+
+  // Hydrate state from location.state if present
+  useEffect(() => {
+    if (location.state?.currentData) {
+      dispatch(updateOnboardingData(location.state.currentData));
+    }
+  }, [location.state, dispatch]);
+
+
+  // Check if coming from edit-profile via state
+  const isEditMode = location.state?.fromEditProfile || document.referrer.includes("edit-profile");
 
   const handleInputChange = (value) => {
     dispatch(
@@ -36,28 +48,32 @@ export default function PromptEditor() {
     const randomBio = bioOptions[Math.floor(Math.random() * bioOptions.length)];
     dispatch(
       updateOnboardingData({
-        prompt: { ...prompt, name: randomBio, reference_id: "I want"},
+        prompt: { ...prompt, name: randomBio, reference_id: "I want" },
       })
     );
   };
 
   const handleSaveAndNext = () => {
-  const payload = {
-    prompt: {
-      name: prompt?.name,
-      reference_id: "I want",  
-    },
+    const payload = {
+      prompt: {
+        name: prompt?.name,
+        reference_id: "I want",
+      },
+    };
+
+    dispatch(updateOnboardingStep(payload));
+    navigate(isEditMode ? "/useronboarding/edit-profile" : "/useronboarding/relationship-status");
   };
 
-  dispatch(updateOnboardingStep(payload));
-  navigate("/useronboarding/relationship-status");
-};
+  const handleBack = () => {
+    navigate(isEditMode ? "/useronboarding/edit-profile" : -1);
+  };
 
   return (
     <div className="min-h-screen bg-black text-brand-off-white px-4 py-6 flex flex-col justify-between">
       {/* Top Navigation */}
       <div className="flex-1">
-        <button className="mb-3" onClick={() => navigate(-1)}>
+        <button className="mb-3" onClick={handleBack}>
           <ArrowLeft className="text-brand-off-white" size={24} />
         </button>
 
@@ -96,15 +112,14 @@ export default function PromptEditor() {
         <button
           disabled={!prompt?.name?.trim()}
           onClick={handleSaveAndNext}
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300 ${
-            !prompt?.name?.trim()
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300 ${!prompt?.name?.trim()
               ? "bg-brand-charcoal cursor-not-allowed opacity-50"
               : "bg-brand-off-white"
-          }`}
+            }`}
         >
-          <img 
-            src={nextArrow} 
-            alt="Next arrow" 
+          <img
+            src={nextArrow}
+            alt="Next arrow"
           />
         </button>
       </div>

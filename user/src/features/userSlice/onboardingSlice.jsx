@@ -1,46 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../providers/api";
+import { fetchUserProfile } from "../userSlice/userSlice";
 
-// export const submitOnboardingProfile = createAsyncThunk(
-//   "onboarding/submitProfile",
-//   async ({ profileImageFile }, { getState, dispatch, rejectWithValue }) => {
-//     try {
-//       const { onboarding } = getState();
-//       const finalProfileData = onboarding.profileData;
-
-//       console.log("Step 1: Creating user with data:", finalProfileData);
-//       const createUserResponse = await api.post("/user/", finalProfileData);
-//       console.log("Raw:", JSON.stringify(createUserResponse.data, null, 2));
-//       const newUser = createUserResponse.data.user;
-//       const userId = newUser.firebase_id;
-
-//       if (!userId) {
-//         throw new Error("Backend did not return a user ID after creation.");
-//       }
-
-//       if (profileImageFile) {
-//         console.log(`Step 2: Uploading profile image for user ${userId}...`);
-//         const formData = new FormData();
-//         formData.append("file", profileImageFile);
-//         await api.post(`/user/${userId}/profile`, formData, {
-//           headers: { "Content-Type": "multipart/form-data" },
-//         });
-//       }
-
-//       console.log("Onboarding complete. Setting final user profile in Redux.");
-//       dispatch(setUserId(userId));
-//       dispatch(setProfile(newUser));
-
-//       return newUser;
-//     } catch (err) {
-//       console.error("Onboarding submission failed:", err);
-//       return rejectWithValue(
-//         err.response?.data?.message || "Onboarding submission failed"
-//       );
-//     }
-//   }
-// );
-
+/* =======================
+   UPDATE STEP
+======================= */
 export const updateOnboardingStep = createAsyncThunk(
   "onboarding/updateStep",
   async (stepData, { getState, dispatch, rejectWithValue }) => {
@@ -53,6 +17,9 @@ export const updateOnboardingStep = createAsyncThunk(
       }
 
       const response = await api.patch(`/user/${userId}`, stepData);
+
+      // ✅ CRITICAL FIX: sync user profile after edit
+      dispatch(fetchUserProfile(userId));
 
       return response.data;
     } catch (err) {
@@ -78,6 +45,9 @@ export const uploadOnboardingProfileImage = createAsyncThunk(
         headers: { "Content-Type": "multipart/form-data" },
       });
 
+      // ✅ OPTIONAL BUT GOOD: refresh profile image
+      dispatch(fetchUserProfile(userId));
+
       return { success: true };
     } catch (err) {
       console.error("Profile image upload failed:", err);
@@ -86,6 +56,9 @@ export const uploadOnboardingProfileImage = createAsyncThunk(
   }
 );
 
+/* =======================
+   INITIAL STATE
+======================= */
 const initialState = {
   status: "idle",
   error: null,
@@ -120,17 +93,6 @@ const onboardingSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // .addCase(submitOnboardingProfile.pending, (state) => {
-      //   state.status = "submitting";
-      // })
-      // .addCase(submitOnboardingProfile.fulfilled, (state) => {
-      //   state.status = "succeeded";
-      // })
-      // .addCase(submitOnboardingProfile.rejected, (state, action) => {
-      //   state.status = "failed";
-      //   state.error = action.payload;
-      // });
-
       .addCase(updateOnboardingStep.pending, (state) => {
         state.status = "submitting";
       })
@@ -159,4 +121,5 @@ export const {
   updateOnboardingData,
   resetOnboardingState,
 } = onboardingSlice.actions;
+
 export default onboardingSlice.reducer;

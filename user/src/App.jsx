@@ -20,6 +20,7 @@ import RelationshipStatusPage from "./component/useronbording/RelationshipStatus
 import UserProfilePage from "./component/useronbording/UserProfilePage";
 import UsernamePage from "./component/useronbording/UsernamePage";
 import BouquetOutlet from "../Outlet/BouquetOutlet";
+import BirthdayEdit from "./component/useronbording/BirthdayEdit";
 
 // Auth Wrapper
 import ProtectedRoute from "./component/useronbording/ProtectedRoute";
@@ -64,9 +65,11 @@ import AlreadyRegisteredPage from "./component/signinPage/AlreadyRegisteredPage.
 import DomainErrorPage from "./component/signinPage/DomainNotAllowed.jsx";
 import ProfileOwner from "./component/useronbording/UserProfileOwner.jsx";
 import LowKeyProfilePage from "./component/lowkey/LowKeyProfile.jsx";
+import EditLowkeyProfilePage from "./component/lowkey/EditLowkeyProfilePage.jsx";
 import ProfileOwnerRoute from "./component/useronbording/ProfileOwnerRoute.jsx";
 import AboutUsWrapper from "./component/Home_page/AboutUsWrapper.jsx";
 import LobbyWrapper from "./component/signinPage/LobbyWrapper.jsx";
+import EditProfile from "./component/useronbording/EditProfile.jsx";
 // Smarket
 import Smarket from "./component/smarket/Smarket.jsx"
 import Item_Info from "./component/smarket/smarket_pages/Items_info.jsx"
@@ -151,6 +154,10 @@ function App() {
             path="/useronboarding/relationship-status"
             element={<RelationshipStatusPage />}
           />
+          <Route
+            path="/useronboarding/birthday-edit"
+            element={<BirthdayEdit />}
+          />
           <Route path="/user-profile/:userId" element={<UserProfilePage />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<ProfileOwnerRoute />}>
@@ -161,9 +168,14 @@ function App() {
             </Route>
 
             <Route path="/useronboarding/user-name" element={<UsernamePage />} />
+            <Route path="useronboarding/edit-profile" element={<EditProfile />} />
             <Route
               path="/lowkey-profile/:userId"
               element={<LowKeyProfilePage />}
+            />
+            <Route
+              path="/edit-lowkey-profile"
+              element={<EditLowkeyProfilePage />}
             />
 
             <Route path="/selecttag/:id" element={<SelectTagPage />} />
@@ -242,9 +254,9 @@ function App() {
 
           {/* Fallback */}
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-        </Routes >
-      </NotificationProvider >
-    </BrowserRouter >
+        </Routes>
+      </NotificationProvider>
+    </BrowserRouter>
   );
 }
 

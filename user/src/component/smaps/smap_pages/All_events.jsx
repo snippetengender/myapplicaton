@@ -17,7 +17,7 @@ export default function All_events() {
                 console.error(err);
             }
         }
-        loadEvents();
+        loadEvents(); 
     }, []);
 
     return (

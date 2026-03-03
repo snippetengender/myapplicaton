@@ -19,6 +19,14 @@ export default function UsernamePage() {
   const dispatch = useDispatch();
 
   const { username } = useSelector((state) => state.onboarding.profileData);
+
+  // Hydrate state from location.state if present
+  useEffect(() => {
+    if (location.state?.currentData) {
+      dispatch(updateOnboardingData(location.state.currentData));
+    }
+  }, [location.state, dispatch]);
+
   const { status: submissionStatus, error } = useSelector(
     (state) => state.onboarding
   );
@@ -169,9 +177,8 @@ export default function UsernamePage() {
       // Draw text
       const initials = username ? username.charAt(0).toUpperCase() : "U";
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = `bold ${
-        size * 0.4
-      }px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+      ctx.font = `bold ${size * 0.4
+        }px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.imageSmoothingEnabled = true;
@@ -356,11 +363,10 @@ export default function UsernamePage() {
             isTaken ||
             submissionStatus === "submitting"
           }
-          className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            checking || !username || (!profileImageFile && !useReactAvatar)
+          className={`w-12 h-12 rounded-full flex items-center justify-center ${checking || !username || (!profileImageFile && !useReactAvatar)
               ? "bg-brand-charcoal cursor-not-allowed opacity-50"
               : "bg-brand-off-white"
-          }`}
+            }`}
         >
           {submissionStatus === "submitting" ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

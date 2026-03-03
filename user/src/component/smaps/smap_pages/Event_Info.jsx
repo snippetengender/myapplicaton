@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, MapPin, Calendar, Share, MoreVertical, Navigation, ExternalLink, Phone, Globe, Trophy } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Share, MoreVertical, Navigation, ExternalLink, Phone, Globe, Trophy, Ticket } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { fetchEventById, formatTimestamp, updateEvent } from '../api';
 
@@ -72,11 +72,16 @@ export default function Event_Info() {
         event_poster,
         college_name,
         location: eventLocation,
-        registrationLink,
+        registration_link,
         phone_number,
         organizer_platform,
         is_cash_prize_available,
-        cash_prize_amount
+        cash_prize_amount,
+        is_registration_fee_available,
+        registration_fee_amount,
+        category,
+        state,
+        district
     } = event;
 
     // const currentEvent = event;
@@ -231,7 +236,7 @@ export default function Event_Info() {
                 {/* Tag */}
                 <div className="flex gap-2 mb-4">
                     <div className="inline-block bg-white/10 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-xs font-medium text-white uppercase tracking-wide">
-                        Event
+                        {category}
                     </div>
                     {countdownText && (
                         <div className={`inline-block backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white tracking-wide ${isLive ? 'bg-red-500/80 border border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse'
@@ -249,9 +254,9 @@ export default function Event_Info() {
                 </h1>
 
                 {/* Registration Button */}
-                {registrationLink && (
+                {registration_link && (
                     <a
-                        href={registrationLink.startsWith('http') ? registrationLink : `https://${registrationLink}`}
+                        href={registration_link.startsWith('http') ? registration_link : `https://${registration_link}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-xl hover:from-pink-700 hover:to-purple-700 transition-all transform active:scale-95 shadow-lg mb-6"
@@ -263,26 +268,33 @@ export default function Event_Info() {
 
                 {/* Info Grid */}
                 <div className="flex flex-col gap-6 mb-8">
-                    {/* Start time */}
-                    <h1>Start Time</h1>
-                    <div className="flex items-start gap-4">
-                        <div className="bg-gray-800/50 p-3 rounded-xl border border-white/10 shrink-0">
-                            <Calendar size={24} className="text-white" />
+                    {/* Time Timeline */}
+                    <div className="bg-gray-800/50 rounded-xl border border-white/10 p-4 flex flex-col gap-4 relative mt-1 mb-2">
+                        {/* Vertical line indicator */}
+                        <div className="absolute left-[1.45rem] top-7 bottom-7 w-0.5 border-l-2 border-dotted border-gray-500"></div>
+
+                        {/* Start Row */}
+                        <div className="flex items-center justify-between relative z-10">
+                            <div className="flex items-center gap-3">
+                                <div className="w-2.5 h-2.5 rounded-full bg-gray-300 ring-4 ring-[#1A1A1A]"></div>
+                                <span className="text-gray-300 font-medium">Start</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <div className="bg-black/50 px-3 py-1.5 rounded-md border border-gray-700 text-sm font-medium">{start.date}</div>
+                                <div className="bg-black/50 px-3 py-1.5 rounded-md border border-gray-700 text-sm font-medium">{start.time}</div>
+                            </div>
                         </div>
-                        <div>
-                            <p className="font-semibold text-lg text-white">{start.date}</p>
-                            <p className="text-gray-400">{start.time}</p>
-                        </div>
-                    </div>
-                    {/* End Time */}
-                    <h1>End Time</h1>
-                    <div className="flex items-start gap-4">
-                        <div className="bg-gray-800/50 p-3 rounded-xl border border-white/10 shrink-0">
-                            <Calendar size={24} className="text-white" />
-                        </div>
-                        <div>
-                            <p className="font-semibold text-lg text-white">{end.date}</p>
-                            <p className="text-gray-400">{end.time}</p>
+
+                        {/* End Row */}
+                        <div className="flex items-center justify-between relative z-10">
+                            <div className="flex items-center gap-3">
+                                <div className="w-2.5 h-2.5 rounded-full bg-transparent border-2 border-gray-300 ring-4 ring-[#1A1A1A]"></div>
+                                <span className="text-gray-300 font-medium">End</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <div className="bg-black/50 px-3 py-1.5 rounded-md border border-gray-700 text-sm font-medium">{end.date}</div>
+                                <div className="bg-black/50 px-3 py-1.5 rounded-md border border-gray-700 text-sm font-medium">{end.time}</div>
+                            </div>
                         </div>
                     </div>
 
@@ -293,7 +305,7 @@ export default function Event_Info() {
                         </div>
                         <div>
                             <p className="font-semibold text-lg text-white">{college_name || "Unknown College"}</p>
-                            <p className="text-sm text-gray-400 mt-0.5">College</p>
+                            <p className="text-sm text-gray-400 mt-0.5">{district}, {state}</p>
                         </div>
                     </div>
 
@@ -306,6 +318,19 @@ export default function Event_Info() {
                             <div>
                                 <p className="font-semibold text-lg text-yellow-500">₹{cash_prize_amount}</p>
                                 <p className="text-sm text-gray-400 mt-0.5">Prize Pool</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Registration Fee */} 
+                    {is_registration_fee_available && registration_fee_amount && (
+                        <div className="flex items-start gap-4">
+                            <div className="bg-gray-800/50 p-3 rounded-xl border border-white/10 shrink-0">
+                                <Ticket size={24} className="text-green-500" />
+                            </div>
+                            <div>
+                                <p className="font-semibold text-lg text-green-500">₹{registration_fee_amount}</p>
+                                <p className="text-sm text-gray-400 mt-0.5">Registration Fee</p>
                             </div>
                         </div>
                     )}

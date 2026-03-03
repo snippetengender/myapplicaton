@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +21,14 @@ export default function GradeInfoPage() {
   const { education_status } = useSelector(
     (state) => state.onboarding.profileData
   );
+
+  // Hydrate state from location.state if present
+  useEffect(() => {
+    if (location.state?.currentData) {
+      dispatch(updateOnboardingData(location.state.currentData));
+    }
+  }, [location.state, dispatch]);
+
   const handleEducationChange = (field, value) => {
     const updatedEducationStatus = {
       ...education_status,
@@ -33,7 +41,10 @@ export default function GradeInfoPage() {
 
   const handleNext = () => {
     dispatch(updateOnboardingStep({ education_status }));
-    navigate("/useronboarding/interests");
+
+    // Check if coming from edit-profile
+    const isEditMode = window.location.pathname.includes("course-year-branch") && document.referrer.includes("edit-profile");
+    navigate(isEditMode ? "/edit-profile" : "/useronboarding/edit-profile");
   };
 
   const isFormValid =
@@ -51,7 +62,7 @@ export default function GradeInfoPage() {
 
         {/* Heading */}
         <h1 className="text-[20px] font-bold mb-2 leading-tight">
-          we need to know <br/>a bit more
+          we need to know <br />a bit more
         </h1>
         <p className="text-sm mb-3">we need your</p>
 
@@ -77,11 +88,10 @@ export default function GradeInfoPage() {
               <button
                 key={yr}
                 onClick={() => handleEducationChange("year", yearNumber)}
-                className={`px-3 py-3 rounded-md border ${
-                  education_status?.year === yearNumber
-                    ? "border-brand-pink text-brand-off-white"
-                    : "border-brand-charcoal text-brand-off-white"
-                }`}
+                className={`px-3 py-3 rounded-md border ${education_status?.year === yearNumber
+                  ? "border-brand-pink text-brand-off-white"
+                  : "border-brand-charcoal text-brand-off-white"
+                  }`}
               >
                 {yr}
               </button>
@@ -95,11 +105,10 @@ export default function GradeInfoPage() {
           {degrees.map((d) => (
             <label
               key={d}
-              className={`flex items-center justify-between text-[28px] font-bold ${
-                education_status?.degree === d
-                  ? "text-brand-off-white"
-                  : "text-brand-medium-gray"
-              }`}
+              className={`flex items-center justify-between text-[28px] font-bold ${education_status?.degree?.toLowerCase() === d.toLowerCase()
+                ? "text-brand-off-white"
+                : "text-brand-medium-gray"
+                }`}
             >
               {d}
               <div className="relative w-6 h-6 flex items-center justify-center">
@@ -107,11 +116,11 @@ export default function GradeInfoPage() {
                   type="radio"
                   name="degree"
                   value={d}
-                  checked={education_status?.degree === d}
+                  checked={education_status?.degree?.toLowerCase() === d.toLowerCase()}
                   onChange={() => handleEducationChange("degree", d)}
                   className="appearance-none w-6 h-6 rounded-full border border-brand-off-white absolute"
                 />
-                {education_status?.degree === d && (
+                {education_status?.degree?.toLowerCase() === d.toLowerCase() && (
                   <div className="w-3 h-3 rounded-full bg-brand-off-white absolute pointer-events-none"></div>
                 )}
               </div>
@@ -122,23 +131,22 @@ export default function GradeInfoPage() {
 
       {/* Bottom Navigation */}
       <div className="flex justify-between items-end mt-10 mb-4 gap-2">
-        <img 
-          src={snippyButler} 
-          alt="Snippy Butler" 
-          className="w-[150px] h-auto transform -scale-x-100 mb-1" 
+        <img
+          src={snippyButler}
+          alt="Snippy Butler"
+          className="w-[150px] h-auto transform -scale-x-100 mb-1"
         />
         <button
           onClick={handleNext}
           disabled={!isFormValid}
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
-            !isFormValid
-              ? "bg-brand-charcoal cursor-not-allowed opacity-50"
-              : "bg-brand-off-white"
-          }`}
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${!isFormValid
+            ? "bg-brand-charcoal cursor-not-allowed opacity-50"
+            : "bg-brand-off-white"
+            }`}
         >
-          <img 
-            src={nextArrow} 
-            alt="Next arrow" 
+          <img
+            src={nextArrow}
+            alt="Next arrow"
           />
         </button>
       </div>

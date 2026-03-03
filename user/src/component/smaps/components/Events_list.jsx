@@ -260,9 +260,18 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                                                                 {event.category}
                                                             </div>
                                                         )}
-                                                        {event.is_cash_prize_available && event.cash_prize_amount && (
-                                                            <p className="text-[13px] font-semibold text-gray-300">Rs. {event.cash_prize_amount} Prize Pool</p>
-                                                        )}
+                                                        {(() => {
+                                                            let textStr = "";
+                                                            if (event.is_cash_prize_available && event.cash_prize_amount) {
+                                                                textStr += `Rs. ${event.cash_prize_amount} Prize Pool and `;
+                                                            }
+                                                            if (event.is_registration_fee_available && event.registration_fee_amount) {
+                                                                textStr += `Rs. ${event.registration_fee_amount} Registration Fee`;
+                                                            } else {
+                                                                textStr += "FREE Registration";
+                                                            }
+                                                            return <p className="text-[13px] font-semibold text-gray-300">{textStr}</p>;
+                                                        })()}
                                                     </div>
                                                 </div>
                                                 <div className="w-[100px] h-[100px] rounded-xl overflow-hidden shrink-0 border border-gray-800 bg-gray-900 mt-1">

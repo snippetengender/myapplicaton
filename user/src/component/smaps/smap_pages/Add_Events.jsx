@@ -23,14 +23,16 @@ export default function Add_events() {
         state: '',
         district: '',
         category: '',
-        registrationLink: '',
+        registration_link: '',
         visibility: 'public',
         college_location: null,
         countryCode: '+91',
         phone_number: '',
         organizer_platform: '',
         is_cash_prize_available: false,
-        cash_prize_amount: ''
+        cash_prize_amount: '',
+        is_registration_fee_available: false,
+        registration_fee_amount: ''
     });
     const [availableDistricts, setAvailableDistricts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -104,14 +106,16 @@ export default function Add_events() {
                 state: editEvent.state || '',
                 district: editEvent.district || '',
                 category: editEvent.category || '',
-                registrationLink: editEvent.registrationLink || '',
+                registration_link: editEvent.registration_link || '',
                 visibility: editEvent.visibility || 'public',
                 college_location: null,
                 countryCode: editCountryCode,
                 phone_number: editPhone,
                 organizer_platform: editEvent.organizer_platform || '',
                 is_cash_prize_available: editEvent.is_cash_prize_available || false,
-                cash_prize_amount: editEvent.cash_prize_amount || ''
+                cash_prize_amount: editEvent.cash_prize_amount || '',
+                is_registration_fee_available: editEvent.is_registration_fee_available || false,
+                registration_fee_amount: editEvent.registration_fee_amount || ''
             });
         } else if (savedData) {
             // Load temp data if exists (resuming draft outside of location flow)
@@ -208,6 +212,10 @@ export default function Add_events() {
             missingFields.push("Valid Cash Prize Amount");
         }
 
+        if (eventData.is_registration_fee_available && (!eventData.registration_fee_amount || isNaN(eventData.registration_fee_amount) || Number(eventData.registration_fee_amount) <= 0)) {
+            missingFields.push("Valid Registration Fee Amount");
+        }
+
         if (missingFields.length > 0) {
             alert(`Please fill in the following required fields:\n\n- ${missingFields.join('\n- ')}`);
             return;
@@ -224,13 +232,15 @@ export default function Add_events() {
             state: eventData.state,
             district: eventData.district,
             category: eventData.category,
-            registrationLink: eventData.registrationLink,
+            registration_link: eventData.registration_link,
             location: eventData.location,
             visibility: eventData.visibility,
             phone_number: `${eventData.countryCode} ${eventData.phone_number}`,
             organizer_platform: eventData.organizer_platform,
             is_cash_prize_available: eventData.is_cash_prize_available,
             cash_prize_amount: eventData.cash_prize_amount,
+            is_registration_fee_available: eventData.is_registration_fee_available,
+            registration_fee_amount: eventData.registration_fee_amount,
         };
 
         try {
@@ -576,8 +586,8 @@ export default function Add_events() {
                             type="url"
                             placeholder="e.g. https://forms.google.com/..."
                             className="w-full bg-gray-900/50 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all"
-                            value={eventData.registrationLink}
-                            onChange={(e) => setEventData({ ...eventData, registrationLink: e.target.value })}
+                            value={eventData.registration_link}
+                            onChange={(e) => setEventData({ ...eventData, registration_link: e.target.value })}
                         />
                         <p className="text-xs text-gray-500 ml-1">Add a Google Form or registration page link</p>
                     </div>
@@ -643,11 +653,49 @@ export default function Add_events() {
                                 <div className="relative">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
                                     <input
-                                        type="number"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
                                         placeholder="e.g. 5000"
                                         className="w-full bg-gray-900/50 border border-gray-800 rounded-xl pl-8 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all"
                                         value={eventData.cash_prize_amount}
-                                        onChange={(e) => setEventData({ ...eventData, cash_prize_amount: e.target.value })}
+                                        onChange={(e) => setEventData({ ...eventData, cash_prize_amount: e.target.value.replace(/\D/g, '') })}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="space-y-4 bg-gray-900/30 p-4 rounded-xl border border-gray-800">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <label className="text-sm text-white font-medium">Registration Fee</label>
+                                <p className="text-xs text-gray-500 mt-1">How much are you collecting from each team</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={eventData.is_registration_fee_available}
+                                    onChange={(e) => setEventData({ ...eventData, is_registration_fee_available: e.target.checked })}
+                                />
+                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            </label>
+                        </div>
+
+                        {eventData.is_registration_fee_available && (
+                            <div className="space-y-2 pt-2 border-t border-gray-800">
+                                <label className="text-sm text-gray-400 ml-1">Registration Amount</label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        placeholder="e.g. 500"
+                                        className="w-full bg-gray-900/50 border border-gray-800 rounded-xl pl-8 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-600 focus:bg-gray-900 transition-all"
+                                        value={eventData.registration_fee_amount}
+                                        onChange={(e) => setEventData({ ...eventData, registration_fee_amount: e.target.value.replace(/\D/g, '') })}
                                     />
                                 </div>
                             </div>

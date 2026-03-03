@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { ArrowLeft, MoreVertical, Info } from "lucide-react";
+import { ArrowLeft, MoreVertical, Info, Pencil } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -12,6 +12,7 @@ import { MixCardSkeleton } from "../lowkey/LowKeyProfile";
 import profileBanner from "../assets/banner.png";
 import backArrow from "../assets/BackArrow.svg";
 import wip from "../assets/Snippy_with_Sign.png";
+import renameIcon from "../assets/edit.svg"
 import BottomTabs from "../shared/BottomTabs";
 
 const ProfileSkeleton = () => (
@@ -58,7 +59,7 @@ const formatCollegeTag = (degree, collegeShow) => {
 };
 
 const formatBirthday = (day, month) => {
-  if (!day || !month) return "Not Set";
+  if (!day || !month || day === -1 || month === -1) return "Not Set";
   const suffix =
     day % 10 === 1 && day !== 11
       ? "st"
@@ -88,6 +89,7 @@ const formatBirthday = (day, month) => {
 
 export default function ProfileOwner() {
   const [activeTab, setActiveTab] = useState("mixes");
+  const [imageHash] = useState(Date.now());
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { userId } = useParams();
@@ -194,7 +196,7 @@ export default function ProfileOwner() {
             {/* Profile Image */}
             <div className="w-[85px] h-[85px] rounded-full overflow-hidden">
               <img
-                src={profile.profile || "..."}
+                src={profile.profile ? `${profile.profile}?h=${imageHash}` : "..."}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
@@ -214,6 +216,13 @@ export default function ProfileOwner() {
               >
                 manage <span className="text-brand-pink">network</span>
               </button>
+              <button
+                onClick={() => navigate("/useronboarding/edit-profile")}
+                className="flex items-center justify-center bg-transparent border border-zinc-600 rounded-full hover:bg-zinc-800 p-1.5 ml-1"
+                aria-label="Edit Profile"
+              >
+                <Pencil size={14} className="text-[#E7E9EA]" />
+              </button>
             </div>
           </div>
           <div className="space-y-1 text-sm">
@@ -225,16 +234,20 @@ export default function ProfileOwner() {
                 profile.college_show
               )}
             </p>
-            <p className="text-zinc-300">
-              Into {profile.interests?.map((i) => i.name).join(", ")}
-            </p>
-            <p className="text-zinc-300 capitalize">
-              {formatYear(profile.education_status?.year)} Year •{" "}
-              {profile.education_status?.course} • {profile.relationship_status}
-            </p>
+            {profile.interests && profile.interests.length > 0 && (
+              <p className="text-zinc-300">
+                Into {profile.interests.map((i) => i.name).join(", ")}
+              </p>
+            )}
+            {(profile.education_status?.year || profile.education_status?.course || profile.relationship_status) && (
+              <p className="text-zinc-300 capitalize">
+                {profile.education_status?.year ? `${formatYear(profile.education_status.year)} Year • ` : ""}
+                {profile.education_status?.course ? `${profile.education_status.course} • ` : ""}
+                {profile.relationship_status && profile.relationship_status !== "unset" ? profile.relationship_status : "Unset"}
+              </p>
+            )}
             <p className="text-brand-dark-gray">
-              Cake me on{" "}
-              {formatBirthday(profile.birthday?.day, profile.birthday?.month)}
+              Cake me on {formatBirthday(profile.birthday?.day, profile.birthday?.month)}
             </p>
             <div className="flex items-center gap-1 pt-1">
               <span className="text-[14px] font-bold">

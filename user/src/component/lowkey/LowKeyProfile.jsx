@@ -1,5 +1,5 @@
-// src/components/ProfilePage.jsx
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Pencil } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLowkeyProfile } from "../../features/userSlice/userSlice";
@@ -65,12 +65,12 @@ export const MixCardSkeleton = () => (
 
 //   let displayText = "ends in ";
 //   if (hours > 0) {
-//     displayText += `${hours}h`;
+//     displayText += `${ hours } h`;
 //     if (minutes > 0) {
-//       displayText += ` ${minutes}m`;
+//       displayText += ` ${ minutes } m`;
 //     }
 //   } else if (minutes > 0) {
-//     displayText += `${minutes}m`;
+//     displayText += `${ minutes } m`;
 //   } else {
 //     displayText = "ends in <1m";
 //   }
@@ -127,7 +127,7 @@ export const MixCardSkeleton = () => (
 //               {profileType === "user" ? (
 //                 <div
 //                   className="flex items-center gap-1.5 text-md font-semibold"
-//                   onClick={() => navigate(`/user-profile/${user.id}`)}
+//                   onClick={() => navigate(`/ user - profile / ${ user.id } `)}
 //                 >
 //                   {"<"}
 //                   {user.username}
@@ -149,7 +149,7 @@ export const MixCardSkeleton = () => (
 //               ) : (
 //                 <div
 //                   className="flex items-center gap-1.5 text-[#E7E9EA] font-semibold"
-//                   onClick={() => navigate(`/communitypage/${user.id}`)}
+//                   onClick={() => navigate(`/ communitypage / ${ user.id } `)}
 //                 >
 //                   {user.name}
 //                   <span className="text-brand-dark-gray font-normal">• {time}</span>
@@ -220,7 +220,7 @@ export const MixCardSkeleton = () => (
 //         <div className="flex justify-between items-center mt-3 text-xs">
 //           <span
 //             className="text-pink-500 font-medium cursor-pointer"
-//             onClick={() => navigate(`/comments/${post.id}`)}
+//             onClick={() => navigate(`/ comments / ${ post.id } `)}
 //           >
 //             {stats.stuffs} stuffs
 //           </span>
@@ -309,7 +309,7 @@ export const MixCardSkeleton = () => (
 //           <div
 //             key={option.id}
 //             onClick={() => handleVote(option.id)}
-//             className={`relative border rounded-xl p-3 flex justify-between items-center transition-all duration-200 overflow-hidden 
+//             className={`relative border rounded - xl p - 3 flex justify - between items - center transition - all duration - 200 overflow - hidden
 //               ${
 //                 !isPollEnded
 //                   ? "cursor-pointer hover:border-pink-500"
@@ -363,21 +363,16 @@ const LowKeyProfilePage = () => {
   const [activeTab, setActiveTab] = useState("mixes");
   const { userId } = useParams();
   const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  const { user: profileUser, status: profileStatus } = useSelector(
-    (state) => state.user
-  );
+  const profileUser = useSelector((state) => state.user.lowkeyProfile.data);
+  const profileStatus = useSelector((state) => state.user.lowkeyProfile.status);
 
-  const { posts, mixesStatus, mixesError, page, hasMore } = useSelector(
-    (state) => ({
-      posts: state.mixes.userPosts,
-      mixesStatus: state.mixes.userPostsStatus,
-      mixesError: state.mixes.userPostsError,
-      page: state.mixes.userPostsPage,
-      hasMore: state.mixes.userPostsHasMore,
-    })
-  );
+  const posts = useSelector((state) => state.mixes.userPosts);
+  const mixesStatus = useSelector((state) => state.mixes.userPostsStatus);
+  const mixesError = useSelector((state) => state.mixes.userPostsError);
+  const page = useSelector((state) => state.mixes.userPostsPage);
+  const hasMore = useSelector((state) => state.mixes.userPostsHasMore);
 
   useEffect(() => {
     if (userId) {
@@ -445,23 +440,34 @@ const LowKeyProfilePage = () => {
         {/* Profile Banner */}
         {/* <div className="relative h-48 bg-gray-800"></div> */}
         <div className="relative">
-          <img 
-            src={profileBanner} 
-            alt="Profile banner" 
+          <img
+            src={profileBanner}
+            alt="Profile banner"
             className="w-full h-full"
           />
           <div className="absolute bottom-[17px] left-[16px] flex items-center justify-center bg-brand-off-whitetext-brand-off-white/30 rounded-full w-[39px] h-[38px] ">
             <button onClick={() => navigate(-1)} className="-left-1">
-              <img 
-                src={backArrow} 
-                alt="Back to Home page"   
+              <img
+                src={backArrow}
+                alt="Back to Home page"
               />
             </button>
           </div>
         </div>
         {/* Profile Info & Avatar */}
         <div className="relative px-4">
-          <h1 className="text-[20px] font-bold mt-4">{"{"}{profileUser.username}{"}"}</h1>
+          <div className="flex justify-between items-center mt-4">
+            <h1 className="text-[20px] font-bold">{"{"}{profileUser.username}{"}"}</h1>
+            {profileUser.is_owner && (
+              <button
+                onClick={() => navigate('/edit-lowkey-profile')}
+                className="p-2 mr-2 bg-zinc-800 rounded-full hover:bg-zinc-700 transition"
+                aria-label="Edit Profile"
+              >
+                <Pencil size={18} className="text-gray-300" />
+              </button>
+            )}
+          </div>
           <p className="text-brand-dark-gray mb-2">
             {formatUserTag(
               profileUser.education_status,
@@ -477,11 +483,10 @@ const LowKeyProfilePage = () => {
         {/* Tabs */}
         <div className="flex border-b border-gray-700">
           <button
-            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
-              activeTab === "mixes"
-                ? "text-brand-off-brand-off-whitetext-brand-off-white"
-                : "text-brand-dark-gray"
-            }`}
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "mixes"
+              ? "text-brand-off-brand-off-whitetext-brand-off-white"
+              : "text-brand-dark-gray"
+              }`}
             onClick={() => setActiveTab("mixes")}
           >
             mixes
@@ -490,11 +495,10 @@ const LowKeyProfilePage = () => {
             )}
           </button>
           <button
-            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${
-              activeTab === "stuffs"
-                ? "text-brand-off-brand-off-whitetext-brand-off-white"
-                : "text-brand-dark-gray"
-            }`}
+            className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "stuffs"
+              ? "text-brand-off-brand-off-whitetext-brand-off-white"
+              : "text-brand-dark-gray"
+              }`}
             onClick={() => setActiveTab("stuffs")}
           >
             stuffs
@@ -511,7 +515,7 @@ const LowKeyProfilePage = () => {
               {isInitialLoad && <MixCardSkeleton />}
 
               {posts.map((post) => (
-                <PostCard key={post.id} post={post}  userId={userId}/>
+                <PostCard key={post.id} post={post} userId={profileUser.is_owner ? userId : null} />
               ))}
 
               {/* Sentinel element to trigger loading more */}
@@ -536,9 +540,9 @@ const LowKeyProfilePage = () => {
 
           {activeTab === "stuffs" && (
             <div className="flex w-full h-full justify-center items-center p-5">
-              <img 
-                src={wip} 
-                alt="Work in progress" 
+              <img
+                src={wip}
+                alt="Work in progress"
                 className="w-[117px]"
               />
             </div>

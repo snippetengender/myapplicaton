@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../../providers/api";
 import { useDispatch, useSelector } from "react-redux";
 import { updateOnboardingData, updateOnboardingStep } from "../../features/userSlice/onboardingSlice";
@@ -9,10 +9,21 @@ import nextArrow from "../assets/next.svg";
 
 export default function InterestPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { interests: selectedInterests = [] } = useSelector(
     (state) => state.onboarding.profileData
   );
+
+  // Hydrate state from location.state if present
+  useEffect(() => {
+    if (location.state?.currentData) {
+      dispatch(updateOnboardingData(location.state.currentData));
+    }
+  }, [location.state, dispatch]);
+
+  // Check if coming from edit-profile via state
+  const isEditMode = location.state?.fromEditProfile || document.referrer.includes("edit-profile");
 
   const [allInterests, setAllInterests] = useState([]);
   const [search, setSearch] = useState("");
@@ -57,10 +68,13 @@ export default function InterestPage() {
     dispatch(updateOnboardingData({ interests: newInterests }));
   };
 
-   const handleNext = () => {
+  const handleNext = () => {
     dispatch(updateOnboardingStep({ interests: selectedInterests }));
-    
-    navigate("/useronboarding/prompt");
+    navigate(isEditMode ? "/useronboarding/edit-profile" : "/useronboarding/prompt");
+  };
+
+  const handleBack = () => {
+    navigate(isEditMode ? "/useronboarding/edit-profile" : -1);
   };
   const filteredInterests = allInterests.filter((i) =>
     i.name.toLowerCase().includes(search.toLowerCase())
@@ -70,13 +84,13 @@ export default function InterestPage() {
     <div className="min-h-screen bg-black text-brand-off-white px-4 py-6 flex flex-col justify-between">
       <div>
         {/* Back Arrow */}
-        <button className="mb-4" onClick={() => navigate(-1)}>
+        <button className="mb-4" onClick={handleBack}>
           <ArrowLeft className="text-brand-off-white" size={24} />
         </button>
 
         {/* Headings */}
         <h1 className="text-[20px] font-bold leading-tight">
-          What you're into 
+          What you're into
         </h1>
         <p className="text-[12px] mt-3 mb-4 leading-relaxed">
           Choose up to 3 interests that describe you best.
@@ -119,13 +133,12 @@ export default function InterestPage() {
                 <button
                   key={interest.id}
                   onClick={() => toggleInterest(interest)}
-                  className={`px-3 py-1 rounded-full text-sm border transition ${
-                    selectedInterests.some(
-                      (i) => i.reference_id === interest.id
-                    )
+                  className={`px-3 py-1 rounded-full text-sm border transition ${selectedInterests.some(
+                    (i) => i.reference_id === interest.id
+                  )
                       ? "border-brand-pink text-brand-off-white"
                       : "border-brand-charcoal text-brand-off-white"
-                  }`}
+                    }`}
                 >
                   {interest.name}
                 </button>
@@ -144,15 +157,14 @@ export default function InterestPage() {
         <button
           onClick={handleNext}
           disabled={selectedInterests.length < 3}
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${
-            selectedInterests.length < 3
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 ${selectedInterests.length < 3
               ? "bg-brand-medium-gray cursor-not-allowed opacity-50"
               : "bg-brand-off-white"
-          }`}
+            }`}
         >
-          <img 
-            src={nextArrow} 
-            alt="Next arrow" 
+          <img
+            src={nextArrow}
+            alt="Next arrow"
           />
         </button>
       </div>

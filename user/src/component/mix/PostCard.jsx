@@ -15,11 +15,11 @@ export const PostCard = ({
   post,
   profileType: propProfileType,
   isCommentPage = false,
-  userId=null,
+  userId = null,
 }) => {
   const dispatch = useDispatch();
   const user = post.user || {};
-  
+
   const profileType = propProfileType || user.profileType || "user";
   const {
     time,
@@ -36,7 +36,7 @@ export const PostCard = ({
   //console.log(post.id)
   const navigate = useNavigate();
 
-    // Truncate helper for "…" continuation
+  // Truncate helper for "…" continuation
   const FEED_CLAMP = 160;
   // const COMMENT_CLAMP = 200;
   const truncateText = (text, limit) => {
@@ -55,7 +55,7 @@ export const PostCard = ({
   const [isPortrait, setIsPortrait] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteMixId, setDeleteMixId] = useState(null);
-  
+
   const handleImageLoad = (e) => {
     const { naturalWidth, naturalHeight } = e.currentTarget;
     if (naturalWidth && naturalHeight) {
@@ -112,7 +112,7 @@ export const PostCard = ({
                   {profileType === "user" ? (
                     <div
                       className="flex items-center gap-1.5 text-[10px] font-bold cursor-pointer"
-                      onClick={() => navigate(`/user-profile/${user.id}`)}
+                      onClick={() => navigate(userMode === "lowkey" ? `/lowkey-profile/${user.id}` : `/user-profile/${user.id}`)}
                     >
                       {"<"}
                       {user.username}
@@ -155,12 +155,12 @@ export const PostCard = ({
                   )}
                 </div>
               </div>
-              
+
               {/* <button className="">
                 <img src={trashIcon} alt="Report post" />
               </button> */}
-              {userId ? 
-              (
+              {userId ?
+                (
                   <button onClick={() => handleDelete(post.id)}>
                     <img
                       style={{ width: "18px", height: "18px" }}
@@ -168,11 +168,11 @@ export const PostCard = ({
                       alt="Delete post"
                     />
                   </button>
-              ) : (
+                ) : (
                   <button>
                     <img src={reportFlag} alt="Report post" />
                   </button>
-            )}
+                )}
             </div>
           </div>
           <div className="px-4 ml-0.5 pl-1 mt-3">
@@ -228,13 +228,13 @@ export const PostCard = ({
                         <p className="text-brand-off-white text-[18px] whitespace-pre-line mb-2">
                           {contentFeed}
                         </p>
-                    )}
+                      )}
                     {(profileType === "network") &&
                       content && (
                         <p className="text-brand-off-white text-[12px] whitespace-pre-line mb-2">
                           {contentFeed}
                         </p>
-                    )}
+                      )}
                   </div>
                 )}
               </>
@@ -296,7 +296,7 @@ export const PostCard = ({
                   {userMode === "lowkey" ? (
                     <div
                       className="flex items-center gap-1.5 font-semibold cursor-pointer"
-                      onClick={() => navigate(`/user-profile/${user.id}`)}
+                      onClick={() => navigate(`/lowkey-profile/${user.id}`)}
                     >
                       {"{"}
                       {user.username}
@@ -396,7 +396,7 @@ export const PostCard = ({
                   </>
                 ) : (
                   <>
-                    { network_id !== null && title && (
+                    {network_id !== null && title && (
                       <h2 className="text-brand-off-white text-[18px] font-semibold mb-2">
                         {title}
                       </h2>
@@ -468,7 +468,7 @@ export const PostCard = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
           <div className="w-[90%] max-w-sm rounded-xl border border-white/20 bg-[#050505] p-5 text-center">
 
-            
+
             <h2 className="text-brand-off-white text-lg font-semibold mb-2">
               Delete Mix?
             </h2>

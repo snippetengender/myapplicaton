@@ -998,11 +998,12 @@ const NewCommentInput = ({
 
   useEffect(() => {
     const currentUserId = userId;
-
-    if (status === "idle") {
+    // Note: status might be succeeded, but userDetails could belong to someone else
+    // if we just visited another profile. We need to fetch our own profile back.
+    if (status === "idle" || (userDetails && userDetails.user_id !== currentUserId)) {
       dispatch(fetchUserProfile(currentUserId));
     }
-  }, [dispatch, status, userId]);
+  }, [dispatch, status, userId, userDetails?.user_id]);
 
   useEffect(() => {
     if (userDetails) {
@@ -1114,8 +1115,8 @@ const NewCommentInput = ({
 
           <button
             className={`text-sm font-medium px-3 pt-1 pb-[6px] rounded-[10px] leading-[17px] ${(!text.trim() && !imageFile) || isSubmitting
-                ? "text-brand-off-white cursor-not-allowed border border-brand-almost-black"
-                : "bg-brand-off-white text-brand-almost-black"
+              ? "text-brand-off-white cursor-not-allowed border border-brand-almost-black"
+              : "bg-brand-off-white text-brand-almost-black"
               }`}
             disabled={(!text.trim() && !imageFile) || isSubmitting}
             onClick={handleSubmit}
@@ -1234,9 +1235,8 @@ const Comment = ({ commment, ...props }) => {
 
   return (
     <div
-      className={`relative w-full font-inter ${
-        indentLevel > 0 ? "border-l border-brand-almost-black pl-2" : ""
-      }`}
+      className={`relative w-full font-inter ${indentLevel > 0 ? "border-l border-brand-almost-black pl-2" : ""
+        }`}
       style={{
         marginLeft: `${indentLevel > 0 ? (indentLevel - 1) * 14 + 2 : 0}px`,
       }}
@@ -1314,11 +1314,10 @@ const Comment = ({ commment, ...props }) => {
               <div className="flex items-center gap-3 h-6">
                 {/* Upvote */}
                 <div
-                  className={`flex items-center gap-1 cursor-pointer ${
-                    user_reaction === "like"
+                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "like"
                       ? "text-pink-500"
                       : "text-gray-400"
-                  }`}
+                    }`}
                   onClick={() => handleReaction("like")}
                 >
                   <FiChevronUp size={22} />
@@ -1326,14 +1325,13 @@ const Comment = ({ commment, ...props }) => {
 
                 {/* Downvote + Net Score */}
                 <div
-                  className={`flex items-center gap-1 cursor-pointer ${
-                    user_reaction === "dislike"
+                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "dislike"
                       ? "text-pink-500"
                       : "text-gray-400"
-                  }`}
+                    }`}
                   onClick={() => handleReaction("dislike")}
                 >
-                  {netScore  && (
+                  {netScore && (
                     <span className="text-xs text-pink-500 font-semibold">
                       {netScore}
                     </span>

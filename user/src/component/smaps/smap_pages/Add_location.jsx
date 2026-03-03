@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 export default function Add_location() {
     const navigate = useNavigate();
     const routerLocation = useLocation();
-    const mapRef = useRef(null);
+    const mapRef = useRef(null); 
 
     // Parse coordinates [lng, lat] from passed location
     const collegeLocation = routerLocation.state?.collegeLocation;
