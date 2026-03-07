@@ -186,7 +186,7 @@ export const PostCard = ({
                       </h2>
                     )}
                     {profileType === "user" && content && (
-                      <p className="text-brand-off-white text-[18px] whitespace-pre-line mb-2">
+                      <p className="text-brand-off-balck text-[18px] whitespace-pre-line mb-2">
                         {content}
                       </p>
                     )}
@@ -291,7 +291,7 @@ export const PostCard = ({
           <div className="px-1 text-[10px]">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-2">
-                <div>by</div>
+                <div className="text-brand-charcoal">by</div>
                 <div className="">
                   {userMode === "lowkey" ? (
                     <div
@@ -402,7 +402,7 @@ export const PostCard = ({
                       </h2>
                     )}
                     {content && (
-                      <p className="text-brand-off-white text-[12px] whitespace-pre-line mb-2">
+                      <p className="text-brand-off-white text-[18px] whitespace-pre-line mb-2">
                         {content}
                       </p>
                     )}

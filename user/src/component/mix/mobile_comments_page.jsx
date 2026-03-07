@@ -1315,8 +1315,8 @@ const Comment = ({ commment, ...props }) => {
                 {/* Upvote */}
                 <div
                   className={`flex items-center gap-1 cursor-pointer ${user_reaction === "like"
-                      ? "text-pink-500"
-                      : "text-gray-400"
+                    ? "text-pink-500"
+                    : "text-gray-400"
                     }`}
                   onClick={() => handleReaction("like")}
                 >
@@ -1326,8 +1326,8 @@ const Comment = ({ commment, ...props }) => {
                 {/* Downvote + Net Score */}
                 <div
                   className={`flex items-center gap-1 cursor-pointer ${user_reaction === "dislike"
-                      ? "text-pink-500"
-                      : "text-gray-400"
+                    ? "text-pink-500"
+                    : "text-gray-400"
                     }`}
                   onClick={() => handleReaction("dislike")}
                 >
@@ -1548,6 +1548,18 @@ const CommentsPage = () => {
         {commentsStatus === "loading" && flatComments.length === 0 && (
           <div className="text-center text-gray-400 py-6">
             Loading comments...
+          </div>
+        )}
+
+        {/* Empty State - no comments */}
+        {commentsStatus !== "loading" && !loadingInitial && nestedComments.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-12">
+            <img
+              src="/snippy-assets/Snippy_hifi.png"
+              alt="No comments yet"
+              className="w-[150px] h-[150px] object-contain"
+            />
+            <p className="text-brand-off-white font-semibold text-[13px] mt-3">Be the first to comment.</p>
           </div>
         )}
 

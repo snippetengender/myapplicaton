@@ -113,7 +113,16 @@ export default function ProductListingForm() {
 
 
 
+  const isFormValid =
+    formData.productName.trim() !== '' &&
+    formData.price !== '' &&
+    formData.category !== '' &&
+    formData.phoneNumber.length === 10 &&
+    uploadedImages.length > 0 &&
+    formData.agreedToTerms;
+
   const handleSubmit = async () => {
+    if (!isFormValid) return;
     // ... existing payload logic
     const payload = {
       product_name: formData.productName,
@@ -150,32 +159,32 @@ export default function ProductListingForm() {
   return (
     <div className="bg-black min-h-screen text-white p-6">
       {/* Header */}
-      <div className="mb-8">
-        <button className="text-white" onClick={() => navigate("/smarket")}>
+      <div className="mb-4">
+        <button className="text-white" onClick={() => navigate(-1)}>
           <ArrowLeft size={24} />
         </button>
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl font-semibold mb-8">{isEditMode ? "Edit Your Product Listing" : "List Your Product"}</h1>
+      <h1 className="text-[20px] font-bold mb-6">{isEditMode ? "Edit Your Product" : "List your Product"}</h1>
 
       {/* Form Fields */}
       <div className="space-y-6">
         {/* Product Name */}
         <div>
-          <label className="block text-sm mb-2">Product Name</label>
+          <label className="block text-sm font-bold mb-2">Product Name *</label>
           <input
             type="text"
             placeholder="Product Name"
             value={formData.productName}
             onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
-            className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-500"
+            className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-500 text-[15px]"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm mb-2">Description</label>
+          <label className="block text-sm font-bold mb-2">Description</label>
           <textarea
             rows="4"
             value={formData.description}
@@ -186,7 +195,7 @@ export default function ProductListingForm() {
 
         {/* Price */}
         <div>
-          <label className="block text-sm mb-2">Price</label>
+          <label className="block text-sm font-bold mb-2">Price *</label>
           <input
             type="text"
             inputMode="numeric"
@@ -203,24 +212,31 @@ export default function ProductListingForm() {
 
         {/* Category */}
         <div>
-          <label className="block text-sm mb-2">Category</label>
-          <select
-            value={formData.category || ""}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            className="w-full p-2 rounded-md bg-black text-white border border-gray-600">
-            <option value="">All Categories</option>
-            {Object.entries(LISTING_CATEGORY).map(([key, label]) => (
-              <option key={key} value={label}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <label className="block text-sm font-bold mb-2">Category *</label>
+          <div className="relative">
+            <select
+              value={formData.category || ""}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="w-full appearance-none bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-gray-500">
+              <option value="" disabled className="text-gray-600">All Categories</option>
+              {Object.entries(LISTING_CATEGORY).map(([key, label]) => (
+                <option key={key} value={label} className="bg-black text-white">
+                  {label}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-white">
+              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+              </svg>
+            </div>
+          </div>
         </div>
 
 
         {/* Phone Number */}
         <div>
-          <label className="block text-sm mb-2">Phone Number</label>
+          <label className="block text-sm font-bold mb-2">Whatsapp Number *</label>
           <input
             type="tel"
             inputMode="numeric"
@@ -238,9 +254,8 @@ export default function ProductListingForm() {
 
         {/* Upload Button */}
         <div>
-          <label className="w-full border border-gray-700 rounded-lg py-16 text-white hover:border-gray-500 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer">
-            <Upload size={32} />
-            <span>Upload Images</span>
+          <label className="w-full bg-transparent border border-gray-700 rounded-lg py-3 px-4 text-white hover:border-gray-500 transition-colors flex items-center justify-center cursor-pointer">
+            <span className="text-sm font-normal">Upload Product Photo *</span>
             <input
               type="file"
               accept="image/*"
@@ -253,19 +268,19 @@ export default function ProductListingForm() {
 
         {/* Uploaded Images Preview */}
         {uploadedImages.length > 0 && (
-          <div className="grid grid-cols-3 gap-4">
+          <div className="flex flex-wrap gap-4 mt-4">
             {uploadedImages.map((img, index) => (
-              <div key={index} className="relative group">
+              <div key={index} className="relative group w-[90px] h-[90px]">
                 <img
                   src={img}
                   alt={`Product ${index + 1}`}
-                  className="w-full h-32 object-cover rounded-lg border border-gray-700"
+                  className="w-full h-full object-cover rounded-[14px] border border-gray-700"
                 />
                 <button
                   onClick={() => removeImage(index)}
-                  className="absolute top-2 right-2 bg-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-[10px] -left-[10px] bg-[#FF453A] text-white rounded-full p-[2px] z-10"
                 >
-                  <X size={16} />
+                  <X size={14} />
                 </button>
               </div>
             ))}
@@ -273,25 +288,37 @@ export default function ProductListingForm() {
         )}
 
         {/* Terms and Conditions */}
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            id="terms"
-            checked={formData.agreedToTerms}
-            onChange={(e) => setFormData({ ...formData, agreedToTerms: e.target.checked })}
-            className="w-4 h-4 bg-transparent border border-gray-700 rounded"
-          />
-          <label htmlFor="terms" className="text-sm">
-            I agree to the Terms and Conditions
-          </label>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <div className="relative flex items-center justify-center">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={formData.agreedToTerms}
+                onChange={(e) => setFormData({ ...formData, agreedToTerms: e.target.checked })}
+                className="appearance-none w-4 h-4 border border-gray-600 rounded bg-transparent checked:bg-white checked:border-white cursor-pointer"
+              />
+              {formData.agreedToTerms && (
+                <svg className="absolute w-3 h-3 text-black pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              )}
+            </div>
+            <label htmlFor="terms" className="text-sm font-normal text-white select-none cursor-pointer">
+              I agree to the <span className="text-[#00A3FF]">Terms and Conditions</span>
+            </label>
+          </div>
+          {/* <p className="text-xs font-normal text-white mt-1">
+            Please ensure that all the above fields are filled <span className="text-base leading-none">👍</span>
+          </p> */}
         </div>
 
         {/* Submit Button */}
         <button
           onClick={handleSubmit}
-          disabled={isSubmitting}
-          className={`w-full text-black font-medium py-3 rounded-lg transition-colors ${isSubmitting
-            ? 'bg-gray-400 cursor-not-allowed'
+          disabled={isSubmitting || !isFormValid}
+          className={`w-full text-black font-bold py-3 mt-4 rounded-lg transition-colors ${isSubmitting || !isFormValid
+            ? 'bg-gray-400 cursor-not-allowed opacity-50'
             : 'bg-white hover:bg-gray-100'
             }`}
         >

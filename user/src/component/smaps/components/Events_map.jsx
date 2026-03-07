@@ -351,11 +351,16 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
 
       {/* Loading Overlay */}
       {!eventsLoaded && (
-        <div className="absolute inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="flex flex-col items-center">
+        <div className="absolute inset-0 z-[2000] flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center z-10">
             <div className="w-8 h-8 rounded-full border-4 border-[#F06CB7] border-t-transparent animate-spin"></div>
-            <p className="text-white mt-4 font-bold text-sm">Loading Events...</p>
+            <p className="text-white mt-4 text-sm">Loading Events...</p>
           </div>
+          <img
+            src="/snippy-assets/Snippy_butler.png"
+            alt="Loading companion"
+            className="absolute bottom-4 right-4 w-[150px] h-[150px] object-contain"
+          />
         </div>
       )}
 

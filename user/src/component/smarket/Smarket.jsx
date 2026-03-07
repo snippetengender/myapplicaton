@@ -61,9 +61,9 @@ export default function Smarket() {
                     </button>
 
                     {/* Search Icon */}
-                    <div className="cursor-pointer">
+                    {/* <div className="cursor-pointer">
                         <img src={SearchIcon} alt="search" className="w-6 h-6" />
-                    </div>
+                    </div> */}
                 </div>
             </nav>
 

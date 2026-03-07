@@ -22,42 +22,52 @@ const ProductCard = ({ listing, onConnect, onShare, navigate }) => {
                 )}
             </div>
 
-            {/* Seller Info */}
-            <div className="mt-2 text-[10px] text-gray-400 font-medium">
-                {listing.show || "@cit"}
-            </div>
-
             {/* Product Name */}
-            <h3 className="text-white text-[15px] font-semibold truncate mt-0.5">
+            <h3 className="text-brand-off-white text-[12px] font-semibold truncate mt-[9px]">
                 {listing.product_name}
             </h3>
 
             {/* Price */}
-            <div className="text-white text-[15px] font-semibold mt-0.5">
+            <div className="text-brand-off-white text-[18px] font-semibold mt-0.5">
                 Rs. {listing.price}
             </div>
 
-            {/* Date */}
-            <div className="text-[9px] text-gray-400 mt-0.5 mb-2">
-                {listing.posted_at ? new Date(Number(listing.posted_at)).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : "Dec 8, 05:44 PM"}
+            <div className="flex">
+                {/* Seller Info */}
+                <div className="text-[8px] text-white font-semibold">
+                    {listing.show || "@cit"}
+                </div>
+                <div className="mx-1 text-[8px] text-white font-bold">
+                    {"•"}
+                </div>
+                {/* Date */}
+                <div className="text-[8px] text-white font-bold">
+                    {listing.posted_at ? new Date(Number(listing.posted_at)).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : "Dec 8, 05:44 PM"}
+                </div>
             </div>
 
 
             {/* Actions */}
-            <div className="flex gap-2 items-center mt-auto">
-                <button
-                    onClick={() => onConnect(listing)}
-                    className="flex-1 bg-gray-200 text-black text-[13px] font-semibold py-1.5 px-3 rounded-lg hover:bg-white transition-colors"
-                >
-                    Connect
-                </button>
-                <button
-                    onClick={() => onShare(listing)}
-                    className="p-1.5 bg-gray-200 rounded-lg text-black hover:bg-white transition-colors"
-                >
-                    <FiShare2 size={16} />
-                </button>
-            </div>
+            {(onConnect || onShare) && (
+                <div className="flex gap-2 items-center mt-auto">
+                    {onConnect && (
+                        <button
+                            onClick={() => onConnect(listing)}
+                            className="flex-1 bg-gray-200 text-black text-[13px] font-semibold py-1.5 px-3 rounded-lg hover:bg-white transition-colors"
+                        >
+                            Connect
+                        </button>
+                    )}
+                    {onShare && (
+                        <button
+                            onClick={() => onShare(listing)}
+                            className="p-1.5 bg-gray-200 rounded-lg text-black hover:bg-white transition-colors"
+                        >
+                            <FiShare2 size={16} />
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

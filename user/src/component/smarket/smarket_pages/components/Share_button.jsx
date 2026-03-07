@@ -19,7 +19,7 @@ const ConnectButton = ({ phoneNumber, productName, className }) => {
       onClick={handleShareClick}
       className={className || "bg-white text-black text-2xl font-normal mt-2 px-2 rounded-md w-full"}
     >
-      Connect
+      Connect on WhatsApp
     </button>
   );
 };

@@ -113,6 +113,7 @@ export default function Your_listing() {
                         <div
                             key={listing.listing_id || listing.posted_at}
                             className="border border-gray-800 rounded-2xl p-[9px] bg-black w-full"
+                            onClick={() => navigate(`/smarket/${listing.listing_id}`, { state: { from: "your_listing" } })}
                         >
                             <div className="flex gap-4">
                                 {/* Image - Left Side - White Box Container */}
@@ -121,24 +122,24 @@ export default function Your_listing() {
                                         src={listing.product_image?.[0]}
                                         alt={listing.product_name}
                                         className="w-full h-full object-contain cursor-pointer"
-                                        onClick={() => navigate(`/smarket/${listing.listing_id}`, { state: { from: "your_listing" } })}
+
                                     />
                                 </div>
 
                                 {/* Info - Right Side */}
-                                <div className="flex flex-col flex-1 min-w-0 py-1">
-                                    <h3 className="text-gray-400 text-[10px] font-medium mb-0.5">{listing.show || "@cit"}</h3>
-                                    <div className="text-white text-lg font-bold mb-0.5">
+                                <div className="flex flex-col flex-1 min-w-0 py-2 justify-between">
+                                    <h3 className="text-brand-off-white text-[10px] font-medium">{listing.show || "@cit"}</h3>
+                                    <div className="text-brand-off-white text-[14px] font-bold">
                                         {listing.product_name}
                                     </div>
-                                    <div className="text-white text-lg font-bold mb-0.5">
+                                    <div className="text-brand-off-white text-[18px] font-bold">
                                         Rs. {listing.price}
                                     </div>
-                                    <div className="text-gray-400 text-[9px] mb-1.5">
+                                    <div className="text-brand-off-white text-[9px]">
                                         Listed on : {listing.posted_at ? new Date(Number(listing.posted_at)).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : "Dec 8, 05:44 PM"}
                                     </div>
 
-                                    <div className="flex items-center gap-1.5 mb-2">
+                                    <div className="flex items-center gap-1.5">
                                         <div className={`w-2 h-2 rounded-full ${status.color}`}></div>
                                         <span className="text-white text-[10px] font-medium">
                                             {status.text}
@@ -146,7 +147,7 @@ export default function Your_listing() {
                                     </div>
 
                                     {/* Edit Button */}
-                                    <button
+                                    {/* <button
                                         onClick={() => navigate('/smarket/selling_now', {
                                             state: {
                                                 mode: "edit",
@@ -156,7 +157,7 @@ export default function Your_listing() {
                                         className="w-full mt-auto bg-gray-200 hover:bg-white text-black text-sm font-bold py-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors"
                                     >
                                         edit your product <FiChevronRight />
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
                         </div>
