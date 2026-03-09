@@ -29,7 +29,7 @@ export default function Lobby() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-black py-6 px-4">
+    <div className="flex flex-col items-center min-h-screen bg-black p-6">
       {/* Create a separate container for the entire content area */}
       <div className="w-full flex-1 flex flex-col items-center">
         {/* Top section with image aligned to center */}
@@ -59,7 +59,7 @@ export default function Lobby() {
           </p>
 
           <div className="w-full mt-auto mb-8 space-y-3">
-            <p className="text-brand-off-white text-xs mb-2 text-left">
+            <p className="text-brand-off-white text-[14px] mb-2 text-left">
               already have an account ? <button onClick={handleLogin} className="text-[#00A3FF]">Log In</button>
             </p>
             <button
