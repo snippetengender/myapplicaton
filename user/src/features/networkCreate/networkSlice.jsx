@@ -182,14 +182,57 @@ export const createNetwork = createAsyncThunk(
 export const fetchNetworkById = createAsyncThunk(
   "network/fetchById",
   async ({ networkId, networkMembership, totalMixes }, { rejectWithValue }) => {
-
     try {
       const requestBody = {
         network_membership: networkMembership || false,
         total_mixes: totalMixes || false,
       };
       const response = await api.post(`/networks/${networkId}`, requestBody);
-      return response.data.data;
+      const networkData = response.data.data;
+
+      // Extract creator's user_id
+      const creatorId = networkData?.created_by?.reference_id || networkData?.created_by?.user_id || networkData?.created_by?.id || networkData?.created_by;
+
+      const parsedCreatorId = typeof creatorId === "string" ? creatorId : creatorId?.reference_id;
+
+      if (parsedCreatorId) {
+        try {
+          // Fetch the user's details separately to get degree and college
+          const userResponse = await api.get(`/user/${parsedCreatorId}`);
+          if (userResponse.data) {
+            const userData = userResponse.data;
+            networkData.created_by = {
+              ...networkData.created_by,
+              degree: userData?.education_status?.degree || "",
+              college: userData?.college_show ? userData.college_show.replace('@', '') : "",
+            };
+            if (userData.profile) {
+              networkData.created_by.image_url = userData.profile;
+            }
+          } else {
+            networkData.created_by = {
+              ...networkData.created_by,
+              degree: "TEST_DEGREE_FAIL",
+              college: "Test College Fail",
+            };
+          }
+        } catch (err) {
+          console.error("Failed to fetch creator metadata:", err);
+          networkData.created_by = {
+            ...networkData.created_by,
+            degree: "TEST_DEGREE_ERR",
+            college: "Test College Err",
+          };
+        }
+      } else {
+        networkData.created_by = {
+          ...networkData.created_by,
+          degree: "TEST_NO_CREATOR_ID",
+          college: "Test No Creator",
+        };
+      }
+
+      return networkData;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -204,8 +247,8 @@ export const joinNetwork = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.detail ||
-          error.response?.data ||
-          "Failed to join network"
+        error.response?.data ||
+        "Failed to join network"
       );
     }
   }
@@ -220,8 +263,8 @@ export const leaveNetwork = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.detail ||
-          error.response?.data ||
-          "Failed to leave network"
+        error.response?.data ||
+        "Failed to leave network"
       );
     }
   }
@@ -267,9 +310,9 @@ export const updateNetwork = createAsyncThunk(
       console.error("updateNetwork error:", error);
       return rejectWithValue(
         error.response?.data?.detail ||
-          error.response?.data?.message ||
-          error.message ||
-          "An unknown error occurred"
+        error.response?.data?.message ||
+        error.message ||
+        "An unknown error occurred"
       );
     }
   }

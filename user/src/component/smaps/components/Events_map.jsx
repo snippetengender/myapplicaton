@@ -24,15 +24,14 @@ const createCustomIcon = () => {
     className: 'custom-marker',
     html: `
       <div style="
-        width: 12px;
-        height: 12px;
+        width: 16px;
+        height: 16px;
         background-color: #F06CB7;
         border-radius: 50%;
-        border: 2px solid white;
       "></div>
     `,
-    iconSize: [12, 12],      // MUST match actual size
-    iconAnchor: [6, 6],      // Center of the dot
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
   });
 };
 
@@ -50,7 +49,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
 
   // New state for tabs and location locking
   const [mapTab, setMapTab] = useState(
-    location.state?.mapTab || sessionStorage.getItem('mapTabPreference') || 'other'
+    location.state?.mapTab || sessionStorage.getItem('mapTabPreference') || 'your'
   );
   useEffect(() => {
     sessionStorage.setItem('mapTabPreference', mapTab);
@@ -220,30 +219,28 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
 
       marker.bindTooltip(`
         <div style="
-            width: 80px;
-            height: 90px;
-            overflow: hidden;
+            width: 85px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background-color: transparent; 
-            padding: 4px;
             box-sizing: border-box;
             color: white; 
-            font-family: sans-serif; 
-            font-size: 10px; 
+            font-family: inherit; 
             line-height: 1.2;
             cursor: pointer;
         ">
-          <img src=${event.image} style="width: 45px; height: 45px; border-radius: 5px; object-fit: cover; margin-bottom: 4px;" />
+          <img src="${event.image}" style="width: 69px; height: 69px; border-radius: 6px; object-fit: cover; margin-bottom: 6px;" />
           <strong style="
               display: block; 
+              width: 100%;
               white-space: nowrap; 
               overflow: hidden; 
               text-overflow: ellipsis; 
-              max-width: 100%;
               text-align: center;
+              font-size: 10px;
+              font-weight: 600;
           ">${event.title}</strong>
           
           ${event.s_time ? (() => {
@@ -253,7 +250,7 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
             const now = Date.now();
             const diff = start - now;
 
-            if (diff <= 0) return '<span style="color: #ccc; font-size: 9px; display: block; margin-top: 2px;">Live Now</span>';
+            if (diff <= 0) return '<span style="color: #ccc; font-size: 8px; font-weight: 500; display: block; margin-top: 3px;">Live Now</span>';
 
             const minutes = Math.floor(diff / (1000 * 60));
             const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -271,13 +268,13 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
             else if (years < 1) text = `In ${months} month${months > 1 ? 's' : ''}`;
             else text = `In ${years} year${years > 1 ? 's' : ''}`;
 
-            return `<span style="color: #ccc; font-size: 9px; display: block; margin-top: 2px;">${text}</span>`;
+            return `<span style="color: #ccc; font-size: 8px; font-weight: 500; display: block; margin-top: 3px;">${text}</span>`;
           } catch (e) {
             return '';
           }
         })() : ''}
         </div>
-      `, { permanent: true, direction: 'top', className: 'compact-popup', offset: [0, -10], interactive: true });
+      `, { permanent: true, direction: 'top', className: 'compact-popup', offset: [0, -14], interactive: true });
 
       const tooltip = marker.getTooltip();
       const id = event.id;
@@ -330,22 +327,26 @@ export default function Events_map({ activeTab, selectedState, selectedDistrict,
       {/* Tabs Header */}
       <div className="absolute top-0 w-full h-[40px] z-[1000] flex items-center bg-black/80 backdrop-blur-sm border-b border-gray-800">
         <div
-          onClick={() => setMapTab('other')}
-          className={`flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'other' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-        >
-          other hood
-        </div>
-        <div
           onClick={() => {
             setMapTab('your');
             markPrivateEventsRead();
           }}
-          className={`relative flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'your' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+          className={`relative flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-semibold transition-colors ${mapTab === 'your' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
         >
-          your hood
+          <div className={`h-full flex items-center border-b-[2px] transition-colors ${mapTab === 'your' ? 'border-white' : 'border-transparent'}`}>
+            your hoods
+          </div>
           {hasUnreadPrivateEvents && mapTab !== 'your' && (
             <span className="absolute top-3 right-[35%] w-2 h-2 bg-pink-500 rounded-full shadow-sm shadow-pink-500/50"></span>
           )}
+        </div>
+        <div
+          onClick={() => setMapTab('other')}
+          className={`relative flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-semibold transition-colors ${mapTab === 'other' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+        >
+          <div className={`h-full flex items-center border-b-[2px] transition-colors ${mapTab === 'other' ? 'border-white' : 'border-transparent'}`}>
+            other hoods
+          </div>
         </div>
       </div>
 

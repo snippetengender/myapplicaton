@@ -8,7 +8,6 @@ import {
 } from "../../features/userSlice/userSlice";
 import { createMix, resetMixes } from "../../features/mixes/mixSlice";
 import imageCompression from "browser-image-compression";
-import ProfileSelector from "./ProfileSelector";
 import peekingImg from "../assets/Snippy_peeking.png";
 import addImages from "../assets/gallery-add.svg";
 import Camera from "../assets/camera.svg";
@@ -43,7 +42,7 @@ const ImageUploadTextArea = ({
       textarea.style.height = `${scrollHeight}px`;
     }
   }, [text]);
-  
+
   return (
     <>
       <div className="w-full bg-transparent border border-brand-charcoal rounded-lg p-3 flex flex-col">
@@ -120,6 +119,7 @@ export default function MobilePostPage() {
   const [newOption, setNewOption] = useState("");
   const [isPortrait, setIsPortrait] = useState(false);
   const [isTitleFocused, setIsTitleFocused] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   // Persisted network-mode flag; default to true if a selectedNetwork already exists
   const [enableNetworkPost, setEnableNetworkPost] = useState(() => {
     const persisted = localStorage.getItem("enableNetworkPost");
@@ -173,7 +173,7 @@ export default function MobilePostPage() {
       // For network posts, focus when network is selected
       // For normal posts, focus immediately
       // if (enableNetworkPost || (enableNetworkPost && selectedNetwork)) {
-        textAreaRef.current.focus();
+      textAreaRef.current.focus();
       // }
     }
   }, [enableNetworkPost, selectedNetwork]);
@@ -192,7 +192,7 @@ export default function MobilePostPage() {
       setImageFile(compressedFile);
       const previewUrl = URL.createObjectURL(compressedFile);
       setImagePreview(previewUrl);
-      
+
       // Check if image is portrait
       const img = new Image();
       img.onload = () => {
@@ -219,7 +219,7 @@ export default function MobilePostPage() {
       setImageFile(compressedFile);
       const previewUrl = URL.createObjectURL(compressedFile);
       setImagePreview(previewUrl);
-      
+
       // Check if image is portrait
       const img = new Image();
       img.onload = () => {
@@ -386,7 +386,7 @@ export default function MobilePostPage() {
     //   return null;
     // }
 
-    const titleInput = enableNetworkPost &&  (
+    const titleInput = enableNetworkPost && (
       <div className="mb-3">
         {/* Hidden input kept for semantics */}
         <input
@@ -418,35 +418,35 @@ export default function MobilePostPage() {
             }
             setIsTitleFocused(false);
           }}
-          className="ce-ph w-full bg-transparent outline-none text-xl font-semibold whitespace-pre-wrap break-words min-h-[32px] text-brand-off-white"
+          className="ce-ph w-full bg-transparent outline-none text-[24px] font-semibold whitespace-pre-wrap break-words min-h-[32px] text-brand-off-white"
         />
-        <span className="text-xs text-brand-dark-gray">{title.length}/100</span>
+        {/* <span className="text-xs text-brand-dark-gray">{title.length}/100</span> */}
       </div>
     );
     const textArea = enableNetworkPost ? (
       <textarea
-            ref={textAreaRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder={
-              enableNetworkPost 
-              ? "Add a bit more detail so people can laugh, cry, or actually reply."
-                : ""
-            }
-            maxLength={maxLength}
-            className="w-full bg-transparent resize-none outline-none text-[14px] placeholder-brand-medium-gray text-brand-off-white min-h-[120px]"
-            rows="5"
-          />
+        ref={textAreaRef}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder={
+          enableNetworkPost
+            ? "Add a bit more detail so people can laugh, cry, or actually reply."
+            : ""
+        }
+        maxLength={maxLength}
+        className="w-full bg-transparent resize-none outline-none text-[14px] font-semibold placeholder-brand-medium-gray text-brand-off-white min-h-[120px]"
+        rows="5"
+      />
     ) : (
       <textarea
-            ref={textAreaRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Finally, a place where you can overshare your existential crises, failed crush stories, and random 3 a.m. thoughts"
-            maxLength={maxLength}
-            className="mt-2 w-full bg-transparent resize-none outline-none text-[18px] font-semibold placeholder-brand-medium-gray text-brand-off-white min-h-[120px]"
-            rows="5"
-          />
+        ref={textAreaRef}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Finally, a place where you can overshare your existential crises, failed crush stories, and random 3 a.m. thoughts"
+        maxLength={maxLength}
+        className="mt-2 w-full bg-transparent resize-none outline-none text-[18px] font-semibold placeholder-brand-medium-gray text-brand-off-white min-h-[120px]"
+        rows="5"
+      />
     );
     if (selectedTag === "polls") {
       return (
@@ -586,7 +586,7 @@ export default function MobilePostPage() {
         </button>
         <button
           onClick={toggleNetworkPost}
-          className="text-xs px-3 py-1.5 rounded-full border border-brand-charcoal text-brand-medium-gray hover:border-brand-pink transition-colors"
+          className="text-xs px-3 py-1.5 rounded-full border border-brand-charcoal text-brand-off-white hover:border-brand-pink transition-colors"
         >
           {!enableNetworkPost ? (
             <>
@@ -608,10 +608,10 @@ export default function MobilePostPage() {
               onClick={() => navigate("/select-network")}
               className="bg-brand-almost-black font-semibold px-4 py-[10px] rounded-xl flex items-center gap-3 text-brand-off-white cursor-pointer border border-dashed border-brand-charcoal"
             >
-              <div className="w-6 h-6 rounded-full border border-dashed border-brand-off-white flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-white border border-dashed border-brand-off-white flex items-center justify-center">
                 <span className="text-xs"></span>
               </div>
-              <span className="text-[14px]">Select a Network and reach more</span>
+              <span className="text-[14px]">Network Name</span>
             </div>
           ) : (
             <div className="bg-brand-almost-black px-4 py-4 rounded-xl flex items-center justify-between border border-brand-charcoal">
@@ -644,27 +644,56 @@ export default function MobilePostPage() {
       )}
 
       {/* Profile Selector */}
-      {enableNetworkPost  && userDetails && (
-        <div className="px-4 pb-3">
-          {hasLowkeyProfile ? (
-            <ProfileSelector
-              userDetails={userDetails}
-              useLowkey={useLowkey}
-              setUseLowkey={setUseLowkey}
-            />
-          ) : (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-brand-medium-gray">Post as</span>
+      {enableNetworkPost && userDetails && (
+        <div className="px-4 pb-3 relative">
+          <div
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <div className="flex items-center gap-2 relative">
+              <span className="text-sm text-brand-off-white font-semibold">Post as</span>
+              {/* <img
+                src={useLowkey ? (userDetails?.lowkey_profile?.profile_image || "https://placehold.co/40x40/222/fff?text=L") : (userDetails?.profile || "https://placehold.co/40x40/222/fff?text=P")}
+                alt="Profile"
+                className="w-6 h-6 rounded-full object-cover ml-1"
+              /> */}
+              <div className="text-brand-off-white text-sm font-medium">
+                {useLowkey ? `{${userDetails?.lowkey_profile?.name || "lowkey"}}` : `<${userDetails?.username || "main"}>`}
+              </div>
+              <ChevronDown size={16} className={`text-brand-off-white transition-transform  ${isProfileOpen ? "rotate-180" : ""}`} />
+            </div>
+          </div>
+
+          {isProfileOpen && (
+            <div className="absolute top-8 left-4 mt-2 bg-brand-almost-black border border-brand-charcoal rounded-lg z-20 shadow-xl overflow-hidden min-w-[180px]">
+              <div
+                onClick={() => {
+                  setUseLowkey(false);
+                  setIsProfileOpen(false);
+                }}
+                className={`flex items-center gap-3 p-3 transition-colors cursor-pointer ${!useLowkey ? "bg-brand-charcoal/40" : "hover:bg-brand-charcoal/40"}`}
+              >
                 <img
-                  src={userDetails.profile}
-                  alt={userDetails.name}
+                  src={userDetails?.profile || "https://placehold.co/40x40/222/fff?text=P"}
+                  alt={userDetails?.username}
                   className="w-6 h-6 rounded-full object-cover"
                 />
-                <div className="text-brand-off-white text-sm font-medium">
-                  {`<${userDetails.username}>`}
-                </div>
-                <ChevronDown size={16} className="text-brand-medium-gray" />
+                <div className="text-brand-off-white text-[13px]">{`<${userDetails?.username || "main"}>`}</div>
+              </div>
+
+              <div
+                onClick={() => {
+                  setUseLowkey(true);
+                  setIsProfileOpen(false);
+                }}
+                className={`flex items-center gap-3 p-3 transition-colors cursor-pointer ${useLowkey ? "bg-brand-charcoal/40" : "hover:bg-brand-charcoal/40"}`}
+              >
+                <img
+                  src={userDetails?.lowkey_profile?.profile_image || "https://placehold.co/40x40/222/fff?text=L"}
+                  alt={userDetails?.lowkey_profile?.name}
+                  className="w-6 h-6 rounded-full object-cover"
+                />
+                <div className="text-brand-off-white text-[13px]">{`{${userDetails?.lowkey_profile?.name || "lowkey"}}`}</div>
               </div>
             </div>
           )}
@@ -676,7 +705,7 @@ export default function MobilePostPage() {
         {error && (
           <p className="text-red-500 text-center my-2 text-sm">{error}</p>
         )}
-        
+
         {renderInputs()}
       </div>
 
@@ -701,11 +730,10 @@ export default function MobilePostPage() {
                 <button
                   key={tag}
                   onClick={() => handleTagSelect(tag)}
-                  className={`px-3 py-1.5 rounded-full border text-[12px] transition whitespace-nowrap flex-shrink-0 ${
-                    selectedTag === tag
-                      ? "border-brand-pink bg-brand-pink/10 text-brand-off-white"
-                      : "border-brand-charcoal text-brand-off-white"
-                  }`}
+                  className={`px-3 py-1.5 rounded-full border text-[13px] transition whitespace-nowrap flex-shrink-0 ${selectedTag === tag
+                    ? "border-brand-pink bg-brand-pink/10 text-brand-off-white"
+                    : "border-brand-charcoal text-brand-off-white"
+                    }`}
                 >
                   {tag}
                 </button>
@@ -717,24 +745,24 @@ export default function MobilePostPage() {
         {/* Action Bar */}
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => cameraInputRef.current?.click()}
               disabled={selectedTag === "polls" || imagePreview !== null}
-              className="text-brand-medium-gray w-6 h-6 disabled:opacity-50"
+              className="text-brand-medium-gray w-[30px] h-[30px] disabled:opacity-50"
             >
               <img src={Camera} alt="Open camera" />
             </button>
-            <button 
+            <button
               onClick={() => fileInputRef.current?.click()}
               disabled={selectedTag === "polls" || imagePreview !== null}
               className="text-brand-medium-gray disabled:opacity-50"
             >
-              <img src={addImages} alt="Add Images" className="w-5 h-5" />
+              <img src={addImages} alt="Add Images" className="w-[30px] h-[30px]" />
             </button>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold text-brand-off-white">
-              {isTitleFocused ? `${100-title.length}` : enableNetworkPost ? `${1000-text.length}` : `${200-text.length}`} 
+              {isTitleFocused ? `${100 - title.length}` : enableNetworkPost ? `${1000 - text.length}` : `${200 - text.length}`}
             </span>
             <button
               disabled={!canPost || isSubmitting || (enableNetworkPost && !selectedNetwork)}

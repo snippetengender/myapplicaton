@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchAllEventLocations, formatTimestamp } from '../api';
-import { MapPin } from 'lucide-react';
+import { MapPin, Tag } from 'lucide-react';
 
 export default function Events_list({ activeTab, selectedState, selectedDistrict, selectedCategory }) {
     const [events, setEvents] = useState([]);
@@ -11,7 +11,7 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
 
     // Persistent mapTab across native history
     const [mapTab, setMapTab] = useState(
-        location.state?.mapTab || sessionStorage.getItem('mapTabPreference') || 'other'
+        location.state?.mapTab || sessionStorage.getItem('mapTabPreference') || 'your'
     );
     useEffect(() => {
         sessionStorage.setItem('mapTabPreference', mapTab);
@@ -171,16 +171,20 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
             {/* Tabs Header */}
             <div className="sticky top-0 w-full h-[40px] z-[1000] flex items-center bg-black/90 backdrop-blur-sm border-b border-gray-800 mb-4">
                 <div
-                    onClick={() => setMapTab('other')}
-                    className={`flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'other' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                    onClick={() => setMapTab('your')}
+                    className={`relative flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-semibold transition-colors ${mapTab === 'your' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
                 >
-                    other hood
+                    <div className={`h-full flex items-center border-b-[2px] transition-colors ${mapTab === 'your' ? 'border-white' : 'border-transparent'}`}>
+                        your hoods
+                    </div>
                 </div>
                 <div
-                    onClick={() => setMapTab('your')}
-                    className={`flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-medium transition-colors ${mapTab === 'your' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                    onClick={() => setMapTab('other')}
+                    className={`relative flex-1 flex justify-center items-center h-full cursor-pointer text-sm font-semibold transition-colors ${mapTab === 'other' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
                 >
-                    your hood
+                    <div className={`h-full flex items-center border-b-[2px] transition-colors ${mapTab === 'other' ? 'border-white' : 'border-transparent'}`}>
+                        other hoods
+                    </div>
                 </div>
             </div>
 
@@ -205,13 +209,13 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                         return (
                             <div
                                 key={dateKey}
-                                className="relative pl-6 pb-10 last:pb-0"
+                                className="relative pl-3 pb-4 pr-2 last:pb-0"
                                 ref={isToday ? todayRef : null}
                             >
                                 {/* Continuous Dotted Line */}
                                 {index !== sortedDates.length - 1 && (
                                     <div
-                                        className="absolute left-[0px] top-2 -bottom-10 w-[2px] -ml-[1px] z-0"
+                                        className="absolute left-[0px] top-2 -bottom-3 w-[2px] -ml-[2px] z-0 font-bold"
                                         style={{
                                             backgroundImage: 'radial-gradient(circle, #4b5563 1.5px, transparent 1.5px)',
                                             backgroundSize: '4px 10px',
@@ -221,12 +225,14 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                                     ></div>
                                 )}
                                 {/* Date Header */}
-                                <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-gray-300 z-10"></div>
 
-                                <div className="flex items-baseline gap-2 mb-4 -mt-1.5">
-                                    <h3 className="text-white font-bold text-lg">{dateLabel}</h3>
-                                    <span className="text-gray-500 text-sm">{getDayName(dateKey)}</span>
+                                <div className="absolute -left-[5px] top-1.5 w-[7px] h-[7px] rounded-full bg-gray-300 z-10"></div>
+
+                                <div className="flex items-baseline gap-2 mb-4">
+                                    <h3 className="text-white font-semibold text-[12px]">{dateLabel}</h3>
+                                    <span className="text-gray-500 font-semibold text-[12px]">{getDayName(dateKey)}</span>
                                 </div>
+
 
                                 {/* Events for this date */}
                                 <div className="flex flex-col gap-4">
@@ -239,46 +245,56 @@ export default function Events_list({ activeTab, selectedState, selectedDistrict
                                                         mapTab: mapTab
                                                     }
                                                 })}
-                                                className="cursor-pointer border border-gray-800 rounded-xl bg-black p-4 flex justify-between items-start group hover:border-gray-700 transition-colors"
+                                                className="cursor-pointer border border-gray-800 rounded-xl bg-black p-2.5 flex flex-col group hover:border-gray-700 transition-colors"
                                             >
-                                                <div className="flex flex-col flex-grow mr-4">
-                                                    <div className="text-xs text-gray-500 mb-2 font-medium tracking-wide">
-                                                        {(() => {
-                                                            try {
-                                                                const timestamp = formatTimestamp(event.event_start_time);
-                                                                return timestamp.time || event.event_start_time;
-                                                            } catch (e) { return event.event_start_time; }
-                                                        })()}
-                                                    </div>
-                                                    <h2 className="text-white font-bold text-lg leading-tight mb-1">{event.event_title}</h2>
-                                                    <p className="text-sm text-gray-400 mb-3">{event.college_name || event.college || "Unknown College"}</p>
+                                                {/* Top section: Info + Image */}
+                                                <div className="flex justify-between items-start w-full">
+                                                    <div className="flex flex-col flex-grow mr-4 min-w-0">
+                                                        <div className="text-[10px] text-gray-500 mb-2 font-regular tracking-wide">
+                                                            {(() => {
+                                                                try {
+                                                                    const timestamp = formatTimestamp(event.event_start_time);
+                                                                    return timestamp.time || event.event_start_time;
+                                                                } catch (e) { return event.event_start_time; }
+                                                            })()}
+                                                        </div>
+                                                        <h2 className="text-brand-off-white font-semibold text-[15px] leading-tight mb-2 line-clamp-2">{event.event_title}</h2>
+                                                        <p className="flex items-start gap-1.5 text-[12px] text-brand-off-white mb-2">
+                                                            <MapPin size={15} className="shrink-0 mt-0.5" />
+                                                            <span className="line-clamp-2">{event.college_name || event.college || "Unknown College"}</span>
+                                                        </p>
 
-                                                    <div className="flex flex-col gap-2.5 mt-auto">
                                                         {event.category && (
-                                                            <div className="inline-flex items-center gap-1 bg-white text-black px-3 py-1.5 rounded-lg font-bold text-[13px] self-start">
-                                                                <MapPin size={14} strokeWidth={2.5} />
-                                                                {event.category}
+                                                            <div className="inline-flex items-center gap-1.5 bg-white text-black px-3 py-1.5 rounded-lg font-semibold text-[12px] self-start max-w-full">
+                                                                <img src="/tag.svg" alt="tag" className="w-3.5 h-3.5 shrink-0" />
+                                                                <span className="truncate">{event.category}</span>
                                                             </div>
                                                         )}
-                                                        {(() => {
-                                                            let textStr = "";
-                                                            if (event.is_cash_prize_available && event.cash_prize_amount) {
-                                                                textStr += `Rs. ${event.cash_prize_amount} Prize Pool and `;
-                                                            }
-                                                            if (event.is_registration_fee_available && event.registration_fee_amount) {
-                                                                textStr += `Rs. ${event.registration_fee_amount} Registration Fee`;
-                                                            } else {
-                                                                textStr += "FREE Registration";
-                                                            }
-                                                            return <p className="text-[13px] font-semibold text-gray-300">{textStr}</p>;
-                                                        })()}
+                                                    </div>
+                                                    <div className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] rounded-xl overflow-hidden shrink-0 border border-gray-800 bg-gray-900">
+                                                        {event.event_poster ? (
+                                                            <img src={event.event_poster} alt={event.event_title} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-500 text-[10px] text-center p-2">No Image</div>
+                                                        )}
                                                     </div>
                                                 </div>
-                                                <div className="w-[100px] h-[100px] rounded-xl overflow-hidden shrink-0 border border-gray-800 bg-gray-900 mt-1">
-                                                    {event.event_poster ? (
-                                                        <img src={event.event_poster} alt={event.event_title} className="w-full h-full object-cover" />
+
+                                                {/* Bottom section: Tags */}
+                                                <div className="flex flex-wrap items-center gap-2 mt-2">
+                                                    {event.is_cash_prize_available && event.cash_prize_amount && (
+                                                        <div className="inline-flex items-center gap-1.5 bg-black border border-gray-700 text-gray-300 px-3 py-1 rounded-xl font-medium text-[12px]">
+                                                            <span className="text-[14px]">🤑</span> ₹ {event.cash_prize_amount} Prize Pool
+                                                        </div>
+                                                    )}
+                                                    {(event.is_registration_fee_available && event.registration_fee_amount) ? (
+                                                        <div className="inline-flex items-center gap-1.5 bg-black border border-gray-700 text-gray-300 px-3 py-1 rounded-xl font-medium text-[12px]">
+                                                            <span className="text-[14px]">🎟️</span> ₹ {event.registration_fee_amount} Entry
+                                                        </div>
                                                     ) : (
-                                                        <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-500 text-xs text-center p-2">No Image</div>
+                                                        <div className="inline-flex items-center gap-1.5 bg-black border border-gray-700 text-gray-300 px-3 py-1 rounded-xl font-medium text-[12px]">
+                                                            <span className="text-[14px]">🙌</span> FREE Entry
+                                                        </div>
                                                     )}
                                                 </div>
                                             </div>

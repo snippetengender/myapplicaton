@@ -29,56 +29,58 @@ export default function Lobby() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-black p-6">
+    <div className="flex flex-col items-center min-h-screen bg-black py-6 px-4">
       {/* Create a separate container for the entire content area */}
-      <div className="w-full flex-1 flex flex-col">
-        {/* Top section with image aligned to right */}
-        <div className="w-full flex justify-end mb-6">
-          <img 
-            src={snippyBaller} 
-            alt="Snippy mascot" 
-            className="w-64"
+      <div className="w-full flex-1 flex flex-col items-center">
+        {/* Top section with image aligned to center */}
+        <div className="w-full flex justify-end mb-6 mt-3">
+          <img
+            src={snippyBaller}
+            alt="Snippy mascot"
+            className="w-[270px]"
           />
         </div>
-        
+
         {/* Rest of your content */}
-        <div className="flex-1 flex flex-col">
+        <div className="w-full flex-1 flex flex-col">
           <div className="w-full h-auto">
-            <h1 className="text-brand-off-white text-3xl font-bold mb-1 text-left">Hlo,</h1>
-            <h2 className="text-brand-off-white text-2xl font-bold mb-3 text-left">This is Snippet</h2>
+            <h1 className="text-brand-off-white text-[35px] leading-[36px] font-bold tracking-tight text-left">
+              Yap<br />
+              without rotting<br />
+              inside,<br />
+              Find Events,<br />
+              Buy/Sell Needs
+            </h1>
           </div>
-          
-          <p className="text-brand-off-white text-left mb-8 max-w-xs text-[15px] font-bold">
-            With Snippet you will be able to know about the occurences and events
+
+          <p className="text-brand-off-white text-left mt-8 mb-12 text-[20px] font-bold leading-tight max-w-[320px]">
+            By joining Snippet, you can<br />
+            see what’s happening around you.
           </p>
-          
-          <div className="w-full max-w-xs space-y-3">
+
+          <div className="w-full mt-auto mb-8 space-y-3">
+            <p className="text-brand-off-white text-xs mb-2 text-left">
+              already have an account ? <button onClick={handleLogin} className="text-[#00A3FF]">Log In</button>
+            </p>
             <button
               onClick={handleGetStarted}
-              className="w-full py-3 bg-brand-off-white text-black rounded-2xl font-medium hover:bg-gray-200 transition"
+              className="w-full py-2.5 bg-[#DCDDDF] text-black rounded-[14px] text-[18px] font-bold hover:bg-gray-200 transition"
             >
-              Sign Up with your College Mail ID
+              See what’s happening
             </button>
-            
-            <button
-              onClick={handleLogin}
-              className="w-full py-3 bg-brand-off-white text-black rounded-2xl font-medium hover:bg-gray-200 transition"
-            >
-              Log In if youre returning
-            </button>
-            
-            <button
+
+            {/* <button
               onClick={handleAboutUs}
               className="w-full py-3 bg-brand-off-white text-black rounded-2xl font-medium hover:bg-gray-200 transition"
             >
               Get to know us whos behind this
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
-      
-      <p className="text-brand-off-white text-[10px] mt-6 text-center">
-        யாமறிந்த மொழிகளிலே தமிழ்மொழி போல் <br/> இனிதாவது எங்கும் காணோம்
+
+      <p className="text-[#8D9295] text-[10px] mb-2 text-center">
+        Made with ♥ for only college students
       </p>
     </div>
   );

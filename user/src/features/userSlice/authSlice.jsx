@@ -17,7 +17,7 @@ export const verifyGoogleLogin = createAsyncThunk(
 
       if (mode === "getStarted") {
         if (user_onboarded) {
-          navigate("/auth/already-registered");
+          return rejectWithValue("Account already exists");
         } else {
           navigate("/useronboarding/name-dob-gender");
         }

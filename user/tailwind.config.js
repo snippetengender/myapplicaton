@@ -13,6 +13,7 @@ module.exports = {
         'brand-blue': '#0C8AE5',
       },
       fontFamily: {
+        sans: ['Inter', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
       },
     },

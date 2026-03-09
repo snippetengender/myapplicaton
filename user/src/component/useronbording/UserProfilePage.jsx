@@ -175,7 +175,7 @@ export default function ProfilePage() {
 
       <div className="">
         {/* Profile Section */}
-        <div className="py-[14px] px-[16px]">
+        <div className="py-[14px] px-[16px] border-b border-gray-700">
           <div className="flex items-center justify-between mb-3">
             {/* Profile Image */}
             <div className="w-[85px] h-[85px] rounded-full overflow-hidden">
@@ -236,11 +236,11 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-700">
+        {/* <div className="flex border-b border-gray-700">
           <button
             className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "mixes"
-                ? "text-brand-off-white"
-                : "text-brand-dark-gray"
+              ? "text-brand-off-white"
+              : "text-brand-dark-gray"
               }`}
             onClick={() => setActiveTab("mixes")}
           >
@@ -251,8 +251,8 @@ export default function ProfilePage() {
           </button>
           <button
             className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "stuffs"
-                ? "text-brand-off-white"
-                : "text-brand-dark-gray"
+              ? "text-brand-off-white"
+              : "text-brand-dark-gray"
               }`}
             onClick={() => setActiveTab("stuffs")}
           >
@@ -261,7 +261,7 @@ export default function ProfilePage() {
               <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
             )}
           </button>
-        </div>
+        </div> */}
 
         {/* Content Area */}
         <div className="">
@@ -289,6 +289,14 @@ export default function ProfilePage() {
                 <p className="text-center text-brand-dark-gray py-4">
                   You've reached the end!
                 </p>
+              )}
+
+              {!hasMore && posts.length === 0 && !isInitialLoad && !mixesError && (
+                <div className="flex flex-col items-center justify-center mt-[100px] text-center">
+                  <p className="text-[#8D9295] text-[16px] leading-[22px] font-medium">
+                    No posts yet 📭
+                  </p>
+                </div>
               )}
             </>
           )}

@@ -191,7 +191,7 @@ export default function ProfileOwner() {
 
       {/* Profile Section */}
       <div className="">
-        <div className="py-[14px] px-[16px]">
+        <div className="py-[14px] px-[16px] border-b border-gray-700">
           <div className="flex items-start justify-between mb-3">
             {/* Profile Image */}
             <div className="w-[85px] h-[85px] rounded-full overflow-hidden">
@@ -243,12 +243,14 @@ export default function ProfileOwner() {
               <p className="text-zinc-300 capitalize">
                 {profile.education_status?.year ? `${formatYear(profile.education_status.year)} Year • ` : ""}
                 {profile.education_status?.course ? `${profile.education_status.course} • ` : ""}
-                {profile.relationship_status && profile.relationship_status !== "unset" ? profile.relationship_status : "Unset"}
+                {profile.relationship_status && profile.relationship_status !== "unset" ? profile.relationship_status : ""}
               </p>
             )}
-            <p className="text-brand-dark-gray">
-              Cake me on {formatBirthday(profile.birthday?.day, profile.birthday?.month)}
-            </p>
+            {formatBirthday(profile.birthday?.day, profile.birthday?.month) !== "Not Set" && (
+              <p className="text-brand-dark-gray">
+                Cake me on {formatBirthday(profile.birthday?.day, profile.birthday?.month)}
+              </p>
+            )}
             <div className="flex items-center gap-1 pt-1">
               <span className="text-[14px] font-bold">
                 {profile.clouts || "0"}
@@ -272,7 +274,7 @@ export default function ProfileOwner() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-700">
+        {/* <div className="flex border-b border-gray-700">
           <button
             className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "mixes"
               ? "text-brand-off-white"
@@ -297,7 +299,7 @@ export default function ProfileOwner() {
               <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-white rounded"></span>
             )}
           </button>
-        </div>
+        </div> */}
 
         {/* Content Area */}
         <div className="">
@@ -325,6 +327,21 @@ export default function ProfileOwner() {
                 <p className="text-center text-gray-500 py-4">
                   You've reached the end!
                 </p>
+              )}
+
+              {!hasMore && posts.length === 0 && !isInitialLoad && !mixesError && (
+                <div className="flex flex-col items-center justify-center mt-[100px] text-center">
+                  <p className="text-[#8D9295] text-[16px] leading-[22px] font-medium">
+                    Your first post could<br />
+                    be legendary 💯
+                  </p>
+                  <button
+                    onClick={() => navigate(`/selecttag/${userId}`)}
+                    className="text-[#00A3FF] text-[16px] font-medium mt-1 underline"
+                  >
+                    post now
+                  </button>
+                </div>
               )}
             </>
           )}

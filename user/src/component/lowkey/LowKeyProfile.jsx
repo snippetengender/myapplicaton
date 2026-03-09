@@ -455,7 +455,7 @@ const LowKeyProfilePage = () => {
           </div>
         </div>
         {/* Profile Info & Avatar */}
-        <div className="relative px-4">
+        <div className="relative px-4 border-b border-gray-700">
           <div className="flex justify-between items-center mt-4">
             <h1 className="text-[20px] font-bold">{"{"}{profileUser.username}{"}"}</h1>
             {profileUser.is_owner && (
@@ -481,7 +481,7 @@ const LowKeyProfilePage = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-700">
+        {/* <div className="flex border-b border-gray-700">
           <button
             className={`relative flex-1 py-3 text-center text-[14px] font-semibold ${activeTab === "mixes"
               ? "text-brand-off-brand-off-whitetext-brand-off-white"
@@ -506,7 +506,7 @@ const LowKeyProfilePage = () => {
               <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[2px] bg-brand-off-whitetext-brand-off-white rounded"></span>
             )}
           </button>
-        </div>
+        </div> */}
 
         {/* Content Area */}
         <div className="">
@@ -534,6 +534,29 @@ const LowKeyProfilePage = () => {
                 <p className="text-center text-brand-dark-gray py-4">
                   You've reached the end!
                 </p>
+              )}
+
+              {!hasMore && posts.length === 0 && !isInitialLoad && !mixesError && (
+                <div className="flex flex-col items-center justify-center mt-[100px] text-center">
+                  {profileUser.is_owner ? (
+                    <>
+                      <p className="text-[#8D9295] text-[16px] leading-[22px] font-medium">
+                        Your first post could<br />
+                        be legendary 💯
+                      </p>
+                      <button
+                        onClick={() => navigate(`/selecttag/${userId}`)}
+                        className="text-[#00A3FF] text-[16px] font-medium mt-1 underline"
+                      >
+                        post now
+                      </button>
+                    </>
+                  ) : (
+                    <p className="text-[#8D9295] text-[16px] leading-[22px] font-medium">
+                      No posts yet 📭
+                    </p>
+                  )}
+                </div>
               )}
             </>
           )}

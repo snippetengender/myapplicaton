@@ -59,10 +59,9 @@ const PollComponent = ({ post }) => {
             key={option.id}
             onClick={() => handleVote(option.id)}
             className={`relative border rounded-xl p-3 flex justify-between items-center transition-all duration-200 overflow-hidden 
-              ${
-                !isPollEnded
-                  ? "cursor-pointer hover:border-brand-pink"
-                  : "cursor-default"
+              ${!isPollEnded
+                ? "cursor-pointer hover:border-brand-pink"
+                : "cursor-default"
               }
               ${isPollEnded && !hasVoted ? "opacity-50" : ""}
               ${isSelectedOption ? "border-brand-pink" : "border-gray-700"}`}
@@ -291,7 +290,7 @@ export const NetworkPostCard = ({ post }) => {
           >
             {stats.thoughts} thoughts
           </span>
-            {/* <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
+          {/* <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
               {stats.nah} nah
             </button>
             <button className="px-3 py-1 rounded-full border border-gray-700 text-gray-400">
@@ -301,32 +300,32 @@ export const NetworkPostCard = ({ post }) => {
               {stats.hellYeah} hell yeah
             </button> */}
 
-            <div className="flex items-center gap-3">
-              <img
-                src={
-                  post.userReaction === "like" ? upvoteActive : upvoteInactive
-                }
-                alt="upvote reaction"
-                onClick={() => handleReaction("like")}
-                className="w-6 h-6 cursor-pointer"
-              />
+          <div className="flex items-center gap-3">
+            <img
+              src={
+                post.userReaction === "like" ? upvoteActive : upvoteInactive
+              }
+              alt="upvote reaction"
+              onClick={() => handleReaction("like")}
+              className="w-6 h-6 cursor-pointer"
+            />
 
-              <p className="text-brand-pink text-[18px] font-semibold w-6 text-center">
-                {netScore}
-              </p>
+            <p className="text-brand-pink text-[18px] font-semibold w-6 text-center">
+              {netScore}
+            </p>
 
-              {/* 5. Downvote image with conditional source */}
-              <img
-                src={
-                  post.userReaction === "dislike"
-                    ? downvoteActive
-                    : downvoteInactive
-                }
-                alt="downvote reaction"
-                onClick={() => handleReaction("dislike")}
-                className="w-6 h-6 cursor-pointer"
-              />
-            </div>
+            {/* 5. Downvote image with conditional source */}
+            <img
+              src={
+                post.userReaction === "dislike"
+                  ? downvoteActive
+                  : downvoteInactive
+              }
+              alt="downvote reaction"
+              onClick={() => handleReaction("dislike")}
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -403,8 +402,8 @@ export default function MobileNetworkPage() {
   if (status === "loading") {
     return (
       <div className="flex justify-center items-center py-6 bg-black min-h-screen">
-        <Lottie 
-          animationData={loadingAnimation} 
+        <Lottie
+          animationData={loadingAnimation}
           loop={true}
           style={{ width: 120, height: 120 }} // Adjust size as needed
         />
@@ -444,16 +443,16 @@ export default function MobileNetworkPage() {
 
     if (networkData?.network_membership?.id) {
       return {
-        text: joinLeaveStatus === "loading" ? "leaving..." : "got in",
+        text: joinLeaveStatus === "loading" ? "leaving..." : "joined",
         onClick: handleLeave,
         disabled: joinLeaveStatus === "loading",
         className:
-          "flex h-[30px] w-[61px] bg-black border border-brand-charcoal text-brand-off-white text-[11px]  rounded-full disabled:opacity-50 justify-center items-center",
+          "flex h-[30px] w-[69px] bg-black border border-brand-charcoal text-brand-off-white text-[14px]  rounded-full disabled:opacity-50 justify-center items-center",
       };
     }
 
     return {
-      text: joinLeaveStatus === "loading" ? "getting in..." : "get in",
+      text: joinLeaveStatus === "loading" ? "getting in..." : "join",
       onClick: handleJoin,
       disabled: joinLeaveStatus === "loading",
       className:
@@ -478,7 +477,7 @@ export default function MobileNetworkPage() {
             onClick={() => navigate(-1)}
             className="bg-black bg-opacity-70 rounded-full w-full h-full justify-center items-center"
           >
-            <img src={backArrow} alt="Back Button" className="ml-[10px] w-[12px] h-[20px] justify-center items-center"/>
+            <img src={backArrow} alt="Back Button" className="ml-[10px] w-[12px] h-[20px] justify-center items-center" />
           </button>
         </div>
 
@@ -551,7 +550,7 @@ export default function MobileNetworkPage() {
                 {networkData.name}
               </h2>
 
-              <p className="text-[11px] font-bold text-brand-off-white mt-[5px]">
+              <p className="text-[12px] font-bold text-brand-off-white mt-[5px]">
                 {networkData.members_count}{" "}
                 <span className="text-brand-dark-gray font-normal">members</span>
                 <span className="mx-2">•</span>
@@ -570,8 +569,8 @@ export default function MobileNetworkPage() {
             </button>
           </div>
         </div>
-        <p className="text-[10px] text-brand-off-white mt-[9px]">{networkData.description}</p>
-        <p className="text-[11px] text-brand-dark-gray mt-[7px]">Network created by</p>
+        <p className="text-[14px] text-brand-off-white mt-[9px]">{networkData.description}</p>
+        <p className="text-[11px] text-brand-dark-gray mt-[7px]">network by</p>
         <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-[9px]">
           <img
             src={networkData.created_by.image_url || "default_avatar.png"}
@@ -579,13 +578,19 @@ export default function MobileNetworkPage() {
             className="w-[23px] h-[22px] bg-gray-500 rounded-full object-cover"
           />
           <span className="text-brand-off-white">{networkData.created_by.name}</span>
+          <span className="text-brand-dark-gray">{" "}•{" "}</span>
+          <span className="text-brand-dark-gray font-normal">
+            {networkData.created_by.degree ? (networkData.created_by.degree === "masters" ? "m" : "b") : ""}
+            {"@"}
+            {networkData.created_by.college}
+          </span>
         </div>
       </div>
       <div className="">
         {mixesStatus === "loading" && (
           <div className="flex justify-center items-center py-6">
-            <Lottie 
-              animationData={loadingAnimation} 
+            <Lottie
+              animationData={loadingAnimation}
               loop={true}
               style={{ width: 120, height: 120 }} // Adjust size as needed
             />
@@ -594,11 +599,11 @@ export default function MobileNetworkPage() {
 
         {networkMixes.length > 0
           ? networkMixes.map((mix) => (
-              <NetworkPostCard key={mix.id} post={mix} />
-            ))
+            <NetworkPostCard key={mix.id} post={mix} />
+          ))
           : mixesStatus === "succeeded" && (
-              <p className="text-gray-400 text-center mt-4">No posts yet.</p>
-            )}
+            <p className="text-gray-400 text-center mt-4">No posts yet.</p>
+          )}
 
         {hasMore && <div ref={loadMoreRef} className="h-10"></div>}
       </div>
@@ -609,7 +614,7 @@ export default function MobileNetworkPage() {
         </div>
       )}
 
-      <div className="fixed bottom-1 left-0 right-0 px-2 py-1 z-10">
+      {/* <div className="fixed bottom-1 left-0 right-0 px-2 py-1 z-10">
         <div className="backdrop-blur-md bg-white/10 border border-brand-charcoal rounded-3xl px-4 py-2 flex justify-between items-center">
           <span className="text-sm text-brand-off-white">Open up now</span>
           <button
@@ -619,7 +624,7 @@ export default function MobileNetworkPage() {
             mix
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

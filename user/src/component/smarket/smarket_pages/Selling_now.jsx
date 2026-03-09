@@ -28,43 +28,43 @@ export default function ProductListingForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
+    const file = e.target.files[0];
+    if (!file) return;
 
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          const MAX_DIM = 1200;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const MAX_DIM = 1200;
 
-          if (width > MAX_DIM || height > MAX_DIM) {
-            if (width > height) {
-              height = Math.round((MAX_DIM / width) * height);
-              width = MAX_DIM;
-            } else {
-              width = Math.round((MAX_DIM / height) * width);
-              height = MAX_DIM;
-            }
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width > height) {
+            height = Math.round((MAX_DIM / width) * height);
+            width = MAX_DIM;
+          } else {
+            width = Math.round((MAX_DIM / height) * width);
+            height = MAX_DIM;
           }
+        }
 
-          canvas.width = width;
-          canvas.height = height;
+        canvas.width = width;
+        canvas.height = height;
 
-          const ctx = canvas.getContext('2d');
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, width, height);
-          ctx.drawImage(img, 0, 0, width, height);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
 
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-          setUploadedImages(prev => [...prev, compressedDataUrl]);
-        };
-        img.src = event.target.result;
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        // Store only the new single image
+        setUploadedImages([compressedDataUrl]);
       };
-      reader.readAsDataURL(file);
-    });
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
   };
 
   useEffect(() => {
@@ -78,7 +78,15 @@ export default function ProductListingForm() {
         agreedToTerms: true
       });
 
-      setUploadedImages(editListing.product_image || []);
+      // Handle both cases: a string containing the URL or an array
+      const existingImages = editListing.product_image;
+      if (Array.isArray(existingImages)) {
+        setUploadedImages(existingImages.length > 0 ? [existingImages[0]] : []);
+      } else if (existingImages && typeof existingImages === 'string') {
+        setUploadedImages([existingImages]);
+      } else {
+        setUploadedImages([]);
+      }
     }
   }, [isEditMode, editListing]);
 
@@ -123,14 +131,16 @@ export default function ProductListingForm() {
 
   const handleSubmit = async () => {
     if (!isFormValid) return;
-    // ... existing payload logic
+
+    // Pass the single image URL to the backend API or an array containing exactly one item
+    // depending on what your backend expects. I am keeping it as an array to avoid breaking the backend schema
     const payload = {
       product_name: formData.productName,
       description: formData.description,
       price: formData.price,
       category: formData.category,
       phone_number: formData.phoneNumber,
-      product_image: uploadedImages
+      product_image: uploadedImages // This is now an array of max 1 item
     };
 
     console.log('Sending payload:', payload);
@@ -254,13 +264,13 @@ export default function ProductListingForm() {
 
         {/* Upload Button */}
         <div>
-          <label className="w-full bg-transparent border border-gray-700 rounded-lg py-3 px-4 text-white hover:border-gray-500 transition-colors flex items-center justify-center cursor-pointer">
+          <label className={`w-full bg-transparent border border-gray-700 rounded-lg py-3 px-4 text-white hover:border-gray-500 transition-colors flex items-center justify-center ${uploadedImages.length > 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
             <span className="text-sm font-normal">Upload Product Photo *</span>
             <input
               type="file"
               accept="image/*"
-              multiple
               onChange={handleImageUpload}
+              disabled={uploadedImages.length > 0}
               className="hidden"
             />
           </label>

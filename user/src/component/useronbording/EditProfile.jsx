@@ -3,8 +3,9 @@ import { ArrowLeft, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import imageCompression from "browser-image-compression";
+import { getAuth, signOut } from "firebase/auth";
 import api from "../../providers/api";
-import { fetchUserProfile } from "../../features/userSlice/userSlice";
+import { fetchUserProfile, clearUserProfile, clearUser } from "../../features/userSlice/userSlice";
 import { resetUserMixes } from "../../features/mixes/mixSlice";
 
 export default function EditProfile() {
@@ -211,13 +212,38 @@ export default function EditProfile() {
         </div>
       </div>
 
-      {/* Bottom Button */}
-      <button
-        onClick={() => navigate(`/user-profile-owner/${userId}`)}
-        className="w-full py-3 bg-brand-off-white text-black font-bold rounded-lg mt-8 hover:opacity-90 transition-opacity"
-      >
-        View Profile
-      </button>
+      <div className="mt-8">
+        {/* Bottom Button */}
+        <button
+          onClick={() => navigate(`/user-profile-owner/${userId}`)}
+          className="w-full py-3 mb-6 bg-brand-off-white text-black font-bold rounded-lg hover:opacity-90 transition-opacity"
+        >
+          View Profile
+        </button>
+
+        <div className="flex flex-col gap-3 mb-6">
+          <button className="text-left font-bold text-[16px] text-brand-dark-gray">Community Guideline</button>
+          <button className="text-left font-bold text-[16px] text-brand-dark-gray">Privacy Policy</button>
+        </div>
+
+        {/* Bottom Button */}
+        <button
+          onClick={() => {
+            const auth = getAuth();
+            signOut(auth)
+              .then(() => {
+                dispatch(clearUser());
+                dispatch(clearUserProfile());
+                dispatch(resetUserMixes());
+                navigate("/lobby", { replace: true });
+              })
+              .catch((error) => console.error("Error signing out:", error));
+          }}
+          className="w-full py-3 bg-[#E0E2E3] text-black text-[16px] font-bold rounded-xl hover:opacity-90 transition-opacity"
+        >
+          Log out
+        </button>
+      </div>
     </div>
   );
 }
