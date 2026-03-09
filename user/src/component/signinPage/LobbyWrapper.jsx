@@ -18,11 +18,11 @@ const LobbyWrapper = () => {
 
   return (
     <>
-      {!animationComplete ? (
-        <div 
-          className={`fixed inset-0 bg-black flex items-center justify-center z-50 transition-opacity duration-500 ${
-            fadeOut ? 'opacity-0' : 'opacity-100'
-          }`}
+      <Lobby />
+      {!animationComplete && (
+        <div
+          className={`fixed inset-0 bg-black flex items-center justify-center z-50 transition-opacity duration-500 pointer-events-none ${fadeOut ? 'opacity-0' : 'opacity-100'
+            }`}
         >
           <Lottie
             lottieRef={lottieRef}
@@ -33,8 +33,6 @@ const LobbyWrapper = () => {
             onComplete={handleAnimationComplete}
           />
         </div>
-      ) : (
-        <Lobby />
       )}
     </>
   );
