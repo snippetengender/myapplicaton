@@ -50,12 +50,12 @@ export default function EventsMapPage() {
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <button
+          {/* <button
             onClick={() => navigate("/events/all_events")}
             className="bg-black border-2 border-gray-700 text-white rounded-[25px] px-6 py-1 text-sm hover:bg-gray-900 transition"
           >
             Add Event
-          </button>
+          </button> */}
 
           {/* Filter Button */}
           <button

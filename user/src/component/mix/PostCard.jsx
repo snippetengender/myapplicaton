@@ -15,11 +15,12 @@ export const PostCard = ({
   post,
   profileType: propProfileType,
   isCommentPage = false,
-  userId=null,
+  userId = null,
+  onOpenComments,
 }) => {
   const dispatch = useDispatch();
   const user = post.user || {};
-  
+
   const profileType = propProfileType || user.profileType || "user";
   const {
     time,
@@ -36,7 +37,7 @@ export const PostCard = ({
   //console.log(post.id)
   const navigate = useNavigate();
 
-    // Truncate helper for "…" continuation
+  // Truncate helper for "…" continuation
   const FEED_CLAMP = 160;
   // const COMMENT_CLAMP = 200;
   const truncateText = (text, limit) => {
@@ -54,8 +55,9 @@ export const PostCard = ({
   // Track whether the post image is portrait (height > width)
   const [isPortrait, setIsPortrait] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteMixId, setDeleteMixId] = useState(null);
-  
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+
   const handleImageLoad = (e) => {
     const { naturalWidth, naturalHeight } = e.currentTarget;
     if (naturalWidth && naturalHeight) {
@@ -82,6 +84,18 @@ export const PostCard = ({
   const cancelDelete = () => {
     setShowDeleteModal(false);
     setDeleteMixId(null);
+  };
+
+  const handleReportSubmit = () => {
+    // Note: Per requirements, this is a visual-only feature and does not send data anywhere.
+    console.log("Mock report submitted:", reportReason);
+    setShowReportModal(false);
+    setReportReason("");
+  };
+
+  const handleReportCancel = () => {
+    setShowReportModal(false);
+    setReportReason("");
   };
 
   const netScore = stats.upvote - stats.downvote;
@@ -155,31 +169,30 @@ export const PostCard = ({
                   )}
                 </div>
               </div>
-              
+
               {/* <button className="">
                 <img src={trashIcon} alt="Report post" />
               </button> */}
-              {userId ? 
-              (
-                  <button onClick={() => handleDelete(post.id)}>
-                    <img
-                      style={{ width: "18px", height: "18px" }}
-                      src={trashIcon}
-                      alt="Delete post"
-                    />
-                  </button>
+              {userId ? (
+                <button onClick={() => handleDelete(post.id)}>
+                  <img
+                    style={{ width: "18px", height: "18px" }}
+                    src={trashIcon}
+                    alt="Delete post"
+                  />
+                </button>
               ) : (
-                  <button>
-                    <img src={reportFlag} alt="Report post" />
-                  </button>
-            )}
+                <button onClick={() => setShowReportModal(true)}>
+                  <img src={reportFlag} alt="Report post" />
+                </button>
+              )}
             </div>
           </div>
           <div className="px-4 ml-0.5 pl-1 mt-3">
             {tag !== "poll" ? (
               <>
                 {imageUrl ? (
-                  <div onClick={() => navigate(`/comments/${post.id}`)}>
+                  <div onClick={() => onOpenComments ? onOpenComments(post.id) : navigate(`/comments/${post.id}`)}>
                     {profileType === "network" && title && (
                       <h2 className="text-brand-off-white text-lg font-semibold mb-2">
                         {title}
@@ -217,7 +230,7 @@ export const PostCard = ({
                     )}
                   </div>
                 ) : (
-                  <div onClick={() => navigate(`/comments/${post.id}`)}>
+                  <div onClick={() => onOpenComments ? onOpenComments(post.id) : navigate(`/comments/${post.id}`)}>
                     {profileType === "network" && title && (
                       <h2 className="text-brand-off-white text-lg font-semibold mb-2">
                         {title}
@@ -228,13 +241,13 @@ export const PostCard = ({
                         <p className="text-brand-off-white text-[18px] whitespace-pre-line mb-2">
                           {contentFeed}
                         </p>
-                    )}
+                      )}
                     {(profileType === "network") &&
                       content && (
                         <p className="text-brand-off-white text-[12px] whitespace-pre-line mb-2">
                           {contentFeed}
                         </p>
-                    )}
+                      )}
                   </div>
                 )}
               </>
@@ -249,7 +262,7 @@ export const PostCard = ({
               ) : (
                 <span
                   className="text-brand-pink font-medium cursor-pointer"
-                  onClick={() => navigate(`/comments/${post.id}`)}
+                  onClick={() => onOpenComments ? onOpenComments(post.id) : navigate(`/comments/${post.id}`)}
                 >
                   {stats.thoughts} thoughts
                 </span>
@@ -396,7 +409,7 @@ export const PostCard = ({
                   </>
                 ) : (
                   <>
-                    { network_id !== null && title && (
+                    {network_id !== null && title && (
                       <h2 className="text-brand-off-white text-[18px] font-semibold mb-2">
                         {title}
                       </h2>
@@ -424,7 +437,7 @@ export const PostCard = ({
               ) : (
                 <span
                   className="text-brand-pink font-medium cursor-pointer"
-                  onClick={() => navigate(`/comments/${post.id}`)}
+                  onClick={() => onOpenComments ? onOpenComments(post.id) : navigate(`/comments/${post.id}`)}
                 >
                   {stats.thoughts} thoughts
                 </span>
@@ -468,7 +481,7 @@ export const PostCard = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
           <div className="w-[90%] max-w-sm rounded-xl border border-white/20 bg-[#050505] p-5 text-center">
 
-            
+
             <h2 className="text-brand-off-white text-lg font-semibold mb-2">
               Delete Mix?
             </h2>
@@ -495,6 +508,73 @@ export const PostCard = ({
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {showReportModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4">
+          <div className="w-full max-w-sm rounded-[24px] bg-[#1a1a1a] p-6 shadow-xl border border-white/10">
+            <h2 className="text-brand-off-white text-xl font-bold mb-2">
+              Report Post
+            </h2>
+            <p className="text-brand-dark-gray text-sm mb-5">
+              Why are you reporting this post?
+            </p>
+
+            <div className="space-y-3 mb-6">
+              {[
+                "Spam",
+                "Harassment",
+                "Sexual content",
+                "Hate speech",
+                "False information",
+                "Irrelevant to campus",
+                "Something else",
+              ].map((reason) => (
+                <label
+                  key={reason}
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <div className="relative flex items-center justify-center w-5 h-5 rounded-full border border-gray-500 group-hover:border-brand-pink transition-colors">
+                    <input
+                      type="radio"
+                      name="reportReason"
+                      value={reason}
+                      checked={reportReason === reason}
+                      onChange={(e) => setReportReason(e.target.value)}
+                      className="absolute opacity-0 w-full h-full cursor-pointer"
+                    />
+                    {reportReason === reason && (
+                      <div className="w-2.5 h-2.5 rounded-full bg-brand-pink" />
+                    )}
+                  </div>
+                  <span className="text-brand-off-white text-sm">
+                    {reason}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleReportCancel}
+                className="flex-1 py-3 rounded-xl border border-white/20 text-brand-off-white text-sm font-semibold hover:bg-white/5 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReportSubmit}
+                disabled={!reportReason}
+                className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-colors ${
+                  reportReason
+                    ? "bg-brand-off-white text-black hover:bg-white/90"
+                    : "bg-white/10 text-white/30 cursor-not-allowed"
+                }`}
+              >
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       )}

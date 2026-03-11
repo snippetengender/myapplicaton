@@ -4,6 +4,44 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
+@layer base {
+
+  html,
+  body,
+  #root,
+  .app-layout-shell {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .app-layout-shell {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@layer utilities {
+
+  /* Modern dynamically scaled viewport height strictly adheres to bottom gesture bars */
+  .min-h-screen {
+    min-height: 100dvh !important;
+  }
+
+  /* Automatically hook components that use absolute fixed positions to clear gesture and status bars unconditionally */
+  .app-layout-shell .fixed.top-0 {
+    padding-top: env(safe-area-inset-top) !important;
+  }
+
+  .app-layout-shell .fixed.bottom-0 {
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+}
+
 /* Marquee */
 @keyframes snips-marquee {
   0% {
@@ -20,6 +58,7 @@
     opacity: 0;
     transform: translate(-50%, -10px);
   }
+
   100% {
     opacity: 1;
     transform: translate(-50%, 0);
@@ -57,6 +96,7 @@
   margin: 8px 10px !important;
   line-height: 1.4;
 }
+
 /* Custom Tooltip Styles for Map Markers */
 .leaflet-tooltip.compact-popup {
   background-color: black !important;

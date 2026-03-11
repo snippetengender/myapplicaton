@@ -6,6 +6,8 @@ import {
   fetchUserProfile,
   clearUserProfile,
 } from "../../features/userSlice/userSlice";
+import { getAuth, signOut } from "firebase/auth";
+import { clearUser } from "../../features/userSlice/userSlice";
 import { fetchParticularUserMix, resetUserMixes } from "../../features/mixes/mixSlice";
 import { PostCard } from "../mix/PostCard";
 import { MixCardSkeleton } from "../lowkey/LowKeyProfile";
@@ -104,6 +106,25 @@ export default function ProfileOwner() {
       hasMore: state.mixes.userPostsHasMore,
     })
   );
+
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const auth = getAuth();
+
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        dispatch(clearUser());
+        navigate("/lobby", { replace: true });
+      })
+      .catch((error) => console.error("Error signing out:", error));
+  };
+
+  const handleMockDeleteConfirm = () => {
+    // Requirements stated: Note : Delete Account is a mock up
+    // "When they click confirm let us logout them"
+    handleLogout();
+  };
 
   const observer = useRef();
   const loadMoreRef = useCallback(
@@ -209,11 +230,17 @@ export default function ProfileOwner() {
                 lowkey
               </button>
               <button
+                onClick={() => setShowSettingsModal(true)}
+                className="bg-transparent border border-zinc-600 rounded-full hover:bg-zinc-800 px-[10px] pt-[4px] pb-[6px]"
+              >
+                logout or delete account
+              </button>
+              {/* <button
                 onClick={() => navigate("/managenetwork")}
                 className="bg-transparent border border-zinc-600 rounded-full hover:bg-zinc-800 px-[10px] pt-[4px] pb-[6px]"
               >
                 manage <span className="text-brand-pink">network</span>
-              </button>
+              </button> */}
             </div>
           </div>
           <div className="space-y-1 text-sm">
@@ -328,6 +355,76 @@ export default function ProfileOwner() {
         </div>
       </div>
       <BottomTabs userId={userId} />
+
+      {/* Settings Modal (Logout / Delete Account) */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/70 px-4 pb-8 sm:pb-0">
+          <div className="w-full max-w-sm rounded-[24px] bg-[#1a1a1a] p-6 shadow-xl border border-white/10 animate-slide-up sm:animate-none">
+            <h2 className="text-brand-off-white text-xl font-bold mb-6 text-center">
+              Account Settings
+            </h2>
+            
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  setShowSettingsModal(false);
+                  handleLogout();
+                }}
+                className="w-full py-4 rounded-xl border border-white/20 text-brand-off-white text-sm font-semibold hover:bg-white/5 transition-colors"
+              >
+                Logout
+              </button>
+              
+              <button
+                onClick={() => {
+                  setShowSettingsModal(false);
+                  setShowDeleteConfirmModal(true);
+                }}
+                className="w-full py-4 rounded-xl border border-brand-pink/50 text-brand-pink text-sm font-semibold hover:bg-brand-pink/10 transition-colors"
+              >
+                Delete Account
+              </button>
+              
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="w-full py-3 mt-2 text-brand-dark-gray text-sm font-medium hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirmModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4">
+          <div className="w-full max-w-sm rounded-[24px] bg-[#1a1a1a] p-6 shadow-xl border border-red-500/20">
+            <h2 className="text-brand-off-white text-xl font-bold mb-4">
+              Delete Account?
+            </h2>
+            
+            <p className="text-brand-dark-gray text-sm mb-6 leading-relaxed">
+              Okay, your account will be deleted but make sure that you dont login in 30 days and if you login again account will not be deleted.
+            </p>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirmModal(false)}
+                className="flex-1 py-3 rounded-xl border border-white/20 text-brand-off-white text-sm font-semibold hover:bg-white/5 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleMockDeleteConfirm}
+                className="flex-1 py-3 rounded-xl bg-red-600/90 text-white text-sm font-semibold hover:bg-red-500 transition-colors"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

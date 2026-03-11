@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { App as CapApp } from "@capacitor/app";
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { NotificationProvider } from "./providers/NotificationContext";
 
 import LandingRouter from "./component/signinPage/LandingRouter";
@@ -81,6 +83,46 @@ import Add_location from "./component/smaps/smap_pages/Add_location.jsx";
 import Event_Info from "./component/smaps/smap_pages/Event_Info.jsx";
 
 
+const HardwareBackButtonHandler = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const locationRef = useRef(location.pathname);
+
+  useEffect(() => {
+    locationRef.current = location.pathname;
+  }, [location]);
+
+  useEffect(() => {
+    let backListener = null;
+    const registerListener = async () => {
+      backListener = await CapApp.addListener("backButton", () => {
+        // Provide an escape hatch for overlay modals to consume the back button
+        if (window.isModalOpen) {
+          window.dispatchEvent(new Event("closeModal"));
+          return;
+        }
+
+        const exitPaths = ["/", "/lobby", "/home", "/events", "/smarket"];
+        if (exitPaths.includes(locationRef.current)) {
+          CapApp.exitApp();
+        } else {
+          navigate(-1);
+        }
+      });
+    };
+
+    registerListener();
+
+    return () => {
+      if (backListener) {
+        backListener.remove();
+      }
+    };
+  }, [navigate]);
+
+  return null;
+};
+
 function App() {
   // Block desktop: allow only widths <= 768px
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -89,6 +131,29 @@ function App() {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const initPushNotifications = async () => {
+      try {
+        FirebaseMessaging.addListener('tokenReceived', (event) => {
+          console.log('Token received: ', event.token);
+          // You can optionally save the token to Firestore here if needed.
+        });
+
+        FirebaseMessaging.addListener('messageReceived', (event) => {
+          console.log('Push message received: ', event.message);
+        });
+      } catch (error) {
+        console.error('Error initializing push notifications: ', error);
+      }
+    };
+
+    initPushNotifications();
+
+    return () => {
+      FirebaseMessaging.removeAllListeners();
+    };
   }, []);
 
   if (!isMobile) {
@@ -104,145 +169,148 @@ function App() {
   return (
     <BrowserRouter>
       <NotificationProvider>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<LandingRouter />} />
-          <Route path="/lobby" element={<LobbyWrapper />} />
-          {/* About Us route */}
-          {/* <Route path="/about-us" element={<AboutUs/>}/> */}
-          <Route path="/about-us" element={<AboutUsWrapper />} />
-          {/* Onboarding */}
-          <Route
-            path="/useronboarding/google-login"
-            element={<GoogleLoginPage />}
-          />
-          <Route path="/domain-not-allowed" element={<DomainErrorPage />} />
-          <Route
-            path="/auth/already-registered"
-            element={<AlreadyRegisteredPage />}
-          />{" "}
-          <Route
-            path="/useronboarding/select-region"
-            element={<SelectRegionPage />}
-          />
-          <Route
-            path="/useronboarding/select-college"
-            element={<SelectCollegePage />}
-          />
-          <Route
-            path="/useronboarding/verify-email"
-            element={<VerifyEmailPage />}
-          />
-          <Route
-            path="/useronboarding/otp-verification"
-            element={<OtpVerificationPage />}
-          />
-          <Route
-            path="/useronboarding/name-dob-gender"
-            element={<NameDobGenderPage />}
-          />
-          <Route
-            path="/useronboarding/course-year-branch"
-            element={<CourseYearBranchPage />}
-          />
-          <Route path="/useronboarding/interests" element={<InterestPage />} />
-          <Route path="/useronboarding/prompt" element={<Prompt />} />
-          <Route
-            path="/useronboarding/relationship-status"
-            element={<RelationshipStatusPage />}
-          />
-          <Route path="/user-profile/:userId" element={<UserProfilePage />} />
-          <Route element={<ProtectedRoute />}>
-            <Route element={<ProfileOwnerRoute />}>
+        <HardwareBackButtonHandler />
+        <div className="app-layout-shell">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<LandingRouter />} />
+            <Route path="/lobby" element={<LobbyWrapper />} />
+            {/* About Us route */}
+            {/* <Route path="/about-us" element={<AboutUs/>}/> */}
+            <Route path="/about-us" element={<AboutUsWrapper />} />
+            {/* Onboarding */}
+            <Route
+              path="/useronboarding/google-login"
+              element={<GoogleLoginPage />}
+            />
+            <Route path="/domain-not-allowed" element={<DomainErrorPage />} />
+            <Route
+              path="/auth/already-registered"
+              element={<AlreadyRegisteredPage />}
+            />{" "}
+            <Route
+              path="/useronboarding/select-region"
+              element={<SelectRegionPage />}
+            />
+            <Route
+              path="/useronboarding/select-college"
+              element={<SelectCollegePage />}
+            />
+            <Route
+              path="/useronboarding/verify-email"
+              element={<VerifyEmailPage />}
+            />
+            <Route
+              path="/useronboarding/otp-verification"
+              element={<OtpVerificationPage />}
+            />
+            <Route
+              path="/useronboarding/name-dob-gender"
+              element={<NameDobGenderPage />}
+            />
+            <Route
+              path="/useronboarding/course-year-branch"
+              element={<CourseYearBranchPage />}
+            />
+            <Route path="/useronboarding/interests" element={<InterestPage />} />
+            <Route path="/useronboarding/prompt" element={<Prompt />} />
+            <Route
+              path="/useronboarding/relationship-status"
+              element={<RelationshipStatusPage />}
+            />
+            <Route path="/user-profile/:userId" element={<UserProfilePage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route element={<ProfileOwnerRoute />}>
+                <Route
+                  path="/user-profile-owner/:userId"
+                  element={<ProfileOwner />}
+                />
+              </Route>
+
+              <Route path="/useronboarding/user-name" element={<UsernamePage />} />
               <Route
-                path="/user-profile-owner/:userId"
-                element={<ProfileOwner />}
+                path="/lowkey-profile/:userId"
+                element={<LowKeyProfilePage />}
               />
-            </Route>
 
-            <Route path="/useronboarding/user-name" element={<UsernamePage />} />
-            <Route
-              path="/lowkey-profile/:userId"
-              element={<LowKeyProfilePage />}
-            />
-
-            <Route path="/selecttag/:id" element={<SelectTagPage />} />
-            <Route path="/s-edits" element={<Image_Edits />} />
-            <Route path="/comments/:mixId" element={<CommentTree />} />
-            <Route
-              path="/createnetworkwrapper"
-              element={<CreateNetworkWrapper />}
-            />
-            <Route path="/communitypage/:id" element={<CommunityPage />} />
-            <Route
-              path="/mobile_createnetwork_1"
-              element={<MobileCreateNetwork1 />}
-            />
-            <Route
-              path="/mobile_createnetwork_2"
-              element={<MobileCreateNetwork2 />}
-            />
-            <Route
-              path="/mobile_createnetwork_3"
-              element={<MobileCreateNetwork3 />}
-            />
-            <Route path="/managenetwork" element={<ManageNetworkScreen />} />
-            <Route path="/networkcommunity" element={<NetworkCommunityPage />} />
-            <Route path="/networkadmin/:id" element={<MobileNetworkAdmin />} />
-            { }
-            <Route
-              path="/communitypage/:id/editnetwork"
-              element={<EditNetworkPage />}
-            />
-            <Route
-              path="/communitypage/:id/ditchnetwork"
-              element={<DitchNetworkPage />}
-            />
-            <Route path="/communitypage/:id/finalpage" element={<FinalPage />} />
-            <Route path="/addclubs" element={<AddClubs />} />
-            <Route path="/registerclub" element={<RegisterClubPage />} />
-            <Route path="/clubapproval" element={<ClubApproval />} />
-            <Route path="/club-signin" element={<ClubSignInPage />} />
-            <Route path="/club-admin" element={<ClubAdminPage />} />
-            <Route path="/add-event" element={<CreateEventPage />} />
-            <Route path="/select-network" element={<NetworkSelectPage />} />
-            <Route path="/lowkey" element={<LowkeyProfile />} />
-            <Route path="/search-network" element={<SearchNetworkPage />} />
-            {/* Authenticated routes */}
-            {/* Protected routes */}
-            <Route path="/home" element={<Home />} />
-            <Route path="/bouquet" element={<BouquetOutlet />}>
-              <Route path="myscreen" element={<MyScreenPage />} />
-              <Route path="sendbouquet" element={<SendBouquetPage />} />
-              <Route path="findem" element={<FindEm />} />
-              <Route path="emresult" element={<EmResult />} />
-              <Route path="bouquetprompt" element={<BouquetPrompt />} />
-              <Route path="referalfeature" element={<ReferalFeature />} />
+              <Route path="/selecttag/:id" element={<SelectTagPage />} />
+              <Route path="/s-edits" element={<Image_Edits />} />
+              <Route path="/comments/:mixId" element={<CommentTree />} />
               <Route
-                path="bouquetfinalactivity"
-                element={<BouquetFinalActivity />}
+                path="/createnetworkwrapper"
+                element={<CreateNetworkWrapper />}
               />
-              <Route path="someonesaidthat" element={<SomeoneSaidThatPage />} />
-              <Route path="realhappyness" element={<RealHappynessPage />} />
-              <Route path="regrets" element={<Regrets />} />
-              <Route path="wannahide" element={<WannaHide />} />
+              <Route path="/communitypage/:id" element={<CommunityPage />} />
+              <Route
+                path="/mobile_createnetwork_1"
+                element={<MobileCreateNetwork1 />}
+              />
+              <Route
+                path="/mobile_createnetwork_2"
+                element={<MobileCreateNetwork2 />}
+              />
+              <Route
+                path="/mobile_createnetwork_3"
+                element={<MobileCreateNetwork3 />}
+              />
+              <Route path="/managenetwork" element={<ManageNetworkScreen />} />
+              <Route path="/networkcommunity" element={<NetworkCommunityPage />} />
+              <Route path="/networkadmin/:id" element={<MobileNetworkAdmin />} />
+              { }
+              <Route
+                path="/communitypage/:id/editnetwork"
+                element={<EditNetworkPage />}
+              />
+              <Route
+                path="/communitypage/:id/ditchnetwork"
+                element={<DitchNetworkPage />}
+              />
+              <Route path="/communitypage/:id/finalpage" element={<FinalPage />} />
+              <Route path="/addclubs" element={<AddClubs />} />
+              <Route path="/registerclub" element={<RegisterClubPage />} />
+              <Route path="/clubapproval" element={<ClubApproval />} />
+              <Route path="/club-signin" element={<ClubSignInPage />} />
+              <Route path="/club-admin" element={<ClubAdminPage />} />
+              <Route path="/add-event" element={<CreateEventPage />} />
+              <Route path="/select-network" element={<NetworkSelectPage />} />
+              <Route path="/lowkey" element={<LowkeyProfile />} />
+              <Route path="/search-network" element={<SearchNetworkPage />} />
+              {/* Authenticated routes */}
+              {/* Protected routes */}
+              <Route path="/home" element={<Home />} />
+              <Route path="/bouquet" element={<BouquetOutlet />}>
+                <Route path="myscreen" element={<MyScreenPage />} />
+                <Route path="sendbouquet" element={<SendBouquetPage />} />
+                <Route path="findem" element={<FindEm />} />
+                <Route path="emresult" element={<EmResult />} />
+                <Route path="bouquetprompt" element={<BouquetPrompt />} />
+                <Route path="referalfeature" element={<ReferalFeature />} />
+                <Route
+                  path="bouquetfinalactivity"
+                  element={<BouquetFinalActivity />}
+                />
+                <Route path="someonesaidthat" element={<SomeoneSaidThatPage />} />
+                <Route path="realhappyness" element={<RealHappynessPage />} />
+                <Route path="regrets" element={<Regrets />} />
+                <Route path="wannahide" element={<WannaHide />} />
+              </Route>
             </Route>
-          </Route>
-          {/* Smarket */}
-          <Route path="/smarket" element={<Smarket />} />
-          <Route path="/smarket/:listingId" element={<Item_Info />} />
-          <Route path="/smarket/selling_now" element={<Selling_now />} />
+            {/* Smarket */}
+            <Route path="/smarket" element={<Smarket />} />
+            <Route path="/smarket/:listingId" element={<Item_Info />} />
+            <Route path="/smarket/selling_now" element={<Selling_now />} />
 
-          {/* Smaps or Events */}
-          <Route path="/events" element={<Smaps />} />
-          <Route path="/events/all_events" element={<All_events />} />
-          <Route path="/events/add_events" element={<Add_Events />} />
-          <Route path="/events/add_location" element={<Add_location />} />
-          <Route path="/events/event-info/:eventId" element={<Event_Info />} />
+            {/* Smaps or Events */}
+            <Route path="/events" element={<Smaps />} />
+            <Route path="/events/all_events" element={<All_events />} />
+            <Route path="/events/add_events" element={<Add_Events />} />
+            <Route path="/events/add_location" element={<Add_location />} />
+            <Route path="/events/event-info/:eventId" element={<Event_Info />} />
 
-          {/* Fallback */}
-          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-        </Routes >
+            {/* Fallback */}
+            {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+          </Routes >
+        </div>
       </NotificationProvider >
     </BrowserRouter >
   );

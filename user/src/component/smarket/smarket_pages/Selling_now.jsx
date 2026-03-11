@@ -282,7 +282,16 @@ export default function ProductListingForm() {
             className="w-4 h-4 bg-transparent border border-gray-700 rounded"
           />
           <label htmlFor="terms" className="text-sm">
-            I agree to the Terms and Conditions
+            I agree to the{" "}
+            <a
+              href="https://thesnippetlegal.vercel.app/terms.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#0C8AE5" }}
+              className="hover:underline"
+            >
+              Terms and Conditions
+            </a>
           </label>
         </div>
 

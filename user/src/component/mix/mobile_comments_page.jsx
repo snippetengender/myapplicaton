@@ -1114,8 +1114,8 @@ const NewCommentInput = ({
 
           <button
             className={`text-sm font-medium px-3 pt-1 pb-[6px] rounded-[10px] leading-[17px] ${(!text.trim() && !imageFile) || isSubmitting
-                ? "text-brand-off-white cursor-not-allowed border border-brand-almost-black"
-                : "bg-brand-off-white text-brand-almost-black"
+              ? "text-brand-off-white cursor-not-allowed border border-brand-almost-black"
+              : "bg-brand-off-white text-brand-almost-black"
               }`}
             disabled={(!text.trim() && !imageFile) || isSubmitting}
             onClick={handleSubmit}
@@ -1182,6 +1182,12 @@ const Comment = ({ commment, ...props }) => {
   ===================== */
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  /* =====================
+     REPORT MODAL STATE
+  ===================== */
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+
   const handleAddReply = ({ comment: replyText, imageFile, is_lowkey }) => {
     dispatch(
       createComment({
@@ -1220,6 +1226,21 @@ const Comment = ({ commment, ...props }) => {
     setShowDeleteModal(false);
   };
 
+  /* =====================
+     REPORT HANDLERS
+  ===================== */
+  const handleReportSubmit = () => {
+    // Note: Per requirements, this is a visual-only feature and does not send data anywhere.
+    console.log("Mock report submitted:", reportReason);
+    setShowReportModal(false);
+    setReportReason("");
+  };
+
+  const handleReportCancel = () => {
+    setShowReportModal(false);
+    setReportReason("");
+  };
+
   if (!hasValidUserDetails) {
     return null;
   }
@@ -1234,9 +1255,8 @@ const Comment = ({ commment, ...props }) => {
 
   return (
     <div
-      className={`relative w-full font-inter ${
-        indentLevel > 0 ? "border-l border-brand-almost-black pl-2" : ""
-      }`}
+      className={`relative w-full font-inter ${indentLevel > 0 ? "border-l border-brand-almost-black pl-2" : ""
+        }`}
       style={{
         marginLeft: `${indentLevel > 0 ? (indentLevel - 1) * 14 + 2 : 0}px`,
       }}
@@ -1272,7 +1292,7 @@ const Comment = ({ commment, ...props }) => {
             <span>{formatTimeAgo(created_at)}</span>
           </div>
 
-          {canDeleteComment && (
+          {canDeleteComment ? (
             <button onClick={handleDelete}>
               <img
                 style={{ width: "18px", height: "18px" }}
@@ -1280,6 +1300,10 @@ const Comment = ({ commment, ...props }) => {
                 className="button-icon"
                 alt="Delete comment"
               />
+            </button>
+          ) : (
+            <button onClick={() => setShowReportModal(true)}>
+              <img src={reportFlag} alt="Report post" />
             </button>
           )}
         </div>
@@ -1314,11 +1338,10 @@ const Comment = ({ commment, ...props }) => {
               <div className="flex items-center gap-3 h-6">
                 {/* Upvote */}
                 <div
-                  className={`flex items-center gap-1 cursor-pointer ${
-                    user_reaction === "like"
-                      ? "text-pink-500"
-                      : "text-gray-400"
-                  }`}
+                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "like"
+                    ? "text-pink-500"
+                    : "text-gray-400"
+                    }`}
                   onClick={() => handleReaction("like")}
                 >
                   <FiChevronUp size={22} />
@@ -1326,14 +1349,13 @@ const Comment = ({ commment, ...props }) => {
 
                 {/* Downvote + Net Score */}
                 <div
-                  className={`flex items-center gap-1 cursor-pointer ${
-                    user_reaction === "dislike"
-                      ? "text-pink-500"
-                      : "text-gray-400"
-                  }`}
+                  className={`flex items-center gap-1 cursor-pointer ${user_reaction === "dislike"
+                    ? "text-pink-500"
+                    : "text-gray-400"
+                    }`}
                   onClick={() => handleReaction("dislike")}
                 >
-                  {netScore  && (
+                  {netScore && (
                     <span className="text-xs text-pink-500 font-semibold">
                       {netScore}
                     </span>
@@ -1398,6 +1420,74 @@ const Comment = ({ commment, ...props }) => {
           </div>
         </div>
       )}
+
+      {/* REPORT MODAL */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4">
+          <div className="w-full max-w-sm rounded-[24px] bg-[#1a1a1a] p-6 shadow-xl border border-white/10">
+            <h2 className="text-brand-off-white text-xl font-bold mb-2">
+              Report Post
+            </h2>
+            <p className="text-brand-dark-gray text-sm mb-5">
+              Why are you reporting this post?
+            </p>
+
+            <div className="space-y-3 mb-6">
+              {[
+                "Spam",
+                "Harassment",
+                "Sexual content",
+                "Hate speech",
+                "False information",
+                "Irrelevant to campus",
+                "Something else",
+              ].map((reason) => (
+                <label
+                  key={reason}
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <div className="relative flex items-center justify-center w-5 h-5 rounded-full border border-gray-500 group-hover:border-brand-pink transition-colors">
+                    <input
+                      type="radio"
+                      name="reportReason"
+                      value={reason}
+                      checked={reportReason === reason}
+                      onChange={(e) => setReportReason(e.target.value)}
+                      className="absolute opacity-0 w-full h-full cursor-pointer"
+                    />
+                    {reportReason === reason && (
+                      <div className="w-2.5 h-2.5 rounded-full bg-brand-pink" />
+                    )}
+                  </div>
+                  <span className="text-brand-off-white text-sm">
+                    {reason}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleReportCancel}
+                className="flex-1 py-3 rounded-xl border border-white/20 text-brand-off-white text-sm font-semibold hover:bg-white/5 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReportSubmit}
+                disabled={!reportReason}
+                className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-colors ${
+                  reportReason
+                    ? "bg-brand-off-white text-black hover:bg-white/90"
+                    : "bg-white/10 text-white/30 cursor-not-allowed"
+                }`}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1405,10 +1495,11 @@ const Comment = ({ commment, ...props }) => {
 export { Comment };
 
 
-const CommentsPage = () => {
+const CommentsPage = ({ mixId: propMixId, onClose }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { mixId } = useParams();
+  const { mixId: paramMixId } = useParams();
+  const mixId = propMixId || paramMixId;
   const observer = useRef();
   const [activeReplyId, setActiveReplyId] = useState(null);
 
@@ -1492,13 +1583,13 @@ const CommentsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-brand-off-white flex flex-col w-full mx-auto">
+    <div className="h-full max-h-screen bg-black text-brand-off-white flex flex-col w-full mx-auto">
       {/* Page Header */}
       <div className="flex items-center py-5 border-b border-brand-almost-black">
         {/* Cross Button */}
         <RxCross2
           className="h-6 w-6 cursor-pointer mr-[12px] ml-[15px]"
-          onClick={() => navigate(-1)}
+          onClick={() => onClose ? onClose() : navigate(-1)}
         />
 
         {selectedMix.network_id === null ? (
@@ -1527,63 +1618,67 @@ const CommentsPage = () => {
         )}
       </div>
 
-      {/* Main Post */}
-      <div className="">
-        <PostCard post={selectedMix} isPartial={true} isCommentPage={true} />
-      </div>
-
-      <div className="px-[16px] py-[10px] font-bold text-[16px] border-b border-brand-almost-black">
-        <h1>thoughts</h1>
-      </div>
-      {/* Comments Section */}
-      <div className="flex-grow overflow-y-auto pb-24 pt-[13px] pl-[14px] pr-[19px]">
-        <div className="mb-6">
-          <NewCommentInput
-            placeholder="Join the conversation..."
-            onSubmit={handlePostTopLevelComment}
-            isSubmitting={isSubmitting}
-            userId={loggedInUserId}
-          />
+      {/* Scrollable Content Region: Post + Comments scroll together */}
+      <div className="flex-grow overflow-y-auto pb-24 w-full">
+        {/* Main Post */}
+        <div className="">
+          <PostCard post={selectedMix} isPartial={true} isCommentPage={true} />
         </div>
 
-        {/* Initial Comments Loading (replaced skeletons) */}
-        {commentsStatus === "loading" && flatComments.length === 0 && (
-          <div className="text-center text-gray-400 py-6">
-            Loading comments...
-          </div>
-        )}
+        <div className="px-[16px] py-[10px] font-bold text-[16px] border-b border-brand-almost-black">
+          <h1>thoughts</h1>
+        </div>
 
-        {/* Rendered Comments */}
-        {nestedComments.map((comment) => (
-          <Comment
-
-
-            postOwnerId={selectedMix?.user_details?.firebase_id ?? null}
-            key={comment.id}
-
-            comment={comment}
-            dispatch={dispatch}
-            mixId={mixId}
-            indentLevel={0}
-            activeReplyId={activeReplyId}
-            onToggleReply={handleToggleReply}
-            loggedInUserId={loggedInUserId}
-          />
-        ))}
-
-
-        {/* Infinite Scroll Sentinel and Loader (replaced skeleton) */}
-        {loadingInitial && (
-          <div className="flex justify-center items-center py-6 bg-black min-h-screen">
-            <Lottie
-              animationData={loadingAnimation}
-              loop={true}
-              style={{ width: 120, height: 120 }} // Adjust size as needed
+        {/* Comments Section */}
+        <div className="pt-[13px] pl-[14px] pr-[19px]">
+          <div className="mb-6">
+            <NewCommentInput
+              placeholder="Join the conversation..."
+              onSubmit={handlePostTopLevelComment}
+              isSubmitting={isSubmitting}
+              userId={loggedInUserId}
             />
           </div>
-        )}
-        <div ref={loadMoreRef}>
-          {loadingMore && <span>Loading more...</span>}
+
+          {/* Initial Comments Loading (replaced skeletons) */}
+          {commentsStatus === "loading" && flatComments.length === 0 && (
+            <div className="text-center text-gray-400 py-6">
+              Loading comments...
+            </div>
+          )}
+
+          {/* Rendered Comments */}
+          {nestedComments.map((comment) => (
+            <Comment
+
+
+              postOwnerId={selectedMix?.user_details?.firebase_id ?? null}
+              key={comment.id}
+
+              comment={comment}
+              dispatch={dispatch}
+              mixId={mixId}
+              indentLevel={0}
+              activeReplyId={activeReplyId}
+              onToggleReply={handleToggleReply}
+              loggedInUserId={loggedInUserId}
+            />
+          ))}
+
+
+          {/* Infinite Scroll Sentinel and Loader (replaced skeleton) */}
+          {loadingInitial && (
+            <div className="flex justify-center items-center py-6 bg-black min-h-screen">
+              <Lottie
+                animationData={loadingAnimation}
+                loop={true}
+                style={{ width: 120, height: 120 }} // Adjust size as needed
+              />
+            </div>
+          )}
+          <div ref={loadMoreRef}>
+            {loadingMore && <span>Loading more...</span>}
+          </div>
         </div>
       </div>
     </div>

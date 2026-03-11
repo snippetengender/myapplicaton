@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">The Snippet</string>
+    <string name="title_activity_main">The Snippet</string>
+    <string name="package_name">com.myred.myapplication</string>
+    <string name="custom_url_scheme">com.myred.myapplication</string>
+</resources>

@@ -129,12 +129,12 @@ export default function NetworkSelectPage() {
             </button>
             <h1 className="text-[18px] font-bold">Post to</h1>
           </div>
-          <button
+          {/* <button
             className="text-sm border border-brand-charcoal px-3 py-1 rounded-full"
             onClick={() => navigate("/mobile_createnetwork_1")}
           >
             establish your own network
-          </button>
+          </button> */}
         </div>
       )}
 

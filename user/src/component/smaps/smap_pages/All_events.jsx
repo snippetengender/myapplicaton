@@ -106,13 +106,13 @@ export default function All_events() {
 
                 {/* Floating Action Button or Fixed Button at Bottom */}
                 <div className="pt-4 mt-auto">
-                    <button
+                    {/* <button
                         onClick={() => navigate("/events/add_events")}
                         className="w-full bg-white text-black font-semibold py-3 px-4 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-white/10"
                     >
                         <Plus size={20} />
                         Add Events
-                    </button>
+                    </button> */}
                 </div>
             </div>
         </div>

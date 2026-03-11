@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@capacitor-firebase/authentication": "^8.1.0",
+    "@capacitor-firebase/messaging": "^8.1.0",
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/app": "^8.0.1",
+    "@capacitor/cli": "^8.1.0",
+    "@capacitor/core": "^8.1.0",
+    "@capacitor/status-bar": "^8.0.1",
     "@dicebear/avatars": "^4.10.8",
     "@dicebear/collection": "^9.2.3",
     "@dicebear/core": "^9.2.3",
@@ -20,8 +27,9 @@
     "@vitejs/plugin-react": "^4.3.0",
     "axios": "^1.7.2",
     "browser-image-compression": "^2.0.2",
+    "capacitor-native-settings": "^8.0.0",
     "clsx": "^2.1.1",
-    "firebase": "^10.12.2",
+    "firebase": "^12.9.0",
     "html-to-image": "^1.11.11",
     "html2canvas": "^1.4.1",
     "leaflet": "^1.9.4",
@@ -63,9 +71,11 @@
     ]
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@tailwindcss/postcss": "^4.1.11",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.9.3"
   }
 }

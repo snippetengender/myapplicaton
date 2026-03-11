@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useNotification } from "../../providers/NotificationContext";
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 
 import All_listing from "./smarket_pages/all_listing";
 import Your_listing from "./smarket_pages/your_listing";
@@ -16,13 +17,49 @@ export default function Smarket() {
     const location = useLocation();
     const [activeMTab, setActiveMTab] = useState(location.state?.activeTab || "all_listing");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [showNotificationModal, setShowNotificationModal] = useState(false);
     const navigate = useNavigate();
     const userId = localStorage.getItem("user_id");
     const { markMarketplaceRead } = useNotification();
 
     useEffect(() => {
         markMarketplaceRead();
+
+        // Check if we should show the modal
+        const checkPushPermissions = async () => {
+            try {
+                const { receive } = await FirebaseMessaging.checkPermissions();
+                const hasSeenPrompt = localStorage.getItem('hasSeenSmarketPushPrompt');
+                // If not already prompted and not granted
+                if (receive !== 'granted' && hasSeenPrompt !== 'true') {
+                    // Small delay to let the UI settle before popping the modal
+                    setTimeout(() => setShowNotificationModal(true), 1200);
+                }
+            } catch (error) {
+                console.log("Could not verify permissions context:", error);
+            }
+        };
+        checkPushPermissions();
     }, []);
+
+    const handleTurnOnNotifications = async () => {
+        setShowNotificationModal(false);
+        localStorage.setItem('hasSeenSmarketPushPrompt', 'true');
+        try {
+            const { receive } = await FirebaseMessaging.requestPermissions();
+            if (receive === 'granted') {
+                await FirebaseMessaging.subscribeToTopic({ topic: 'all_users' });
+                console.log("Subscribed to topic: all_users from Smarket");
+            }
+        } catch (error) {
+            console.error("Permission request failed", error);
+        }
+    };
+
+    const handleMaybeLater = () => {
+        setShowNotificationModal(false);
+        localStorage.setItem('hasSeenSmarketPushPrompt', 'true');
+    };
 
     const renderTab = () => {
         switch (activeMTab) {
@@ -102,6 +139,36 @@ export default function Smarket() {
 
             {/* Bottom Navigation */}
             <BottomTabs userId={userId} />
+
+            {/* Pre-Permission Modal */}
+            {showNotificationModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+                    <div className="bg-[#111111] border border-gray-800 rounded-2xl p-6 w-full max-w-sm flex flex-col items-center text-center shadow-xl">
+                        <div className="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center mb-4 text-2xl">
+                            🔔
+                        </div>
+                        <h2 className="text-xl font-semibold text-white mb-2">Stay in the campus loop 🎓</h2>
+                        <p className="text-gray-400 text-sm mb-6">
+                            Get notified instantly about new items, textbook deals, and exclusive marketplace drops.
+                        </p>
+
+                        <div className="w-full flex flex-col gap-3">
+                            <button
+                                onClick={handleTurnOnNotifications}
+                                className="w-[100%] py-3 bg-white text-black font-semibold rounded-xl hover:bg-gray-200 transition-colors"
+                            >
+                                Turn on notifications
+                            </button>
+                            <button
+                                onClick={handleMaybeLater}
+                                className="w-[100%] py-3 text-gray-400 font-medium rounded-xl hover:text-white transition-colors"
+                            >
+                                Maybe later
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
